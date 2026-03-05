@@ -1,0 +1,29 @@
+name: Deploy to GitHub Pages with Secrets
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Replace secrets in quiz/index.html
+        run: |
+          sed -i 's/__TELEGRAM_BOT_TOKEN__/${{ secrets.TELEGRAM_BOT_TOKEN }}/g' quiz/index.html
+          sed -i 's/__TELEGRAM_CHAT_ID__/${{ secrets.TELEGRAM_CHAT_ID }}/g' quiz/index.html
+      
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          publish_branch: gh-pages
