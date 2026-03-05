@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бизнес‑аудит · Елена Савичева</title>
+    <!-- Web3Forms (ключ будет вставлен в JS) -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f6f9fc 0%, #edf2f7 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .quiz-card {
+            max-width: 760px;
+            width: 100%;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 20, 40, 0.25), inset 0 1px 2px rgba(255,255,255,0.6);
+            border: 1px solid rgba(255,255,255,0.7);
+            overflow: hidden;
+            padding: 2rem 2.25rem;
+            transition: all 0.2s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* шапка с прогрессом */
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+        }
+        .progress-label {
+            color: #1a3440;
+            background: rgba(10, 40, 60, 0.06);
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(0,40,60,0.08);
+        }
+        .progress-bar-bg {
+            height: 8px;
+            width: 160px;
+            background: #e2eaf0;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 8px;
+            background: #0b4f6c;
+            width: 0%;
+            border-radius: 20px;
+            transition: width 0.3s ease;
+        }
+
+        /* стартовый экран (первая карточка) */
+        .start-screen, .question-screen, .result-screen, .final-screen {
+            display: none;
+            animation: fadeSlide 0.4s ease;
+        }
+        .active-screen {
+            display: block;
+        }
+
+        @keyframes fadeSlide {
+            0% { opacity: 0.4; transform: translateY(8px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+            color: #0a2838;
+            margin-bottom: 1rem;
+        }
+        .accent-text {
+            color: #1b6b8f;
+            font-weight: 500;
+        }
+        .hero-description {
+            font-size: 1.1rem;
+            color: #2b4a5c;
+            margin-bottom: 2.5rem;
+            line-height: 1.5;
+            border-left: 4px solid #1b6b8f;
+            padding-left: 1.4rem;
+            background: rgba(27, 107, 143, 0.02);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 550;
+            color: #0b3445;
+            margin-bottom: 1.8rem;
+            padding-right: 1rem;
+        }
+
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+            margin-bottom: 2.8rem;
+        }
+        .option-item {
+            background: white;
+            border: 1px solid #dae8f0;
+            border-radius: 60px;
+            padding: 0.9rem 1.8rem;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 4px 10px -6px rgba(0,32,64,0.08);
+        }
+        .option-item:hover {
+            border-color: #1b6b8f;
+            background: #f8fbfe;
+            box-shadow: 0 8px 18px -10px #1b6b8f40;
+            transform: scale(1.01);
+        }
+        .option-item.selected {
+            border-color: #1b6b8f;
+            background: #eaf4fb;
+            box-shadow: 0 0 0 3px rgba(27,107,143,0.15);
+        }
+        .option-item input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #b6ccda;
+            border-radius: 50%;
+            margin-right: 1rem;
+            position: relative;
+            transition: 0.1s;
+        }
+        .option-item input[type="radio"]:checked {
+            border-color: #1b6b8f;
+            background-color: #1b6b8f;
+            box-shadow: inset 0 0 0 4px white, 0 0 0 1px #1b6b8f;
+        }
+        .option-item label {
+            font-size: 1.05rem;
+            font-weight: 450;
+            color: #1f3d4f;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+        }
+        .btn {
+            border: none;
+            background: white;
+            padding: 0.7rem 2rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 1rem;
+            border: 1px solid #cbdae6;
+            color: #1b4b63;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 6px 12px -8px rgba(0,40,60,0.2);
+        }
+        .btn-primary {
+            background: #0f4b63;
+            border: 1px solid #0a384b;
+            color: white;
+            box-shadow: 0 12px 22px -10px #0f4b63;
+        }
+        .btn-primary:hover {
+            background: #135d7a;
+            transform: translateY(-2px);
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        /* СТИЛИ ДЛЯ СТРАНИЦЫ РЕЗУЛЬТАТА */
+        .result-card {
+            background: #ffffffd6;
+            border-radius: 2rem;
+            padding: 2.2rem 2rem;
+            border: 1px solid #cde3ef;
+            margin: 1rem 0 2rem;
+            box-shadow: 0 15px 30px -12px rgba(0,40,60,0.15);
+        }
+        
+        .result-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #083349;
+            margin-bottom: 1.2rem;
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            border-bottom: 3px solid #1b6b8f;
+            padding-bottom: 0.8rem;
+            display: inline-block;
+        }
+        
+        .score-badge {
+            background: linear-gradient(135deg, #0f4b63 0%, #1b6b8f 100%);
+            color: white;
+            display: inline-block;
+            padding: 0.6rem 1.5rem;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #b7d9e9;
+            box-shadow: 0 4px 10px rgba(27,107,143,0.3);
+        }
+        
+        .result-content {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #1b4257;
+        }
+        
+        /* Стили для структурированного контента */
+        .result-section {
+            margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #083349;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-header .emoji {
+            font-size: 1.6rem;
+        }
+        
+        .problem-list, .solution-list, .action-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1rem 0;
+        }
+        
+        .problem-item, .solution-item, .action-item {
+            margin-bottom: 0.8rem;
+            padding-left: 2rem;
+            position: relative;
+            font-size: 1rem;
+        }
+        
+        .problem-item:before {
+            content: "❌";
+            position: absolute;
+            left: 0;
+            font-size: 1.1rem;
+        }
+        
+        .solution-item:before {
+            content: "📊";
+            position: absolute;
+            left: 0;
+            font-size: 1.1rem;
+        }
+        
+        .action-item:before {
+            content: "🎯";
+            position: absolute;
+            left: 0;
+            font-size: 1.1rem;
+        }
+        
+        .numbered-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1rem 0;
+        }
+        
+        .numbered-item {
+            margin-bottom: 1.2rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+        
+        .numbered-item strong {
+            display: block;
+            font-size: 1.1rem;
+            color: #0f4b63;
+            margin-bottom: 0.3rem;
+        }
+        
+        .numbered-item .item-desc {
+            color: #1b4257;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            padding-left: 0.5rem;
+        }
+        
+        .numbered-item:before {
+            content: counter(item) ".";
+            counter-increment: item;
+            position: absolute;
+            left: 0;
+            font-weight: 700;
+            color: #1b6b8f;
+            font-size: 1.1rem;
+        }
+        
+        .numbered-list {
+            counter-reset: item;
+        }
+        
+        .recommendation-block {
+            background: #eaf4fb;
+            padding: 1.2rem 1.5rem;
+            border-radius: 1.2rem;
+            margin: 1.5rem 0;
+            border-left: 5px solid #1b6b8f;
+        }
+        
+        .recommendation-text {
+            font-weight: 500;
+            font-size: 1.1rem;
+            color: #083349;
+            line-height: 1.5;
+        }
+        
+        .recommendation-text .highlight {
+            font-weight: 700;
+            color: #0f4b63;
+        }
+        
+        .bullet-list {
+            list-style: none;
+            padding: 0;
+            margin: 0.5rem 0 1rem 1rem;
+        }
+        
+        .bullet-item {
+            margin-bottom: 0.5rem;
+            padding-left: 1.8rem;
+            position: relative;
+            font-size: 0.95rem;
+        }
+        
+        .bullet-item:before {
+            content: "•";
+            position: absolute;
+            left: 0.5rem;
+            color: #1b6b8f;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #b7cfde, transparent);
+            margin: 1.5rem 0;
+        }
+
+        .final-field {
+            margin-bottom: 1.4rem;
+        }
+        .final-field input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border-radius: 60px;
+            border: 1px solid #c2d8e8;
+            font-size: 1rem;
+            background: white;
+        }
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            margin: 2rem 0 1.2rem;
+            font-size: 0.9rem;
+            color: #3f5e70;
+        }
+        .checkbox-row a {
+            color: #0f4b63;
+            text-decoration: none;
+            border-bottom: 1px dotted;
+        }
+        .checkbox-row a:hover {
+            color: #062a36;
+        }
+
+        .footer-note {
+            color: #577a8f;
+            font-size: 0.85rem;
+            margin-top: 2rem;
+            text-align: center;
+            border-top: 1px dashed #b7cfde;
+            padding-top: 1.5rem;
+        }
+        .footer-note a {
+            color: #1b5a75;
+            text-decoration: none;
+            border-bottom: 1px dotted #98b8cc;
+        }
+        .footer-note a:hover {
+            color: #083349;
+        }
+
+        /* Модальное окно для политики */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 2rem;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 2rem 2.2rem;
+            box-shadow: 0 30px 60px rgba(0,20,40,0.3);
+            border: 1px solid #c2ddee;
+            position: relative;
+        }
+        .modal-content h2 {
+            color: #083349;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+        .modal-content pre {
+            white-space: pre-wrap;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #1b4257;
+        }
+        .close-modal {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #577a8f;
+            line-height: 1;
+        }
+
+        /* Экран благодарности */
+        .thank-you-screen {
+            display: none;
+            text-align: center;
+            padding: 3rem 1.5rem;
+        }
+        .thank-you-screen.active-screen {
+            display: block;
+        }
+        .thank-you-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            animation: scaleIn 0.5s ease-out;
+        }
+        @keyframes scaleIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .thank-you-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #0a2838;
+            margin-bottom: 1rem;
+        }
+        .thank-you-message {
+            font-size: 1.1rem;
+            color: #2b4a5c;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        .thank-you-note {
+            background: rgba(27, 107, 143, 0.08);
+            border-left: 4px solid #1b6b8f;
+            padding: 1rem 1.5rem;
+            border-radius: 0 8px 8px 0;
+            color: #1b4b63;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-card" id="quizContainer">
+        <!-- прогресc бар -->
+        <div class="progress-header">
+            <span class="progress-label" id="progressText">Готово: 0%</span>
+            <div class="progress-bar-bg">
+                <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <!-- СТАРТОВЫЙ ЭКРАН (0% готовности) -->
+        <div id="startScreen" class="start-screen active-screen">
+            <h1>Узнайте точки роста вашего бизнеса за 2 минуты</h1>
+            <div class="hero-description">
+                Ответьте на вопросы и получите бесплатно рекомендации от финансового директора.<br> 
+                Поймёте, как навести порядок в финансах и вырасти.
+            </div>
+            <div style="margin-top: 2rem;">
+                <button class="btn btn-primary" id="startBtn">▶ Начать аудит</button>
+            </div>
+            <div style="margin-top: 2.2rem; color: #476c7f; font-size:0.95rem;">
+                <span>✓ 2 минуты · 11 вопросов · персональные инсайты</span>
+            </div>
+        </div>
+
+        <!-- ОСНОВНОЙ ОПРОСНИК (будет подставляться динамически) -->
+        <div id="quizScreen" class="question-screen">
+            <div id="questionContainer"></div>
+            <div class="nav-buttons">
+                <button class="btn" id="prevBtn" disabled>← Назад</button>
+                <button class="btn btn-primary" id="nextBtn">Далее →</button>
+            </div>
+        </div>
+
+        <!-- ЭКРАН РЕКОМЕНДАЦИИ (появляется после подсчёта баллов) -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-card" id="resultCard">
+                <div class="result-title" id="resultTitle"></div>
+                <div class="score-badge" id="scoreDisplay">Вы набрали 0 баллов из 31</div>
+                <div class="result-content" id="resultMessage"></div>
+            </div>
+            <div style="text-align: center; margin: 1rem 0 2rem;">
+                <button class="btn btn-primary" id="showFinalFormBtn">📧 Получить рекомендации на почту</button>
+            </div>
+        </div>
+
+        <!-- ФИНАЛЬНАЯ ФОРМА (контакты + согласие) -->
+        <div id="finalScreen" class="final-screen">
+            <h3 style="font-size:1.8rem; color:#083f57; margin-bottom:1.5rem;">Оставьте контакты</h3>
+            <p style="margin-bottom:2rem; color:#316277;">Мы отправим рекомендации на ваш e-mail</p>
+            <div class="final-field">
+                <input type="text" id="nameInput" placeholder="Имя" required>
+            </div>
+            <div class="final-field">
+                <input type="email" id="emailInput" placeholder="РАБОЧИЙ E-MAIL" required>
+            </div>
+            <div class="final-field">
+                <input type="tel" id="phoneInput" placeholder="+7 (900) 000-00-00">
+            </div>
+            <div class="checkbox-row">
+                <input type="checkbox" id="agreeCheck" checked>
+                <label for="agreeCheck">Я соглашаюсь на обработку персональных данных согласно <a href="#" id="privacyLink">Политикой конфиденциальности</a></label>
+            </div>
+            <button class="btn btn-primary" id="sendFinalBtn" style="width:100%;">Получить рекомендации</button>
+        </div>
+
+        <!-- ЭКРАН БЛАГОДАРНОСТИ -->
+        <div id="thankYouScreen" class="thank-you-screen">
+            <div class="thank-you-icon">✅</div>
+            <h1 class="thank-you-title">Благодарим за прохождение теста!</h1>
+            <div class="thank-you-message">
+                Детальные рекомендации будут направлены вам на почту в течение 1-2 часов.
+            </div>
+            <div class="thank-you-note">
+                💡 Проверьте папку "Спам", если письмо не придёт в основную папку
+            </div>
+            <button class="btn btn-primary" id="backToStartBtn" style="margin-top: 1rem;">Пройти ещё раз</button>
+        </div>
+
+        <!-- скрытый элемент для хранения последней рекомендации -->
+        <div id="hiddenResultStore" style="display:none;"></div>
+
+        <div class="footer-note">
+            Елена Савичева, финансовый директор на аутсорсе · <a href="#" id="footerPrivacyLink">Политика конфиденциальности</a>
+        </div>
+    </div>
+    <!-- Конец quiz-card -->
+
+    <!-- МОДАЛЬНОЕ ОКНО С ПОЛИТИКОЙ КОНФИДЕНЦИАЛЬНОСТИ (текст из вашего файла) -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModalBtn">&times;</span>
+            <h2>Политика конфиденциальности</h2>
+            <pre>
+ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ
+И ОБРАБОТКИ ПЕРСОНАЛЬНЫХ ДАННЫХ
+
+Савичева Елена
+ИНН: 026509702969
+Плательщик налога на профессиональный доход (НПД)
+
+1. ОБЩИЕ ПОЛОЖЕНИЯ
+1. Настоящая Политика конфиденциальности и обработки персональных данных (далее — Политика) определяет порядок обработки и защиты персональных данных субъектов персональных данных (физических лиц), которые предоставляют свои персональные данные Савичевой Елене, ИНН 026509702969, плательщику налога на профессиональный доход (далее — Оператор).
+
+2. Политика разработана в соответствии с:
+- Федеральным законом от 27.07.2006 № 152-ФЗ «О персональных данных»;
+- Федеральным законом от 27.07.2006 № 149-ФЗ «Об информации, информационных технологиях и о защите информации».
+
+3. Целью настоящей Политики является обеспечение защиты прав и свобод субъектов персональных данных при обработке их персональных данных, а также установление ответственности должностных лиц, имеющих доступ к персональным данным, за невыполнение требований и норм, регулирующих обработку персональных данных.
+
+4. Адрес сайта Оператора: https://elenasavichevafindir.ru/
+
+2. ОСНОВНЫЕ ПОНЯТИЯ
+5. Персональные данные — любая информация, относящаяся к прямо или косвенно определенному или определяемому физическому лицу (субъекту персональных данных).
+
+6. Оператор персональных данных — Савичева Елена, ИНН 026509702969, самостоятельно или совместно с другими лицами организующая и (или) осуществляющая обработку персональных данных, а также определяющая цели обработки персональных данных, состав персональных данных, подлежащих обработке, действия (операции), совершаемые с персональными данными.
+
+7. Обработка персональных данных — любое действие (операция) или совокупность действий (операций), совершаемых с использованием средств автоматизации или без использования таких средств с персональными данными, включая сбор, запись, систематизацию, накопление, хранение, уточнение (обновление, изменение), извлечение, использование, передачу (распространение, предоставление, доступ), обезличивание, блокирование, удаление, уничтожение персональных данных.
+
+8. Конфиденциальность персональных данных — обязательное для соблюдения Оператором или иным получившим доступ к персональным данным лицом требование не допускать их распространение без согласия субъекта персональных данных или наличия иного законного основания.
+
+3. ПРИНЦИПЫ ОБРАБОТКИ ПЕРСОНАЛЬНЫХ ДАННЫХ
+Оператор при обработке персональных данных руководствуется следующими принципами:
+- законность и справедливая основа обработки персональных данных;
+- обработка персональных данных ограничивается достижением конкретных, заранее определенных и законных целей;
+- не допускается объединение баз данных, содержащих персональные данные, обработка которых осуществляется в целях, несовместимых между собой;
+- обработке подлежат только персональные данные, которые отвечают целям их обработки;
+- содержание и объем обрабатываемых персональных данных соответствуют заявленным целям обработки;
+- при обработке персональных данных обеспечивается точность персональных данных, их достаточность, а в необходимых случаях и актуальность по отношению к целям обработки персональных данных;
+- хранение персональных данных осуществляется в форме, позволяющей определить субъекта персональных данных, не дольше, чем этого требуют цели обработки персональных данных.
+
+4. ЦЕЛИ ОБРАБОТКИ ПЕРСОНАЛЬНЫХ ДАННЫХ
+9. Обработка персональных данных осуществляется Оператором в следующих целях:
+- оказание консультационных услуг субъекту персональных данных;
+- заключение договоров на оказание услуг;
+- исполнение договорных обязательств;
+- направление информационных материалов, коммерческих предложений;
+- осуществление обратной связи с субъектом персональных данных;
+- выставление счетов и актов выполненных работ;
+- ведение управленческого и финансового учета.
+
+5. ПРАВОВЫЕ ОСНОВАНИЯ ОБРАБОТКИ ПЕРСОНАЛЬНЫХ ДАННЫХ
+10. Правовыми основаниями обработки персональных данных являются:
+- Федеральный закон от 27.07.2006 № 152-ФЗ «О персональных данных»;
+- договоры, заключаемые между Оператором и субъектом персональных данных;
+- согласие субъектов персональных данных на обработку их персональных данных.
+
+11. Оператор обрабатывает персональные данные субъекта только в случае их предоставления субъектом персональных данных самостоятельно через формы на сайте, по электронной почте или через мессенджеры.
+
+6. СОСТАВ ОБРАБАТЫВАЕМЫХ ПЕРСОНАЛЬНЫХ ДАННЫХ
+12. Оператор обрабатывает следующие категории персональных данных субъектов:
+- фамилия, имя, отчество;
+- адрес электронной почты (email);
+- номер телефона;
+- данные, необходимые для заключения и исполнения договоров (паспортные данные, адрес регистрации, ИНН при необходимости);
+- платежная информация (реквизиты банковских счетов, данные о произведенных платежах);
+- информация из переписки с субъектом персональных данных.
+
+13. Оператор не обрабатывает специальные категории персональных данных, касающиеся расовой, национальной принадлежности, политических взглядов, религиозных или философских убеждений, состояния здоровья, интимной жизни.
+
+7. ПОРЯДОК И УСЛОВИЯ ОБРАБОТКИ ПЕРСОНАЛЬНЫХ ДАННЫХ
+14. Обработка персональных данных осуществляется Оператором следующими способами:
+- с использованием средств автоматизации (обработка данных в электронном виде);
+- без использования средств автоматизации (обработка данных на бумажных носителях).
+
+15. Персональные данные собираются Оператором через:
+- формы обратной связи на сайте;
+- мессенджеры (Telegram, WhatsApp, Viber, Max и др.);
+- электронную почту;
+- при личном общении и заключении договоров.
+
+16. Хранение персональных данных осуществляется:
+- в электронном виде на защищенных носителях информации;
+- на бумажных носителях в условиях, обеспечивающих их сохранность и исключающих несанкционированный доступ.
+
+17. Срок обработки персональных данных определяется сроком действия договора с субъектом персональных данных, а также требованиями законодательства Российской Федерации.
+
+8. ПЕРЕДАЧА ПЕРСОНАЛЬНЫХ ДАННЫХ ТРЕТЬИМ ЛИЦАМ
+18. Оператор не передает персональные данные третьим лицам, за исключением случаев:
+- субъект персональных данных выразил согласие на такие действия;
+- передача предусмотрена законодательством Российской Федерации;
+- передача необходима для исполнения договора, стороной которого является субъект персональных данных.
+
+19. В случае необходимости передачи персональных данных третьим лицам (например, банкам для проведения платежей, налоговым органам в соответствии с законодательством), Оператор обеспечивает заключение соответствующих соглашений, гарантирующих соблюдение конфиденциальности и безопасности персональных данных.
+
+9. МЕРЫ ПО ЗАЩИТЕ ПЕРСОНАЛЬНЫХ ДАННЫХ
+20. Оператор принимает необходимые и достаточные правовые, организационные и технические меры для защиты персональных данных от неправомерного или случайного доступа к ним, уничтожения, изменения, блокирования, копирования, распространения, а также от иных неправомерных действий.
+
+21. К таким мерам относятся:
+- использование паролей для доступа к электронным базам данных;
+- использование антивирусных программ и средств защиты информации;
+- ограничение доступа к персональным данным для лиц, не имеющих права на их обработку;
+- обучение и инструктаж лиц, имеющих доступ к персональным данным, о правилах их обработки и защиты;
+- физическая защита помещений и носителей персональных данных.
+
+10. ПРАВА СУБЪЕКТОВ ПЕРСОНАЛЬНЫХ ДАННЫХ
+22. Субъект персональных данных имеет право:
+- получать информацию, касающуюся обработки его персональных данных;
+- требовать уточнения своих персональных данных, их блокирования или уничтожения в случае, если персональные данные являются неполными, устаревшими, неточными, незаконно полученными или не являются необходимыми для заявленной цели обработки;
+- отозвать согласие на обработку персональных данных;
+- обжаловать действия или бездействие Оператора в уполномоченный орган по защите прав субъектов персональных данных или в судебном порядке.
+
+23. Для реализации своих прав субъект персональных данных может обратиться к Оператору по контактным данным, указанным в разделе 12 настоящей Политики.
+
+11. ИСПОЛЬЗОВАНИЕ ФАЙЛОВ COOKIE И СЧЕТЧИКОВ
+24. Оператор может использовать технологию «cookies» на своем сайте. Файлы cookie — это небольшие текстовые файлы, которые сохраняются на устройстве пользователя при посещении сайта.
+
+25. Оператор использует файлы cookie для:
+- улучшения функциональности сайта;
+- анализа посещаемости сайта;
+- персонализации пользовательского опыта.
+
+26. Пользователь может настроить свой браузер таким образом, чтобы отклонять все файлы cookie или получать уведомления об их отправке. Однако в этом случае некоторые функции сайта могут быть недоступны.
+
+12. КОНТАКТНАЯ ИНФОРМАЦИЯ ОПЕРАТОРА
+По всем вопросам, связанным с обработкой персональных данных, субъекты персональных данных могут обращаться к Оператору:
+
+Оператор: Савичева Елена
+ИНН: 026509702969
+Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c6a0afa8a7a8b5a9b0f786aba7afaae8b4b3">[email&#160;protected]</a>
+Телефон: +7 927 23 03 594
+
+13. ЗАКЛЮЧИТЕЛЬНЫЕ ПОЛОЖЕНИЯ
+27. Настоящая Политика может быть изменена или дополнена Оператором в одностороннем порядке без какого-либо специального уведомления.
+
+28. Новая редакция Политики вступает в силу с момента ее размещения на сайте Оператора, если иное не предусмотрено новой редакцией Политики.
+
+29. Действующая редакция Политики находится на сайте Оператора по адресу: https://elenasavichevafindir.ru/
+
+30. К настоящей Политике и отношениям между субъектом персональных данных и Оператором применяется действующее законодательство Российской Федерации.
+
+Дата вступления в силу: 01.03.2026
+            </pre>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ---------- ВОПРОСЫ И БАЛЛЫ ----------
+            const questions = [
+                { text: "Какая у вас сфера бизнеса?", options: ["Услуги", "Производство", "Торговля", "Другое"], scores: [0,0,0,0] },
+                { text: "Укажите вашу роль в компании", options: ["Владелец", "Сотрудник", "Другое"], scores: [0,0,0] },
+                { text: "Часто в малом бизнесе бывает бардак с финансами. А как у вас?", options: ["В финансах идеальный порядок", "Скорее порядок", "Скорее бардак", "Полный бардак"], scores: [5,3,1,0] },
+                { text: "Как организован учет финансов в вашей компании? (речь НЕ про бухгалтерию и расчет налогов)", options: ["Всё сам — собираю данные, анализирую и принимаю решения", "Сотрудники собирают данные, а анализирую и принимаю решения я", "Финучет не ведется, только бухучет для сдачи отчетности"], scores: [1,3,0] },
+                { text: "Где вы считаете ключевые финансовые показатели компании?", options: ["Excel или Google-таблицы", "1С", "Другая программа", "Нигде"], scores: [2,3,4,0] },
+                { text: "Как эта программа решает ваши задачи по финансам?", options: ["Отлично", "Хорошо", "Удовлетворительно"], scores: [5,3,1] },
+                { text: "По статистике 40% бизнесов сталкиваются с кассовыми разрывами. А как у вас?", options: ["Их нет", "Доставляют мелкие неудобства", "Это частая проблема, хочу её решить"], scores: [3,1,0] },
+                { text: "Какой оборот по компании в месяц?", options: ["До 3 млн. рублей", "От 3 до 10 млн. рублей", "Более 10 млн. рублей"], scores: [0,0,0] },
+                { text: "Вы знаете прибыль (или убыток) за прошлый месяц?", options: ["Знаю точную прибыль", "Знаю примерную прибыль", "Знаю, что прибыль есть, но какая — непонятно", "Бизнес убыточен"], scores: [4,2,1,0] },
+                { text: "Как вы считаете прибыль?", options: ["Только по компании в целом", "По каждому заказу или направлению", "По компании в целом и по каждому заказу или направлению"], scores: [1,3,4] },
+                { text: "Сколько дивидендов вы забираете себе?", options: ["Беру нужную сумму из остатка на счете", "Беру не больше, чем заработанная прибыль", "Ничего не беру, всю прибыль оставляю в бизнесе", "Вообще не беру, т.к. бизнес убыточен"], scores: [0,3,2,0] }
+            ];
+
+            const MAX_SCORE = 31;
+
+            let currentIndex = 0;
+            let answers = new Array(questions.length).fill(null);
+            let totalScore = 0;
+            let recommendationText = "";
+
+            // DOM элементы
+            const startScreen = document.getElementById('startScreen');
+            const quizScreen = document.getElementById('quizScreen');
+            const resultScreen = document.getElementById('resultScreen');
+            const finalScreen = document.getElementById('finalScreen');
+            const thankYouScreen = document.getElementById('thankYouScreen');
+            const questionContainer = document.getElementById('questionContainer');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const startBtn = document.getElementById('startBtn');
+            const showFinalFormBtn = document.getElementById('showFinalFormBtn');
+            const sendFinalBtn = document.getElementById('sendFinalBtn');
+            const backToStartBtn = document.getElementById('backToStartBtn');
+            const nameInput = document.getElementById('nameInput');
+            const emailInput = document.getElementById('emailInput');
+            const phoneInput = document.getElementById('phoneInput');
+            const agreeCheck = document.getElementById('agreeCheck');
+            const hiddenStore = document.getElementById('hiddenResultStore');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultMessage = document.getElementById('resultMessage');
+            
+            // Проверка что все элементы найдены
+            if (!startBtn) {
+                console.error('START BUTTON NOT FOUND!');
+            } else {
+                console.log('Start button found:', startBtn);
+            }
+            
+            // Модальное окно
+            const modal = document.getElementById('privacyModal');
+            const privacyLinks = document.querySelectorAll('#privacyLink, #footerPrivacyLink');
+            const closeBtn = document.getElementById('closeModalBtn');
+
+            // Web3Forms ключ (вставьте сюда ваш ключ)
+            // ===== НАСТРОЙКИ TELEGRAM BOT =====
+            // 1. Создайте бота у @BotFather и получите TOKEN
+            // 2. Узнайте свой Telegram ID у @getmyid_bot (или @myidbot, @RawDataBot)
+            const TELEGRAM_BOT_TOKEN = "__TELEGRAM_BOT_TOKEN__";
+            const TELEGRAM_CHAT_ID = "__TELEGRAM_CHAT_ID__";
+
+            function showScreen(screenName) {
+                startScreen.classList.remove('active-screen');
+                quizScreen.classList.remove('active-screen');
+                resultScreen.classList.remove('active-screen');
+                finalScreen.classList.remove('active-screen');
+                thankYouScreen.classList.remove('active-screen');
+                if (screenName === 'start') startScreen.classList.add('active-screen');
+                if (screenName === 'quiz') quizScreen.classList.add('active-screen');
+                if (screenName === 'result') resultScreen.classList.add('active-screen');
+                if (screenName === 'final') finalScreen.classList.add('active-screen');
+                if (screenName === 'thankYou') thankYouScreen.classList.add('active-screen');
+                updateProgress();
+            }
+
+            function renderQuestion() {
+                const q = questions[currentIndex];
+                let html = `<div class="question-text">${currentIndex+1}. ${q.text}</div>`;
+                html += `<div class="options-group" id="optionsGroup">`;
+                q.options.forEach((opt, idx) => {
+                    const checkedAttr = (answers[currentIndex] === idx) ? 'checked' : '';
+                    html += `
+                        <div class="option-item ${answers[currentIndex] === idx ? 'selected' : ''}" data-opt-index="${idx}">
+                            <input type="radio" name="q${currentIndex}" value="${idx}" id="opt_${currentIndex}_${idx}" ${checkedAttr}>
+                            <label for="opt_${currentIndex}_${idx}">${opt}</label>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+                questionContainer.innerHTML = html;
+
+                document.querySelectorAll('.option-item').forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        const idx = this.dataset.optIndex;
+                        const radio = this.querySelector('input[type="radio"]');
+                        if (radio) {
+                            radio.checked = true;
+                            answers[currentIndex] = parseInt(idx);
+                            document.querySelectorAll('.option-item').forEach(oi => oi.classList.remove('selected'));
+                            this.classList.add('selected');
+                        }
+                    });
+                });
+
+                prevBtn.disabled = (currentIndex === 0);
+                updateProgress();
+            }
+
+            function computeTotalScore() {
+                let sum = 0;
+                for (let i = 0; i < questions.length; i++) {
+                    const ansIdx = answers[i];
+                    if (ansIdx !== null && ansIdx !== undefined) {
+                        if (i === 5 && answers[4] === 3) {
+                            continue;
+                        }
+                        const scoreVal = questions[i].scores[ansIdx];
+                        if (scoreVal !== undefined) sum += scoreVal;
+                    }
+                }
+                return sum;
+            }
+
+            function getRecommendation(score) {
+                if (score <= 8) {
+                    return {
+                        title: "🚨 СЕГМЕНТ 1: «КРИТИЧЕСКАЯ ЗОНА»",
+                        message: `
+                            <div class="result-section">
+                                <div class="section-header">
+                                    <span class="emoji">📋</span>
+                                    <span>Ваш результат: Финансовый учёт требует срочного внедрения</span>
+                                </div>
+                                <p>Результаты показывают, что в вашем бизнесе отсутствует система управленческого учёта. Это создаёт серьёзные риски.</p>
+                            </div>
+                            
+                            <div class="result-section">
+                                <div class="section-header">
+                                    <span class="emoji">❌</span>
+                                    <span>Ваши текущие проблемы:</span>
+                                </div>
+                                <ul class="problem-list">
+                                    <li class="problem-item">Вы управляете вслепую — принимаете решения без цифр</li>
+                                    <li class="problem-item">Не видите реальную прибыль — путаете оборот с прибылью</li>
+                                    <li class="problem-item">Кассовые разрывы неизбежны — нет прогноза денег</li>
+                                    <li class="problem-item">Смешиваете бизнес и личные финансы</li>
+                                    <li class="problem-item">Не знаете, какие заказы прибыльны, а какие убыточны</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="result-section">
+                                <div class="section-header">
+                                    <span class="emoji">📊</span>
+                                    <span>Что внедрить:</span>
+                                </div>
+                                <ol class="numbered-list">
+                                    <li class="numbered-item">
+                                        <strong>Отчёт о движении денег</strong>
+                                        <div class="item-desc">Увидите, откуда приходят деньги и куда уходят. Сможете планировать платежи на месяц вперёд и избежать кассовых разрывов.</div>
+                                    </li>
+                                    <li class="numbered-item">
+                                        <strong>Отчёт о прибылях и убытках</strong>
+                                        <div class="item-desc">Поймёте реальную прибыль компании. Сможете безопасно забирать дивиденды.</div>
+                                    </li>
+                                    <li class="numbered-item">
+                                        <strong>Учёт по проектам</strong>
+                                        <div class="item-desc">Увидите, какие сделки приносят прибыль, а какие убыток. Откажетесь от убыточных направлений.</div>
+                                    </li>
+                                </ol>
+                            </div>
+                            
+                            <div class="result-section">
+                                <div class="section-header">
+                                    <span class="emoji">🎯</span>
+                                    <span>Первые шаги:</span>
+                                </div>
+                                <ul class="action-list">
+                                    <li class="action-item">Начните вести учёт движения денег в простой таблице (приход/расход)</li>
+                                    <li class="action-item">Разделите расходы на категории (зарплаты, аренда, закупки, налоги)</li>
+                                    <li class="action-item">Внедрите управленческий учёт с помощью финансового специалиста</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="recommendation-block">
+                                <div class="recommendation-text">
+                                    <span class="highlight">💡 Рекомендация финансового директора:</span><br>
+                                    Каждый месяц без учёта — это потерянные деньги. Отсутствие финансового контроля может стоить вам <strong>15-30% прибыли ежемесячно</strong>.
+                                </div>
+                            </div>
+                        `
+                    };
+                } else if (score <= 15) {
+                    return {
+                        title: "⚠️ СЕГМЕНТ 2: «ЗОНА РИСКА»",
+                        message: `
+                            <div class="result-section">
+                                <div class="section-header">
+                                    <span class="emoji">📋</span>
+                                    <span>Ваш результат: Есть учёт, но он неполный и создаёт риски</span>
+                                </div>
+                                <p>У вас есть базовое понимание финансов, но система учёта работает с пробелами. Это создаёт «слепые зоны», где теряются деньги.</p>
+                            </div>
+                            
+                            <div class="result-section">
+                                <div class="section-header">
+                                    <span class="emoji">⚠️</span>
+                                    <span>Обнаруженные проблемы:</span>
+                                </div>
+                                <ul class="problem-list">
+                                    <li class="problem-item">Учёт фрагментарный — не все процессы под контролем</li>
+                                    <li class="problem-item">Прибыль считается приблизительно</li>
+                                    <li class="problem-item">Кассовые разрывы случаются</li>
+                                    <li class="problem-item">Нет детализации по направлениям</li>
+                                    <li class="problem-item">Решения принимаются на ощущениях</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="result-section">
+                                <div class="section-header">
+                                    <span class="emoji">📊</span>
+                                    <span>Что доработать:</span>
+                                </div>
+                                <ol class="numbered-list">
+                                    <li class="numbered-item">
+                                        <strong>Планирование денежного потока</strong>
+                                        <div class="item-desc">Внедрите платёжный календарь на месяц вперёд. Будете знать о проблемах с деньгами заранее.</div>
+                                    </li>
+                                    <li class="numbered-item">
+                                        <strong>Детализация прибыли</strong>
+                                        <div class="item-desc">Считайте прибыль по направлениям и проектам. Увидите, какие сделки тянут бизнес вниз.</div>
+                                    </li>
+                                    <li class="numbered-item">
+                                        <strong>Контроль задолженностей</strong>
+                                        <div class="item-desc">Следите за долгами клиентов еженедельно. Деньги не будут зависать в дебиторке.</div>
+                                    </li>
+                                    <li class="numbered-item">
+                                        <strong>Правило дивидендов</strong>
+                                        <div class="item-desc">Установите: дивиденды = 30-50% от прибыли. Бизнес развивается, а вы получаете стабильный доход.</div>
+                                    </li>
+                                    <li class="numbered-item">
+                                        <strong>Автоматизация</strong>
+                                        <div class="item-desc">Настройте выгрузку данных из банка и CRM. Отчёты за 10 минут вместо нескольких дней.</div>
+                                    </li>
+                                </ol>
+                            </div>
+                            
+                            <div class="result-section">
+                                <div class="section-header">
+                                    <span class="emoji">🎯</span>
+                                    <span>План действий:</span>
+                                </div>
+                                <ul class="action-list">
+                                    <li class="action-item">Составьте платёжный календарь на месяц</li>
+                                    <li class="action-item">Разбейте учёт прибыли по направлениям</li>
+                                    <li class="action-item">Внедрите еженедельную отчётность</li>
+                                    <li class="action-item">Автоматизируйте сбор данных</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="recommendation-block">
+                                <div class="recommendation-text">
+                                    <span class="highlight">💡 Рекомендация финансового директора:</span><br>
+                                    Доработка системы даст вам <strong>+10-20% к прибыли</strong> за счёт устранения утечек.
+                                </div>
+                            </div>
+                        `
+                    };
+                } else if (score <= 22) {
+                    return {
+                        title: "✅ СЕГМЕНТ 3: «СТАБИЛЬНАЯ ЗОНА»",
+                        message: `
+                            <div class="result-section">
+                                <div class="section-header">
+                                    <span class="emoji">📋</span>
+                                    <span>Ваш результат: Управленческий учёт работает, но есть точки роста</span>
+                                </div>
+                                <p>Отлично! У вас выстроен управленческий учёт, решения принимаются на основе цифр. Есть возможности для роста эффективности.</p>
+                            </div>
+                            
+                            <div class="result-section">
+                                <div class="section-header">
+                                    <span class="emoji">✅</span>
+                                    <span>Что работает хорошо:</span>
+                                </div>
+                                <ul class="bullet-list">
+                                    <li class="bullet-item">Знаете прибыль и движение денег</li>
+                                    <li class="bullet-item">Финансовый учёт регулярный</li>
+                                    <li class="bullet-item">Кассовые разрывы под контролем</li>
+                                    <li class="bullet-item">Есть понимание рентабельности</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="result-section">
+                                <div class="section-header">
+                                    <span class="emoji">📈</span>
+                                    <span>Что улучшить:</span>
+                                </div>
+                                <ol class="numbered-list">
+                                    <li class="numbered-item">
+                                        <strong>Детальная аналитика</strong>
+                                        <div class="item-desc">Найдите 20% клиентов и товаров, которые дают 80% прибыли. Откажитесь от неприбыльных направлений.</div>
+                                    </li>
+                                    <li class="numbered-item">
+                                        <strong>Планирование сценариев</strong>
+                                        <div class="item-desc">Просчитайте 3 варианта развития (хороший, базовый, плохой). Снизите риски при запуске новых направлений.</div>
+                                    </li>
+                                    <li class="numbered-item">
+                                        <strong>Прогноз на год</strong>
+                                        <div class="item-desc">Планируйте на квартал и год вперёд. Подготовитесь к сезонным колебаниям.</div>
+                                    </li>
+                                    <li class="numbered-item">
+                                        <strong>Прибыль на единицу</strong>
+                                        <div class="item-desc">Считайте: сколько приносит один клиент, один заказ. Поймёте окупаемость вложений в привлечение.</div>
+                                    </li>
+                                    <li class="numbered-item">
+                                        <strong>Дашборд с метриками</strong>
+                                        <div class="item-desc">Создайте онлайн-панель с ключевыми показателями. Видите состояние бизнеса в реальном времени.</div>
+                                    </li>
+                                    <li class="numbered-item">
+                                        <strong>Финансовые показатели для команды</strong>
+                                        <div class="item-desc">Свяжите мотивацию сотрудников с прибылью. Команда начнёт влиять на результат.</div>
+                                    </li>
+                                </ol>
+                            </div>
+                            
+                            <div class="result-section">
+                                <div class="section-header">
+                                    <span class="emoji">🎯</span>
+                                    <span>План развития:</span>
+                                </div>
+                                <ul class="action-list">
+                                    <li class="action-item">Проведите анализ клиентов и продуктов</li>
+                                    <li class="action-item">Постройте финансовую модель на год</li>
+                                    <li class="action-item">Внедрите показатели для сотрудников</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="recommendation-block">
+                                <div class="recommendation-text">
+                                    <span class="highlight">💡 Рекомендация финансового директора:</span><br>
+                                    Переходите от анализа прошлого к управлению будущим через прогнозы. Это даст <strong>+15-25% к прибыли</strong>.
+                                </div>
+                            </div>
+                        `
+                    };
+                } else {
+                    return {
+                        title: "🏆 СЕГМЕНТ 4: «ЗОНА МАСТЕРСТВА»",
+                        message: `
+                            <div class="result-section">
+                                <div class="section-header">
+                                    <span class="emoji">📋</span>
+                                    <span>Ваш результат: Управленческий учёт на высшем уровне!</span>
+                                </div>
+                                <p>Поздравляем! Ваша система финансового управления выстроена профессионально. Вы в топ-10% компаний по зрелости учёта.</p>
+                            </div>
+                            
+                            <div class="result-section">
+                                <div class="section-header">
+                                    <span class="emoji">🏆</span>
+                                    <span>Ваши сильные стороны:</span>
+                                </div>
+                                <ul class="bullet-list">
+                                    <li class="bullet-item">Полная финансовая прозрачность</li>
+                                    <li class="bullet-item">Детальная аналитика по направлениям</li>
+                                    <li class="bullet-item">Прогнозирование кассовых разрывов</li>
+                                    <li class="bullet-item">Разделение личных и бизнес-финансов</li>
+                                    <li class="bullet-item">Решения на основе точных данных</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="result-section">
+                                <div class="section-header">
+                                    <span class="emoji">🚀</span>
+                                    <span>Точки роста:</span>
+                                </div>
+                                <ol class="numbered-list">
+                                    <li class="numbered-item">
+                                        <strong>Стратегическое финансовое планирование</strong>
+                                        <div class="item-desc">Используйте финансы для достижения стратегических целей. Бюджетирование по подразделениям. Оценка эффективности инвестиций.</div>
+                                    </li>
+                                    <li class="numbered-item">
+                                        <strong>Сравнение с рынком</strong>
+                                        <div class="item-desc">Сравнивайте свои показатели с лучшими в отрасли. Анализируйте конкурентов. Найдёте скрытые резервы роста.</div>
+                                    </li>
+                                    <li class="numbered-item">
+                                        <strong>Оптимизация оборотных средств</strong>
+                                        <div class="item-desc">Высвободите «замороженные» деньги. Управляйте дебиторкой и запасами эффективнее. Договаривайтесь о выгодных условиях с поставщиками.</div>
+                                    </li>
+                                    <li class="numbered-item">
+                                        <strong>Модель для масштабирования</strong>
+                                        <div class="item-desc">Подготовьте финансы к резкому росту. Просчитайте экономику новых рынков. Определите точку безубыточности.</div>
+                                    </li>
+                                    <li class="numbered-item">
+                                        <strong>Подготовка к инвестициям</strong>
+                                        <div class="item-desc">Сделайте бизнес привлекательным для инвесторов. Очистите отчётность. Постройте финансовую модель на 3-5 лет.</div>
+                                    </li>
+                                    <li class="numbered-item">
+                                        <strong>Онлайн-мониторинг</strong>
+                                        <div class="item-desc">Создайте дашборд с ключевыми метриками. Управляйте бизнесом из любой точки мира. Получайте уведомления об отклонениях.</div>
+                                    </li>
+                                </ol>
+                            </div>
+                            
+                            <div class="result-section">
+                                <div class="section-header">
+                                    <span class="emoji">🎯</span>
+                                    <span>Стратегия развития:</span>
+                                </div>
+                                <ul class="action-list">
+                                    <li class="action-item">Сравните показатели с лидерами отрасли</li>
+                                    <li class="action-item">Оптимизируйте управление деньгами</li>
+                                    <li class="action-item">Постройте финансовую модель на 3-5 лет</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="recommendation-block">
+                                <div class="recommendation-text">
+                                    <span class="highlight">💡 Рекомендация финансового директора:</span><br>
+                                    Ваш учёт — эталон. Время думать о стратегии: рост в разы, привлечение инвестиций или подготовка к продаже бизнеса. Финансы должны стать драйвером роста стоимости компании.
+                                </div>
+                            </div>
+                        `
+                    };
+                }
+            }
+
+            function displayResult() {
+                totalScore = computeTotalScore();
+                const rec = getRecommendation(totalScore);
+                resultTitle.innerText = rec.title;
+                resultMessage.innerHTML = rec.message;
+                scoreDisplay.innerText = `Вы набрали ${totalScore} баллов из ${MAX_SCORE}`;
+                recommendationText = `${rec.title}\n\n${rec.message}`;
+                hiddenStore.innerText = recommendationText;
+                showScreen('result');
+            }
+
+            function updateProgress() {
+                let answeredCount = answers.filter(a => a !== null).length;
+                let totalQ = questions.length;
+                let percent = Math.round((answeredCount / totalQ) * 100);
+                if (startScreen.classList.contains('active-screen')) percent = 0;
+                if (resultScreen.classList.contains('active-screen')) percent = 100;
+                if (finalScreen.classList.contains('active-screen')) percent = 100;
+                progressFill.style.width = percent + '%';
+                progressText.innerText = `Готово: ${percent}%`;
+            }
+
+            function getSegmentName(score) {
+                if (score >= 0 && score <= 8) return "КРИТИЧЕСКАЯ ЗОНА";
+                if (score >= 9 && score <= 15) return "ЗОНА РИСКА";
+                if (score >= 16 && score <= 22) return "СТАБИЛЬНАЯ ЗОНА";
+                if (score >= 23 && score <= 31) return "ЗОНА МАСТЕРСТВА";
+                return "Неопределен";
+            }
+
+            // Обработчики
+            if (startBtn) {
+                startBtn.addEventListener('click', () => {
+                    console.log('Start button clicked');
+                    console.log('Current index before:', currentIndex);
+                    currentIndex = 0;
+                    console.log('Calling showScreen...');
+                    showScreen('quiz');
+                    console.log('Calling renderQuestion...');
+                    renderQuestion();
+                    console.log('Done');
+                });
+            } else {
+                console.error('Cannot add event listener - startBtn is null');
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    renderQuestion();
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (answers[currentIndex] !== null) {
+                    if (currentIndex < questions.length - 1) {
+                        currentIndex++;
+                        renderQuestion();
+                    } else {
+                        displayResult();
+                    }
+                } else {
+                    alert("Пожалуйста, выберите вариант ответа");
+                }
+            });
+
+            showFinalFormBtn.addEventListener('click', () => {
+                showScreen('final');
+            });
+
+            sendFinalBtn.addEventListener('click', function() {
+                const name = nameInput.value.trim();
+                const email = emailInput.value.trim();
+                if (!name || !email) {
+                    alert("Пожалуйста, заполните имя и e-mail");
+                    return;
+                }
+                if (!agreeCheck.checked) {
+                    alert("Необходимо согласие на обработку данных");
+                    return;
+                }
+
+                let answersText = "";
+                for (let i = 0; i < questions.length; i++) {
+                    const ansIdx = answers[i];
+                    const qtext = questions[i].text;
+                    const ansText = (ansIdx !== null && ansIdx !== undefined) ? questions[i].options[ansIdx] : "—";
+                    answersText += `${i+1}. ${qtext} → ${ansText}\n`;
+                }
+
+                // Формируем КОРОТКОЕ сообщение для Telegram (без длинных рекомендаций)
+                let telegramMessage = `🆕 НОВЫЙ ЛИД!\n\n`;
+                telegramMessage += `👤 Имя: ${name}\n`;
+                telegramMessage += `📧 Email: ${email}\n`;
+                telegramMessage += `📱 Телефон: ${phoneInput.value || "не указан"}\n\n`;
+                telegramMessage += `📊 Результат: ${totalScore} баллов из ${MAX_SCORE}\n`;
+                telegramMessage += `📋 Сегмент: ${getSegmentName(totalScore)}\n\n`;
+                telegramMessage += `ОТВЕТЫ:\n${answersText}`;
+                
+                // НЕ добавляем рекомендации в Telegram - они слишком длинные!
+                // Вы увидите сегмент и сами отправите нужный шаблон письма
+
+                // Отправка в Telegram
+                const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+                const telegramPayload = {
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: telegramMessage
+                };
+
+                console.log('Отправка в Telegram...', telegramUrl);
+                console.log('Данные:', telegramPayload);
+
+                fetch(telegramUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(telegramPayload)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Ответ от Telegram:', data);
+                    if (data.ok) {
+                        // Показываем экран благодарности вместо alert
+                        showScreen('thankYou');
+                        // Очищаем форму
+                        answers.fill(null);
+                        nameInput.value = "";
+                        emailInput.value = "";
+                        phoneInput.value = "";
+                        agreeCheck.checked = false;
+                    } else {
+                        console.error('Ошибка от Telegram:', data);
+                        // Показываем экран благодарности даже при ошибке
+                        showScreen('thankYou');
+                        // Очищаем форму
+                        answers.fill(null);
+                        nameInput.value = "";
+                        emailInput.value = "";
+                        phoneInput.value = "";
+                        agreeCheck.checked = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка соединения:', error);
+                    // Показываем экран благодарности даже при ошибке
+                    showScreen('thankYou');
+                    // Очищаем форму
+                    answers.fill(null);
+                    nameInput.value = "";
+                    emailInput.value = "";
+                    phoneInput.value = "";
+                    agreeCheck.checked = false;
+                });
+            });
+
+            backToStartBtn.addEventListener('click', () => {
+                showScreen('start');
+                currentIndex = 0;
+                answers.fill(null);
+            });
+
+            privacyLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    modal.classList.add('active');
+                });
+            });
+
+            closeBtn.addEventListener('click', () => {
+                modal.classList.remove('active');
+            });
+        }); // End DOMContentLoaded
+    </script>
+</body>
+</html>
