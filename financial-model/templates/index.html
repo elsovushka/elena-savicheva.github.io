@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Финансовая модель — Казань 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body>
+
+<!-- ═══════════════════ HEADER ═══════════════════ -->
+<header class="app-header">
+  <div class="header-brand">
+    <i class="fas fa-chart-line"></i>
+    <span>Финансовая модель <span class="brand-sub">Казань 2026</span></span>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-outline" id="btnSave" title="Сохранить сценарий">
+      <i class="fas fa-save"></i><span>Сохранить</span>
+    </button>
+    <button class="btn btn-outline" id="btnLoad" title="Загрузить сценарий">
+      <i class="fas fa-folder-open"></i><span>Загрузить</span>
+    </button>
+    <button class="btn btn-outline" id="btnCompare" title="Сравнить сценарии">
+      <i class="fas fa-columns"></i><span>Сравнить</span>
+    </button>
+    <button class="btn btn-outline" id="btnExportPDF" title="Экспорт в PDF">
+      <i class="fas fa-file-pdf"></i><span>PDF</span>
+    </button>
+  </div>
+</header>
+
+<!-- ═══════════════════ MAIN LAYOUT ═══════════════════ -->
+<main class="app-main">
+
+  <!-- ───── LEFT PANEL: PARAMETERS ───── -->
+  <aside class="panel panel-params" id="paramsPanel">
+    <div class="panel-header">
+      <i class="fas fa-sliders-h"></i>
+      <span>Параметры проекта</span>
+      <button class="btn-icon panel-toggle" id="toggleParams" title="Свернуть">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+    </div>
+    <div class="panel-body" id="paramsPanelBody">
+
+      <!-- 📦 ОБЪЕКТ -->
+      <div class="accordion" data-open="true">
+        <div class="accordion-header">
+          <span><i class="fas fa-building"></i> Объект</span>
+          <i class="fas fa-chevron-down acc-icon"></i>
+        </div>
+        <div class="accordion-body">
+          <div class="form-row">
+            <label>Площадь здания</label>
+            <div class="input-wrap">
+              <input type="number" id="area" value="1200" min="1" step="1"/>
+              <span class="unit">м²</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Количество квартир</label>
+            <div class="input-wrap">
+              <input type="number" id="apartments" value="20" min="1" step="1"/>
+              <span class="unit">шт</span>
+            </div>
+          </div>
+          <div class="form-row info-row">
+            <label>Средняя площадь квартиры</label>
+            <span class="calc-value" id="avgAptArea">60.0 м²</span>
+          </div>
+          <div class="form-row">
+            <label>Горизонт планирования</label>
+            <div class="input-wrap">
+              <input type="number" id="horizon" value="13" min="4" max="40" step="1"/>
+              <span class="unit">кв.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 💰 ПОКУПКА -->
+      <div class="accordion" data-open="true">
+        <div class="accordion-header">
+          <span><i class="fas fa-hand-holding-usd"></i> Покупка</span>
+          <i class="fas fa-chevron-down acc-icon"></i>
+        </div>
+        <div class="accordion-body">
+          <div class="form-row">
+            <label>Цена покупки</label>
+            <div class="input-wrap">
+              <input type="number" id="purchase_price" value="110000" min="0" step="1000"/>
+              <span class="unit">₽/м²</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Доп. расходы</label>
+            <div class="input-wrap">
+              <input type="number" id="extra_costs" value="2432000" min="0" step="10000"/>
+              <span class="unit">₽</span>
+            </div>
+          </div>
+          <div class="form-row info-row">
+            <label>Итого на покупку</label>
+            <span class="calc-value" id="totalPurchase">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🏗️ РЕКОНСТРУКЦИЯ -->
+      <div class="accordion" data-open="true">
+        <div class="accordion-header">
+          <span><i class="fas fa-hard-hat"></i> Реконструкция</span>
+          <i class="fas fa-chevron-down acc-icon"></i>
+        </div>
+        <div class="accordion-body">
+          <div class="form-row">
+            <label>Цена реконструкции</label>
+            <div class="input-wrap">
+              <input type="number" id="reconstruction_price" value="45000" min="0" step="1000"/>
+              <span class="unit">₽/м²</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Срок реконструкции</label>
+            <div class="input-wrap">
+              <input type="number" id="reconstruction_period" value="4" min="1" max="16" step="1"/>
+              <span class="unit">кв.</span>
+            </div>
+          </div>
+          <div class="form-row info-row">
+            <label>Итого реконструкция</label>
+            <span class="calc-value" id="totalRecon">—</span>
+          </div>
+          <div class="form-row">
+            <label>График работ (% по кварталам)</label>
+          </div>
+          <div id="reconScheduleContainer" class="schedule-grid"></div>
+        </div>
+      </div>
+
+      <!-- 🏠 АРЕНДА -->
+      <div class="accordion" data-open="true">
+        <div class="accordion-header">
+          <span><i class="fas fa-home"></i> Аренда</span>
+          <i class="fas fa-chevron-down acc-icon"></i>
+        </div>
+        <div class="accordion-body">
+          <div class="form-row">
+            <label>Ставка аренды</label>
+            <div class="input-wrap">
+              <input type="number" id="rent_monthly" value="45000" min="0" step="500"/>
+              <span class="unit">₽/мес/кв</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Период аренды</label>
+            <div class="input-group-inline">
+              <div class="input-wrap sm">
+                <span class="prefix">Q</span>
+                <input type="number" id="rent_start_q" value="5" min="1" max="40" step="1"/>
+              </div>
+              <span class="dash">—</span>
+              <div class="input-wrap sm">
+                <span class="prefix">Q</span>
+                <input type="number" id="rent_end_q" value="8" min="1" max="40" step="1"/>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Заполняемость (% по кварталам)</label>
+          </div>
+          <div id="occupancyContainer" class="schedule-grid"></div>
+          <div class="form-row">
+            <label>OPEX (управление + ЖКХ + ремфонд + реклама)</label>
+            <div class="input-wrap">
+              <input type="number" id="opex_monthly" value="175000" min="0" step="5000"/>
+              <span class="unit">₽/мес</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 📈 ПРОДАЖА -->
+      <div class="accordion" data-open="true">
+        <div class="accordion-header">
+          <span><i class="fas fa-tag"></i> Продажа</span>
+          <i class="fas fa-chevron-down acc-icon"></i>
+        </div>
+        <div class="accordion-body">
+          <div class="form-row">
+            <label>Цена продажи</label>
+            <div class="input-wrap">
+              <input type="number" id="sale_price" value="230000" min="0" step="1000"/>
+              <span class="unit">₽/м²</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Начало продаж</label>
+            <div class="input-wrap sm">
+              <span class="prefix">Q</span>
+              <input type="number" id="sale_start_q" value="9" min="1" max="40" step="1"/>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>График продаж (кв. по кварталам)</label>
+          </div>
+          <div id="saleScheduleContainer" class="schedule-grid"></div>
+          <div class="form-row info-row">
+            <label>Итого выручка от продаж</label>
+            <span class="calc-value" id="totalSalesRevenue">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 💳 КРЕДИТ -->
+      <div class="accordion" data-open="false">
+        <div class="accordion-header">
+          <span><i class="fas fa-university"></i> Кредит</span>
+          <i class="fas fa-chevron-down acc-icon"></i>
+        </div>
+        <div class="accordion-body">
+          <div class="form-row">
+            <label>Доля заемных средств</label>
+            <div class="input-wrap">
+              <input type="number" id="debt_ratio" value="60" min="0" max="100" step="1"/>
+              <span class="unit">%</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Ставка кредита</label>
+            <div class="input-wrap">
+              <input type="number" id="interest_rate" value="14.5" min="0" max="100" step="0.1"/>
+              <span class="unit">% год.</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Срок кредита</label>
+            <div class="input-wrap">
+              <input type="number" id="loan_period" value="16" min="1" max="40" step="1"/>
+              <span class="unit">кв.</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Льготный период</label>
+            <div class="input-wrap">
+              <input type="number" id="grace_period" value="4" min="0" max="20" step="1"/>
+              <span class="unit">кв.</span>
+            </div>
+          </div>
+          <div class="form-row info-row">
+            <label>Сумма кредита</label>
+            <span class="calc-value" id="loanAmount">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 📊 НАЛОГИ -->
+      <div class="accordion" data-open="false">
+        <div class="accordion-header">
+          <span><i class="fas fa-file-invoice-dollar"></i> Налоги</span>
+          <i class="fas fa-chevron-down acc-icon"></i>
+        </div>
+        <div class="accordion-body">
+          <div class="form-row">
+            <label>Режим налогообложения</label>
+            <select id="usn_mode" class="form-select">
+              <option value="income_expense">УСН 15% (доходы − расходы)</option>
+              <option value="income">УСН 6% (с доходов)</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>Ставка УСН</label>
+            <div class="input-wrap">
+              <input type="number" id="usn_rate" value="15" min="1" max="20" step="0.1"/>
+              <span class="unit">%</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Налог на имущество</label>
+            <div class="input-wrap">
+              <input type="number" id="property_tax_rate" value="2.2" min="0" max="5" step="0.1"/>
+              <span class="unit">% год.</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Ставка амортизации</label>
+            <div class="input-wrap">
+              <input type="number" id="depreciation_rate" value="2" min="0.5" max="10" step="0.1"/>
+              <span class="unit">% год.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ⚙️ ФИНАНСОВЫЕ ПАРАМЕТРЫ -->
+      <div class="accordion" data-open="true">
+        <div class="accordion-header">
+          <span><i class="fas fa-percentage"></i> Финансовые параметры</span>
+          <i class="fas fa-chevron-down acc-icon"></i>
+        </div>
+        <div class="accordion-body">
+          <div class="form-row">
+            <label>Ставка дисконтирования</label>
+            <div class="input-wrap">
+              <input type="number" id="discount_rate" value="20" min="1" max="100" step="0.5"/>
+              <span class="unit">% год.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-btn-wrap">
+        <button class="btn btn-calc" id="btnCalculate">
+          <i class="fas fa-sync-alt"></i> Пересчитать модель
+        </button>
+      </div>
+
+    </div><!-- /panel-body -->
+  </aside>
+
+  <!-- ───── RIGHT PANEL: RESULTS ───── -->
+  <section class="panel panel-results" id="resultsPanel">
+    <div class="panel-header">
+      <i class="fas fa-chart-bar"></i>
+      <span>Результаты расчёта</span>
+      <div class="result-actions">
+        <button class="btn btn-sm btn-primary" id="btnAIAnalysis">
+          <i class="fas fa-robot"></i> AI-анализ
+        </button>
+      </div>
+    </div>
+    <div class="panel-body">
+
+      <!-- KPI CARDS -->
+      <div class="kpi-grid">
+        <div class="kpi-card" data-metric="npv">
+          <div class="kpi-label"><i class="fas fa-chart-line"></i> NPV</div>
+          <div class="kpi-value" id="kpiNPV">—</div>
+          <div class="kpi-sub">чистая приведённая стоимость</div>
+        </div>
+        <div class="kpi-card" data-metric="irr">
+          <div class="kpi-label"><i class="fas fa-percentage"></i> IRR</div>
+          <div class="kpi-value" id="kpiIRR">—</div>
+          <div class="kpi-sub">внутренняя норма доходности</div>
+        </div>
+        <div class="kpi-card" data-metric="pi">
+          <div class="kpi-label"><i class="fas fa-balance-scale"></i> PI</div>
+          <div class="kpi-value" id="kpiPI">—</div>
+          <div class="kpi-sub">индекс рентабельности</div>
+        </div>
+        <div class="kpi-card" data-metric="equity_irr">
+          <div class="kpi-label"><i class="fas fa-user-tie"></i> Equity IRR</div>
+          <div class="kpi-value" id="kpiEquityIRR">—</div>
+          <div class="kpi-sub">доходность на собственный капитал</div>
+        </div>
+        <div class="kpi-card" data-metric="payback">
+          <div class="kpi-label"><i class="fas fa-clock"></i> Срок окупаемости</div>
+          <div class="kpi-value" id="kpiPayback">—</div>
+          <div class="kpi-sub">до выхода в плюс</div>
+        </div>
+        <div class="kpi-card" data-metric="dscr">
+          <div class="kpi-label"><i class="fas fa-shield-alt"></i> Мин. DSCR</div>
+          <div class="kpi-value" id="kpiDSCR">—</div>
+          <div class="kpi-sub">покрытие долга доходами</div>
+        </div>
+      </div>
+
+      <!-- ФИНАНСОВЫЕ ПОКАЗАТЕЛИ -->
+      <div class="results-section">
+        <div class="section-title"><i class="fas fa-table"></i> Финансовые показатели</div>
+        <div class="fin-table">
+          <div class="fin-row fin-row-rev">
+            <span class="fin-label">Общая выручка</span>
+            <span class="fin-value" id="finRevenue">—</span>
+          </div>
+          <div class="fin-row fin-row-exp">
+            <span class="fin-label">Общий CAPEX</span>
+            <span class="fin-value" id="finCAPEX">—</span>
+          </div>
+          <div class="fin-row fin-row-exp">
+            <span class="fin-label">Общий OPEX</span>
+            <span class="fin-value" id="finOPEX">—</span>
+          </div>
+          <div class="fin-row fin-row-exp">
+            <span class="fin-label">Налоги (итого)</span>
+            <span class="fin-value" id="finTax">—</span>
+          </div>
+          <div class="fin-row fin-row-exp">
+            <span class="fin-label">Обслуживание долга (итого)</span>
+            <span class="fin-value" id="finDebtService">—</span>
+          </div>
+          <div class="fin-row fin-row-profit">
+            <span class="fin-label">Чистый денежный поток</span>
+            <span class="fin-value" id="finNetProfit">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ГРАФИК -->
+      <div class="results-section">
+        <div class="section-title">
+          <i class="fas fa-chart-mixed"></i> График денежного потока
+          <div class="chart-legend" id="chartLegend"></div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="cashflowChart"></canvas>
+        </div>
+      </div>
+
+      <!-- ТАБЛИЦА ПО КВАРТАЛАМ -->
+      <div class="results-section">
+        <div class="section-title collapsible-title" data-target="quarterlyTable">
+          <i class="fas fa-table"></i> Детализация по кварталам
+          <i class="fas fa-chevron-down section-chevron"></i>
+        </div>
+        <div id="quarterlyTable" class="table-scroll" style="display:none">
+          <table class="data-table" id="qTable">
+            <thead>
+              <tr>
+                <th>Квартал</th>
+                <th>Выручка</th>
+                <th>CAPEX</th>
+                <th>OPEX</th>
+                <th>Налоги</th>
+                <th>Долг</th>
+                <th>ЧДП</th>
+                <th>ЧДП накоп.</th>
+              </tr>
+            </thead>
+            <tbody id="qTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- AI АНАЛИЗ -->
+      <div class="results-section ai-section">
+        <div class="section-title"><i class="fas fa-robot"></i> AI-анализ</div>
+        <div class="ai-content" id="aiContent">
+          <div class="ai-placeholder">
+            <i class="fas fa-robot"></i>
+            <p>Нажмите <strong>«Пересчитать модель»</strong> для получения анализа.<br/>
+            При повторном расчёте AI сравнит изменения показателей.</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /panel-body -->
+  </section>
+</main>
+
+<!-- ═══════════════════ MODAL: SAVE ═══════════════════ -->
+<div class="modal-overlay" id="modalSave">
+  <div class="modal">
+    <div class="modal-header">
+      <span><i class="fas fa-save"></i> Сохранить сценарий</span>
+      <button class="modal-close" data-modal="modalSave"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label>Название сценария</label>
+        <input type="text" id="scenarioName" placeholder="Например: Базовый сценарий" class="form-input"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" data-modal="modalSave">Отмена</button>
+      <button class="btn btn-primary" id="btnSaveConfirm">
+        <i class="fas fa-check"></i> Сохранить
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MODAL: LOAD ═══════════════════ -->
+<div class="modal-overlay" id="modalLoad">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span><i class="fas fa-folder-open"></i> Загрузить сценарий</span>
+      <button class="modal-close" data-modal="modalLoad"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div id="scenarioList" class="scenario-list">
+        <div class="loading-msg"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" data-modal="modalLoad">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MODAL: COMPARE ═══════════════════ -->
+<div class="modal-overlay" id="modalCompare">
+  <div class="modal modal-xl">
+    <div class="modal-header">
+      <span><i class="fas fa-columns"></i> Сравнение сценариев</span>
+      <button class="modal-close" data-modal="modalCompare"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <p class="compare-hint">Выберите до 3 сценариев для сравнения:</p>
+      <div id="compareSelectList" class="scenario-list"></div>
+      <div id="compareTable" class="compare-table-wrap" style="display:none"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" data-modal="modalCompare">Закрыть</button>
+      <button class="btn btn-primary" id="btnCompareRun">
+        <i class="fas fa-chart-bar"></i> Сравнить
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TOAST ═══════════════════ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ═══════════════════ LOADER ═══════════════════ -->
+<div class="page-loader" id="pageLoader" style="display:none">
+  <div class="loader-spinner"><i class="fas fa-sync-alt fa-spin"></i></div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
