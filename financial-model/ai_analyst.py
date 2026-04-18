@@ -1,5 +1,5 @@
 import os
-from typing import Dict
+from typing import Dict, List
 
 try:
     import google.generativeai as genai
@@ -171,7 +171,3 @@ PI: {results['pi']:.2f}
             lines.append("⚠️ NPV отрицательный — пересмотрите ключевые параметры.")
 
         return lines
-
-
-# Аннотация для type hints в _common_risks
-from typing import List  # noqa: E402

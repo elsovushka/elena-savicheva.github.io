@@ -20,31 +20,34 @@ class FinancialModel:
         cf = self._build_cashflow()
         equity_cf = self._equity_cashflow(cf)
 
-        npv_val = self._npv(cf['free_cashflow'])
-        irr_val = self._irr(cf['free_cashflow'])
+        # Project metrics — unlevered free cash flow (without debt service)
+        npv_val        = self._npv(cf['unlevered_cashflow'])
+        irr_val        = self._irr(cf['unlevered_cashflow'])
+        pi_val         = self._pi(cf['unlevered_cashflow'])
+        payback_val    = self._payback(cf['unlevered_cashflow'])
+
+        # Equity metrics — after debt drawdowns and repayment
         equity_irr_val = self._irr(equity_cf)
-        pi_val = self._pi(cf['free_cashflow'])
-        payback_val = self._payback(cf['free_cashflow'])
-        min_dscr = self._min_dscr(cf)
+        min_dscr       = self._min_dscr(cf)
 
         return {
-            'npv': round(npv_val, 2),
-            'irr': round(irr_val * 100, 2),
-            'equity_irr': round(equity_irr_val * 100, 2),
-            'pi': round(pi_val, 3),
-            'payback': payback_val,
-            'dscr': round(min_dscr, 3),
-            'total_revenue': round(sum(cf['revenue']), 2),
-            'total_capex': round(sum(abs(x) for x in cf['capex']), 2),
-            'total_opex': round(sum(abs(x) for x in cf['opex']), 2),
-            'total_tax': round(sum(abs(x) for x in cf['taxes']), 2),
+            'npv':                round(npv_val, 2),
+            'irr':                round(irr_val * 100, 2),
+            'equity_irr':         round(equity_irr_val * 100, 2),
+            'pi':                 round(pi_val, 3),
+            'payback':            payback_val,
+            'dscr':               round(min_dscr, 3),
+            'total_revenue':      round(sum(cf['revenue']), 2),
+            'total_capex':        round(sum(abs(x) for x in cf['capex']), 2),
+            'total_opex':         round(sum(abs(x) for x in cf['opex']), 2),
+            'total_tax':          round(sum(abs(x) for x in cf['taxes']), 2),
             'total_debt_service': round(sum(abs(x) for x in cf['debt_service']), 2),
-            'net_profit': round(sum(cf['free_cashflow']), 2),
+            'net_profit':         round(sum(cf['unlevered_cashflow']), 2),
         }
 
     def get_cashflow(self) -> Dict:
         cf = self._build_cashflow()
-        return {k: [round(v, 2) for v in vals] for k, vals in cf.items()}
+        return {k: [round(v, 2) for v in vals] for k, vals in cf.items() if k != 'unlevered_cashflow'}
 
     # ─────────────────────────────────────────────────────────────────
     # CASHFLOW BUILDER
@@ -62,7 +65,8 @@ class FinancialModel:
         opex = []
         taxes = []
         debt_service = []
-        free_cashflow = []
+        unlevered_cashflow = []   # project IRR/NPV (no debt service)
+        free_cashflow = []        # levered (after debt)
         cumulative_cashflow = []
         cumulative = 0.0
 
@@ -73,15 +77,17 @@ class FinancialModel:
             tax = self._taxes(q, rev, cap, ope)
             ds = loan_schedule[q] if q < len(loan_schedule) else 0.0
 
-            net = rev + cap + ope + tax + ds  # cap/ope/tax/ds already negative
+            unlev = rev + cap + ope + tax          # unlevered (project)
+            lev   = unlev + ds                      # levered (equity + debt)
 
             revenue.append(rev)
             capex.append(cap)
             opex.append(ope)
             taxes.append(tax)
             debt_service.append(ds)
-            free_cashflow.append(net)
-            cumulative += net
+            unlevered_cashflow.append(unlev)
+            free_cashflow.append(lev)
+            cumulative += lev
             cumulative_cashflow.append(cumulative)
 
         return {
@@ -91,6 +97,7 @@ class FinancialModel:
             'opex': opex,
             'taxes': taxes,
             'debt_service': debt_service,
+            'unlevered_cashflow': unlevered_cashflow,
             'free_cashflow': free_cashflow,
             'cumulative_cashflow': cumulative_cashflow,
         }
@@ -331,13 +338,13 @@ class FinancialModel:
         return -1
 
     def _min_dscr(self, cf: Dict) -> float:
-        """Минимальный DSCR в кварталах с обслуживанием долга."""
+        """Минимальный DSCR только в операционных кварталах (выручка > 0)."""
         dscr_values = []
         for q in range(self.quarters):
             ds = abs(cf['debt_service'][q])
-            if ds < 1:
+            rev = cf['revenue'][q]
+            if ds < 1 or rev <= 0:
                 continue
-            # NOI = выручка − опекс (без налогов и CAPEX)
-            noi = cf['revenue'][q] + cf['opex'][q]  # opex уже отрицательный
+            noi = rev + cf['opex'][q]  # opex already negative
             dscr_values.append(noi / ds)
         return min(dscr_values) if dscr_values else 0.0
