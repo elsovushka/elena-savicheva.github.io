@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Финмодель · Казань 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<style>
+:root{
+  --bg:#f0f2f5;--white:#fff;--panel:#fafbfc;--border:#e2e6ea;--border2:#d0d5dd;
+  --blue:#1a56db;--blue-l:#e8f0fe;--blue-d:#1241b0;
+  --green:#0a7c42;--green-l:#dcf5e7;
+  --red:#c0392b;--red-l:#fde8e8;
+  --amber:#b45309;--amber-l:#fef3c7;
+  --gray:#6b7280;--gray2:#374151;--gray3:#9ca3af;--txt:#111827;
+  --shadow:0 2px 8px rgba(0,0,0,.10);--radius:10px;--radius-sm:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--txt);
+  font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;overflow:hidden}
+
+/* ── HEADER ── */
+.hdr{background:var(--white);border-bottom:2px solid var(--border);padding:0 20px;
+  display:flex;align-items:center;justify-content:space-between;height:58px;
+  box-shadow:var(--shadow);z-index:10;flex-shrink:0}
+.hdr-brand{display:flex;align-items:center;gap:10px}
+.hdr-icon{width:36px;height:36px;background:var(--blue);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:700;flex-shrink:0}
+.hdr-title{font-size:15px;font-weight:700;color:var(--txt)}
+.hdr-sub{font-size:11px;color:var(--gray)}
+.hdr-right{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.scen-group{display:flex;background:var(--bg);border-radius:8px;padding:3px;gap:2px;border:1px solid var(--border)}
+.scen-btn{padding:5px 13px;border-radius:6px;border:none;background:transparent;font-size:12px;font-weight:600;
+  color:var(--gray);cursor:pointer;transition:all .15s;white-space:nowrap}
+.scen-btn.act{background:var(--white);color:var(--blue);box-shadow:var(--shadow)}
+.scen-btn:hover:not(.act){color:var(--txt);background:rgba(255,255,255,.6)}
+.hdr-btn{padding:6px 12px;border-radius:var(--radius-sm);border:1.5px solid var(--border2);background:var(--white);
+  font-size:12px;font-weight:600;color:var(--gray2);cursor:pointer;display:flex;align-items:center;gap:5px;
+  transition:all .15s;white-space:nowrap}
+.hdr-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-l)}
+.hdr-btn.xls{background:#1d6f42;color:#fff;border-color:#1d6f42}.hdr-btn.xls:hover{background:#155534}
+.hdr-btn.pdf{background:#dc2626;color:#fff;border-color:#dc2626}.hdr-btn.pdf:hover{background:#b91c1c}
+
+/* ── TABS ── */
+.tabs-bar{background:var(--white);border-bottom:2px solid var(--border);padding:0 20px;
+  display:flex;align-items:flex-end;gap:1px;overflow-x:auto;flex-shrink:0}
+.tabs-bar::-webkit-scrollbar{height:3px}
+.tabs-bar::-webkit-scrollbar-thumb{background:var(--border2)}
+.tab-btn{padding:11px 16px;border:none;background:transparent;font-size:13px;font-weight:600;
+  color:var(--gray);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;
+  white-space:nowrap;transition:all .15s;border-radius:var(--radius-sm) var(--radius-sm) 0 0}
+.tab-btn:hover:not(.act){color:var(--gray2);background:var(--bg)}
+.tab-btn.act{color:var(--blue);border-bottom-color:var(--blue);background:var(--blue-l)}
+
+/* ── LAYOUT ── */
+.body{display:flex;height:calc(100vh - 58px - 48px);overflow:hidden}
+
+/* ── PARAMS PANEL ── */
+.par-panel{width:288px;flex-shrink:0;background:var(--white);border-right:2px solid var(--border);
+  overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:5px}
+.par-panel::-webkit-scrollbar{width:4px}
+.par-panel::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.par-panel.hid{display:none}
+.ps{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:10px 13px;margin-bottom:2px}
+.ps-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--blue);margin-bottom:9px;display:flex;align-items:center;gap:6px}
+.ps-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.pr{margin-bottom:10px}.pr:last-child{margin-bottom:0}
+.pl{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.pn{font-size:12px;font-weight:600;color:var(--gray2)}
+.pv{font-size:12px;font-weight:700;color:var(--blue);background:var(--blue-l);
+  padding:2px 8px;border-radius:20px;min-width:68px;text-align:center}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:var(--border2);
+  border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;
+  background:var(--blue);border-radius:50%;cursor:pointer;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;background:var(--blue);border-radius:50%;border:2px solid #fff;cursor:pointer}
+.ph{display:flex;justify-content:space-between;font-size:10px;color:var(--gray3);margin-top:2px}
+.sell-row-item{display:grid;grid-template-columns:1fr 1fr 26px;gap:5px;margin-bottom:5px;align-items:flex-end}
+.sell-row-item label{font-size:10px;font-weight:600;color:var(--gray);display:block;margin-bottom:2px}
+.sell-row-item input{border:1.5px solid var(--border2);border-radius:5px;padding:5px 7px;
+  font-size:13px;font-weight:700;color:var(--blue);text-align:center;width:100%;outline:none}
+.sell-row-item input:focus{border-color:var(--blue)}
+.sell-rm{width:26px;height:30px;border:none;background:var(--red-l);color:var(--red);border-radius:5px;
+  cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
+.sell-rm:hover{background:var(--red);color:#fff}
+.add-row-btn{width:100%;margin-top:5px;padding:6px;border:2px dashed var(--border2);border-radius:var(--radius-sm);
+  background:transparent;color:var(--gray);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.add-row-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-l)}
+
+/* ── MAIN ── */
+.main{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.tab-pane{display:none;flex:1;overflow:hidden;flex-direction:column}
+.tab-pane.show{display:flex}
+
+/* ── DASHBOARD ── */
+#tab-dash{display:none;flex:1;overflow:hidden;padding:10px;gap:8px;
+  grid-template-rows:auto auto 1fr 1fr;
+  grid-template-columns:repeat(6,1fr)}
+#tab-dash.show{display:grid}
+.kpi{background:var(--white);border-radius:var(--radius);padding:12px 14px;
+  box-shadow:var(--shadow);border-left:4px solid transparent}
+.kpi.k-green{border-left-color:var(--green)}.kpi.k-red{border-left-color:var(--red)}
+.kpi.k-blue{border-left-color:var(--blue)}.kpi.k-amber{border-left-color:var(--amber)}
+.kpi-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray);margin-bottom:3px}
+.kpi-val{font-size:21px;font-weight:800;line-height:1.1;margin-bottom:2px}
+.kpi-val.cv-green{color:var(--green)}.kpi-val.cv-red{color:var(--red)}
+.kpi-val.cv-blue{color:var(--blue)}.kpi-val.cv-amber{color:var(--amber)}
+.kpi-sub{font-size:11px;color:var(--gray3)}
+.verdict{grid-column:1/-1;background:var(--white);border-radius:var(--radius);
+  padding:10px 15px;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px}
+.verdict.show{display:flex}
+.vbadge{padding:6px 13px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;flex-shrink:0}
+.vbadge.vg{background:var(--green-l);color:var(--green)}
+.vbadge.vy{background:var(--amber-l);color:var(--amber)}
+.vbadge.vr{background:var(--red-l);color:var(--red)}
+.vtxt{font-size:12px;color:var(--gray2);flex:1;line-height:1.4}
+.vstats{display:flex;gap:14px;flex-shrink:0}
+.vs{text-align:center}
+.vs-val{font-size:13px;font-weight:800;color:var(--txt)}
+.vs-lbl{font-size:9px;color:var(--gray3);text-transform:uppercase;letter-spacing:.05em}
+.ch-card{background:var(--white);border-radius:var(--radius);padding:10px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.ch-title{font-size:11px;font-weight:700;color:var(--gray2);margin-bottom:6px;flex-shrink:0}
+.chw{flex:1;position:relative;min-height:0}
+.chw canvas{position:absolute;top:0;left:0;width:100%!important;height:100%!important}
+
+/* ── SHEET VIEW ── */
+.sv{flex:1;overflow-y:auto;padding:16px 20px;background:var(--bg)}
+.sv::-webkit-scrollbar{width:5px}
+.sv::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* KPI bar on sheets */
+.kpi-bar{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px}
+.kpi-bar .kpi{padding:10px 13px}
+.kpi-bar .kpi-val{font-size:18px}
+
+.sht{font-size:17px;font-weight:800;color:var(--txt);margin-bottom:12px}
+.dtbl{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;
+  background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:13px}
+.dtbl th{background:#f8f9fb;padding:8px 11px;text-align:right;font-size:10px;font-weight:700;
+  color:var(--gray);text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid var(--border);white-space:nowrap}
+.dtbl th:first-child{text-align:left;min-width:165px}
+.dtbl td{padding:7px 11px;text-align:right;border-bottom:1px solid var(--border);color:var(--gray2);white-space:nowrap}
+.dtbl td:first-child{text-align:left;font-weight:600;color:var(--txt)}
+.dtbl tr:last-child td{border-bottom:none}
+.dtbl tr:hover td{background:#f8f9fb}
+.dtbl .rp td{color:var(--green);font-weight:600}
+.dtbl .rn td{color:var(--red)}
+.dtbl .rt td{background:linear-gradient(90deg,#e8f0fe,#f0f5ff);font-weight:800;color:var(--blue);border-top:2px solid var(--border)}
+.dtbl .rs td{background:#f0f5ff;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);border-top:2px solid var(--border)}
+.igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:9px;margin-bottom:12px}
+.ic{background:var(--white);border-radius:var(--radius-sm);padding:9px 13px;box-shadow:var(--shadow);border-left:3px solid var(--blue)}
+.ic-l{font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.ic-v{font-size:15px;font-weight:800;color:var(--txt)}
+.ic-s{font-size:10px;color:var(--gray3);margin-top:1px}
+
+/* ── SENSITIVITY ── */
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:13px}
+.mc{background:var(--white);border-radius:var(--radius);padding:13px;box-shadow:var(--shadow)}
+.mt{font-size:12px;font-weight:700;color:var(--gray2);margin-bottom:9px}
+.mtbl{border-collapse:collapse;font-size:11px;width:100%}
+.mtbl th{background:#f8f9fb;padding:5px 7px;text-align:center;font-size:10px;font-weight:700;color:var(--gray);border:1px solid var(--border)}
+.mtbl td{padding:5px 7px;text-align:center;border:1px solid var(--border);font-weight:600}
+.mtbl td.cp{background:#d1fae5;color:#065f46}
+.mtbl td.cw{background:#fef3c7;color:#92400e}
+.mtbl td.cn{background:#fee2e2;color:#991b1b}
+.mtbl td.base{outline:3px solid var(--blue);outline-offset:-2px;color:var(--blue);font-weight:800}
+
+/* ── COMPARE ── */
+.save-panel{background:var(--white);border-radius:var(--radius);padding:12px 16px;
+  box-shadow:var(--shadow);margin-bottom:13px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.spi{border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:6px 11px;
+  font-size:13px;font-weight:600;outline:none;min-width:170px;color:var(--txt)}
+.spi:focus{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-l)}
+.abtn{padding:6px 13px;border-radius:var(--radius-sm);border:none;font-size:12px;
+  font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s}
+.abtn.blue{background:var(--blue);color:#fff}.abtn.blue:hover{background:var(--blue-d)}
+.abtn.danger{background:var(--red-l);color:var(--red);border:1.5px solid var(--red-l)}
+.abtn.danger:hover{background:var(--red);color:#fff}
+.abtn.out{background:var(--white);color:var(--gray2);border:1.5px solid var(--border2)}
+.abtn.out:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-l)}
+.sl{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}
+.sb2{padding:6px 11px;border-radius:20px;background:var(--blue-l);color:var(--blue);
+  font-size:12px;font-weight:700;cursor:pointer;border:2px solid transparent;
+  display:flex;align-items:center;gap:6px;transition:all .15s}
+.sb2:hover{border-color:var(--blue)}.sb2 .rm{width:15px;height:15px;border-radius:50%;
+  background:rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:10px}
+.sb2 .rm:hover{background:var(--red);color:#fff}
+.ctbl{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;
+  background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.ctbl th{background:var(--blue);color:#fff;padding:9px 13px;text-align:center;font-size:11px;font-weight:700}
+.ctbl th:first-child{text-align:left;background:#1241b0}
+.ctbl td{padding:8px 13px;text-align:center;border-bottom:1px solid var(--border);font-weight:600}
+.ctbl td:first-child{text-align:left;color:var(--gray2);font-weight:700;background:#f8f9fb}
+.ctbl .best{color:var(--green);font-weight:800}.ctbl .worst{color:var(--red)}
+
+/* ── PDF INFO BOX ── */
+.pdf-info{background:var(--amber-l);border:1.5px solid #fcd34d;border-radius:var(--radius);
+  padding:14px 18px;margin-bottom:14px;font-size:13px;line-height:1.6;color:var(--gray2)}
+.pdf-info strong{color:var(--amber)}
+
+/* ── PRINT ── */
+@media print{
+  html,body{overflow:visible!important;height:auto!important;background:#fff!important}
+  .hdr,.tabs-bar,.par-panel{display:none!important}
+  .body{display:block!important;height:auto!important;overflow:visible!important}
+  .main{overflow:visible!important;display:block!important}
+  #tab-dash.show{display:none!important}
+  .tab-pane{display:block!important;height:auto!important;overflow:visible!important;page-break-after:always}
+  .sv{overflow:visible!important;padding:8px!important}
+  .dtbl,.ctbl{font-size:9px!important;box-shadow:none!important}
+  .dtbl th,.ctbl th{padding:4px 6px!important}
+  .dtbl td,.ctbl td{padding:3px 6px!important}
+  .kpi-bar{display:grid!important}
+  .kpi,.ch-card,.mc,.ic{box-shadow:none!important;border:1px solid #ddd!important}
+  @page{size:A4 landscape;margin:1cm}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-icon">₽</div>
+    <div>
+      <div class="hdr-title">Финансовая модель · Казань 2026</div>
+      <div class="hdr-sub">Редевелопмент · 1 200 м² · 20 квартир · Покупка → Реконструкция → Аренда → Продажа</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <div class="scen-group">
+      <button class="scen-btn act" onclick="applyScen('base',this)">📊 Базовый</button>
+      <button class="scen-btn" onclick="applyScen('opt',this)">🚀 Оптимист.</button>
+      <button class="scen-btn" onclick="applyScen('stress',this)">⚡ Стресс</button>
+    </div>
+    <button class="hdr-btn" onclick="showTab('compare',document.querySelector('[data-tab=compare]'))">⚖️ Сравнить</button>
+    <button class="hdr-btn xls" onclick="exportXLS()">📊 Excel</button>
+    <button class="hdr-btn pdf" onclick="doPrint()">📄 PDF</button>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-bar">
+  <button class="tab-btn act" data-tab="dash"    onclick="showTab('dash',this)">🏠 Дашборд</button>
+  <button class="tab-btn" data-tab="vvod"         onclick="showTab('vvod',this)">📋 Вводные</button>
+  <button class="tab-btn" data-tab="pok"          onclick="showTab('pok',this)">🏗️ Покупка</button>
+  <button class="tab-btn" data-tab="rek"          onclick="showTab('rek',this)">🔨 Реконструкция</button>
+  <button class="tab-btn" data-tab="ar"           onclick="showTab('ar',this)">🏠 Аренда</button>
+  <button class="tab-btn" data-tab="pr"           onclick="showTab('pr',this)">💰 Продажа</button>
+  <button class="tab-btn" data-tab="kr"           onclick="showTab('kr',this)">🏦 Кредит</button>
+  <button class="tab-btn" data-tab="nal"          onclick="showTab('nal',this)">📑 Налоги</button>
+  <button class="tab-btn" data-tab="df"           onclick="showTab('df',this)">📈 Ден. Поток</button>
+  <button class="tab-btn" data-tab="opiu"         onclick="showTab('opiu',this)">📊 ОПиУ</button>
+  <button class="tab-btn" data-tab="chuvst"       onclick="showTab('chuvst',this)">🎯 Чувств.</button>
+  <button class="tab-btn" data-tab="compare"      onclick="showTab('compare',this)">⚖️ Сравнение</button>
+</div>
+
+<div class="body">
+<!-- PARAMS -->
+<div class="par-panel" id="par-panel">
+  <div class="ps">
+    <div class="ps-title">🏢 Объект</div>
+    <div class="pr"><div class="pl"><span class="pn">Площадь здания</span><span class="pv" id="v-area">1 200 м²</span></div>
+      <input type="range" id="s-area" min="600" max="2400" step="50" value="1200" oninput="upd()">
+      <div class="ph"><span>600</span><span>2 400 м²</span></div></div>
+    <div class="pr"><div class="pl"><span class="pn">Квартир, шт</span><span class="pv" id="v-apts">20 шт</span></div>
+      <input type="range" id="s-apts" min="4" max="60" step="1" value="20" oninput="upd()">
+      <div class="ph"><span>4</span><span>60</span></div></div>
+  </div>
+  <div class="ps">
+    <div class="ps-title">💵 Цены, ₽/м²</div>
+    <div class="pr"><div class="pl"><span class="pn">Цена покупки</span><span class="pv" id="v-buy">110 000</span></div>
+      <input type="range" id="s-buy" min="60000" max="200000" step="5000" value="110000" oninput="upd()">
+      <div class="ph"><span>60 тыс</span><span>200 тыс</span></div></div>
+    <div class="pr"><div class="pl"><span class="pn">Реконструкция</span><span class="pv" id="v-reno">45 000</span></div>
+      <input type="range" id="s-reno" min="15000" max="90000" step="2500" value="45000" oninput="upd()">
+      <div class="ph"><span>15 тыс</span><span>90 тыс</span></div></div>
+    <div class="pr"><div class="pl"><span class="pn">Цена продажи</span><span class="pv" id="v-sell">230 000</span></div>
+      <input type="range" id="s-sell" min="120000" max="360000" step="5000" value="230000" oninput="upd()">
+      <div class="ph"><span>120 тыс</span><span>360 тыс</span></div></div>
+  </div>
+  <div class="ps">
+    <div class="ps-title">🏠 Аренда</div>
+    <div class="pr"><div class="pl"><span class="pn">Ставка, ₽/мес</span><span class="pv" id="v-rent">45 000</span></div>
+      <input type="range" id="s-rent" min="15000" max="100000" step="2500" value="45000" oninput="upd()">
+      <div class="ph"><span>15 тыс</span><span>100 тыс</span></div></div>
+    <div class="pr"><div class="pl"><span class="pn">Заполняемость</span><span class="pv" id="v-occ">75%</span></div>
+      <input type="range" id="s-occ" min="20" max="100" step="5" value="75" oninput="upd()">
+      <div class="ph"><span>20%</span><span>100%</span></div></div>
+    <div class="pr"><div class="pl"><span class="pn">Начало аренды</span><span class="pv" id="v-rs">Q5</span></div>
+      <input type="range" id="s-rs" min="2" max="15" step="1" value="5" oninput="onRsChange()">
+      <div class="ph"><span>Q2</span><span>Q15</span></div></div>
+    <div class="pr"><div class="pl"><span class="pn">Кварталов аренды</span><span class="pv" id="v-rd">4 кв.</span></div>
+      <input type="range" id="s-rd" min="1" max="12" step="1" value="4" oninput="onRdChange()">
+      <div class="ph"><span>1</span><span>12</span></div></div>
+  </div>
+  <div class="ps">
+    <div class="ps-title">💰 График продаж</div>
+    <div style="font-size:10px;color:var(--gray);margin-bottom:6px">Сдвигается автоматически при изменении аренды</div>
+    <div id="sell-rows-container"></div>
+    <button class="add-row-btn" onclick="addSell()">+ Добавить квартал продаж</button>
+  </div>
+  <div class="ps">
+    <div class="ps-title">🏦 Кредит</div>
+    <div class="pr"><div class="pl"><span class="pn">Доля кредита</span><span class="pv" id="v-lev">60%</span></div>
+      <input type="range" id="s-lev" min="10" max="90" step="5" value="60" oninput="upd()">
+      <div class="ph"><span>10%</span><span>90%</span></div></div>
+    <div class="pr"><div class="pl"><span class="pn">Ставка кредита</span><span class="pv" id="v-rate">14.5%</span></div>
+      <input type="range" id="s-rate" min="6" max="28" step="0.25" value="14.5" oninput="upd()">
+      <div class="ph"><span>6%</span><span>28%</span></div></div>
+    <div class="pr"><div class="pl"><span class="pn">Срок кредита, кв.</span><span class="pv" id="v-lt">16 кв.</span></div>
+      <input type="range" id="s-lt" min="4" max="32" step="1" value="16" oninput="upd()">
+      <div class="ph"><span>4</span><span>32</span></div></div>
+    <div class="pr"><div class="pl"><span class="pn">Начало погашения</span><span class="pv" id="v-rps">Q5</span></div>
+      <input type="range" id="s-rps" min="1" max="20" step="1" value="5" oninput="upd()">
+      <div class="ph"><span>Q1</span><span>Q20</span></div></div>
+    <div class="pr"><div class="pl"><span class="pn">Ставка диск.</span><span class="pv" id="v-disc">20%</span></div>
+      <input type="range" id="s-disc" min="8" max="40" step="1" value="20" oninput="upd()">
+      <div class="ph"><span>8%</span><span>40%</span></div></div>
+  </div>
+  <div class="ps">
+    <div class="ps-title">⚙️ Прочее</div>
+    <div class="pr"><div class="pl"><span class="pn">Доп. расходы</span><span class="pv" id="v-ex">2.4 млн</span></div>
+      <input type="range" id="s-ex" min="0" max="10000000" step="100000" value="2432000" oninput="upd()">
+      <div class="ph"><span>0</span><span>10 млн</span></div></div>
+    <div class="pr"><div class="pl"><span class="pn">OPEX/квартал</span><span class="pv" id="v-op">525 тыс</span></div>
+      <input type="range" id="s-op" min="50000" max="2000000" step="25000" value="525000" oninput="upd()">
+      <div class="ph"><span>50 тыс</span><span>2 млн</span></div></div>
+    <div class="pr"><div class="pl"><span class="pn">Горизонт</span><span class="pv" id="v-hz">12 кв.</span></div>
+      <input type="range" id="s-hz" min="8" max="28" step="1" value="12" oninput="upd()">
+      <div class="ph"><span>8</span><span>28 кв.</span></div></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- DASHBOARD -->
+<div id="tab-dash" class="show">
+  <div class="kpi" id="k-npv"><div class="kpi-lbl">NPV проекта</div><div class="kpi-val" id="kv-npv">—</div><div class="kpi-sub" id="ks-npv">—</div></div>
+  <div class="kpi" id="k-irr"><div class="kpi-lbl">IRR проекта</div><div class="kpi-val" id="kv-irr">—</div><div class="kpi-sub">FCFF, годовых</div></div>
+  <div class="kpi" id="k-eirr"><div class="kpi-lbl">Equity IRR</div><div class="kpi-val" id="kv-eirr">—</div><div class="kpi-sub">доходность инвестора</div></div>
+  <div class="kpi" id="k-pi"><div class="kpi-lbl">PI (индекс рент.)</div><div class="kpi-val" id="kv-pi">—</div><div class="kpi-sub">норма ≥ 1.0</div></div>
+  <div class="kpi" id="k-pb"><div class="kpi-lbl">Окупаемость</div><div class="kpi-val" id="kv-pb" style="font-size:17px">—</div><div class="kpi-sub" id="ks-pb">—</div></div>
+  <div class="kpi" id="k-dscr"><div class="kpi-lbl">Мин. DSCR</div><div class="kpi-val" id="kv-dscr">—</div><div class="kpi-sub">норма ≥ 1.0</div></div>
+  <div class="verdict" id="verdict-bar" style="grid-column:1/-1"></div>
+  <div class="ch-card" style="grid-column:1/4">
+    <div class="ch-title">Денежный поток по кварталам, млн ₽</div>
+    <div class="chw"><canvas id="c-cf"></canvas></div>
+  </div>
+  <div class="ch-card" style="grid-column:4/5">
+    <div class="ch-title">Структура затрат</div>
+    <div class="chw"><canvas id="c-dn"></canvas></div>
+  </div>
+  <div class="ch-card" style="grid-column:5/7">
+    <div class="ch-title">Итоги, млн ₽</div>
+    <div class="chw"><canvas id="c-bar2"></canvas></div>
+  </div>
+  <div class="ch-card" style="grid-column:1/4">
+    <div class="ch-title">Кумулятивный NCF (Equity), млн ₽</div>
+    <div class="chw"><canvas id="c-cu"></canvas></div>
+  </div>
+  <div class="ch-card" style="grid-column:4/7">
+    <div class="ch-title">Чувствительность NPV · покупка × продажа</div>
+    <div class="chw"><canvas id="c-sc"></canvas></div>
+  </div>
+</div>
+
+<!-- SHEET TABS — each has KPI bar + content, NO charts -->
+<div id="tab-vvod" class="tab-pane"><div class="sv">
+  <div class="kpi-bar" id="kb-vvod"></div>
+  <div class="sht">📋 Вводные данные</div><div id="c-vvod"></div>
+</div></div>
+
+<div id="tab-pok" class="tab-pane"><div class="sv">
+  <div class="kpi-bar" id="kb-pok"></div>
+  <div class="sht">🏗️ Покупка здания</div><div id="c-pok"></div>
+</div></div>
+
+<div id="tab-rek" class="tab-pane"><div class="sv">
+  <div class="kpi-bar" id="kb-rek"></div>
+  <div class="sht">🔨 Реконструкция</div><div id="c-rek"></div>
+</div></div>
+
+<div id="tab-ar" class="tab-pane"><div class="sv">
+  <div class="kpi-bar" id="kb-ar"></div>
+  <div class="sht">🏠 Аренда</div><div id="c-ar"></div>
+</div></div>
+
+<div id="tab-pr" class="tab-pane"><div class="sv">
+  <div class="kpi-bar" id="kb-pr"></div>
+  <div class="sht">💰 Продажа</div><div id="c-pr"></div>
+</div></div>
+
+<div id="tab-kr" class="tab-pane"><div class="sv">
+  <div class="kpi-bar" id="kb-kr"></div>
+  <div class="sht">🏦 Кредит</div><div id="c-kr"></div>
+</div></div>
+
+<div id="tab-nal" class="tab-pane"><div class="sv">
+  <div class="kpi-bar" id="kb-nal"></div>
+  <div class="sht">📑 Налоги</div><div id="c-nal"></div>
+</div></div>
+
+<div id="tab-df" class="tab-pane"><div class="sv">
+  <div class="kpi-bar" id="kb-df"></div>
+  <div class="sht">📈 Денежный поток</div><div id="c-df"></div>
+</div></div>
+
+<div id="tab-opiu" class="tab-pane"><div class="sv">
+  <div class="kpi-bar" id="kb-opiu"></div>
+  <div class="sht">📊 Отчёт о прибылях и убытках</div><div id="c-opiu"></div>
+</div></div>
+
+<div id="tab-chuvst" class="tab-pane"><div class="sv">
+  <div class="kpi-bar" id="kb-chuvst"></div>
+  <div class="sht">🎯 Анализ чувствительности NPV</div><div id="c-chuvst"></div>
+</div></div>
+
+<div id="tab-compare" class="tab-pane"><div class="sv">
+  <div class="sht">⚖️ Сравнение сценариев</div>
+  <div class="save-panel">
+    <span style="font-size:13px;font-weight:700;color:var(--gray2)">Сохранить текущий:</span>
+    <input class="spi" id="save-name" placeholder="Название сценария...">
+    <button class="abtn blue" onclick="saveScenario()">💾 Сохранить</button>
+    <button class="abtn danger" onclick="clearSaved()">🗑️ Очистить всё</button>
+    <button class="abtn out" onclick="exportCompareXLS()">📊 Excel сравнение</button>
+  </div>
+  <div id="saved-list" class="sl"></div>
+  <div id="compare-table" style="margin-top:14px"></div>
+</div></div>
+
+</div><!-- /main -->
+</div><!-- /body -->
+
+<script>
+// ══════════════════════════════════════════
+// SELL ROWS
+// ══════════════════════════════════════════
+let sellRows=[{q:9,n:5},{q:10,n:6},{q:11,n:6},{q:12,n:3}];
+let lastRs=5,lastRd=4;
+
+function renderSellRows(){
+  document.getElementById('sell-rows-container').innerHTML=
+    sellRows.map((r,i)=>`<div class="sell-row-item">
+      <div><label>Квартал (Q)</label><input type="number" min="1" max="40" value="${r.q}" onchange="sellRows[${i}].q=+this.value;upd()"></div>
+      <div><label>Квартир, шт</label><input type="number" min="0" max="50" value="${r.n}" onchange="sellRows[${i}].n=+this.value;upd()"></div>
+      <button class="sell-rm" onclick="rmSell(${i})">x</button>
+    </div>`).join('');
+}
+function addSell(){sellRows.push({q:sellRows.length?sellRows[sellRows.length-1].q+1:9,n:1});renderSellRows();upd();}
+function rmSell(i){if(sellRows.length>1){sellRows.splice(i,1);renderSellRows();upd();}}
+
+function onRsChange(){
+  const newRs=+document.getElementById('s-rs').value;
+  const delta=newRs-lastRs;
+  if(delta!==0)sellRows=sellRows.map(r=>({...r,q:Math.max(1,r.q+delta)}));
+  lastRs=newRs;renderSellRows();upd();
+}
+function onRdChange(){
+  const newRd=+document.getElementById('s-rd').value;
+  const delta=newRd-lastRd;
+  if(delta!==0)sellRows=sellRows.map(r=>({...r,q:Math.max(1,r.q+delta)}));
+  lastRd=newRd;renderSellRows();upd();
+}
+
+// ══════════════════════════════════════════
+// SCENARIOS
+// ══════════════════════════════════════════
+const SCEN={
+  base:  {area:1200,apts:20,buy:110000,reno:45000,sell:230000,rent:45000,occ:75,lev:60,rate:14.5,disc:20,ex:2432000,op:525000,hz:12,rs:5,rd:4,lt:16,rps:5,sr:[{q:9,n:5},{q:10,n:6},{q:11,n:6},{q:12,n:3}]},
+  opt:   {area:1200,apts:20,buy:90000,reno:40000,sell:270000,rent:55000,occ:85,lev:60,rate:10.25,disc:20,ex:2432000,op:525000,hz:12,rs:5,rd:4,lt:16,rps:5,sr:[{q:9,n:5},{q:10,n:6},{q:11,n:6},{q:12,n:3}]},
+  stress:{area:1200,apts:20,buy:140000,reno:55000,sell:200000,rent:40000,occ:55,lev:60,rate:15.5,disc:20,ex:2432000,op:525000,hz:12,rs:5,rd:4,lt:16,rps:5,sr:[{q:9,n:5},{q:10,n:6},{q:11,n:6},{q:12,n:3}]},
+};
+
+function gv(id){return +document.getElementById(id).value;}
+function getP(){
+  return{area:gv('s-area'),apts:gv('s-apts'),buy:gv('s-buy'),reno:gv('s-reno'),sell:gv('s-sell'),
+    rent:gv('s-rent'),occ:gv('s-occ')/100,lev:gv('s-lev')/100,rate:gv('s-rate')/100,
+    disc:gv('s-disc')/100,ex:gv('s-ex'),op:gv('s-op'),hz:gv('s-hz'),
+    rs:gv('s-rs'),rd:gv('s-rd'),lt:gv('s-lt'),rps:gv('s-rps'),
+    sr:sellRows.map(r=>({...r}))};
+}
+
+// ══════════════════════════════════════════
+// MODEL — uses actual hz (not fixed Q12)
+// ══════════════════════════════════════════
+const RECO=[1,2,3,4];
+function calc(p){
+  const{area,apts,buy,reno,sell,rent,occ,lev,rate,disc,ex,op,rs,rd,sr,lt,rps}=p;
+  const sqA=area/apts;
+  const cBuy=area*buy+ex, cReno=area*reno, cTot=cBuy+cReno;
+  const cred=cTot*lev, eq=cTot-cred, rQ=rate/4;
+
+  // Горизонт: авто-расширение
+  const rentEnd=rs+rd-1;
+  const loanEnd=rps+lt-1;
+  const lastSell=sr.length?Math.max(...sr.map(r=>r.q)):0;
+  const hz=Math.max(p.hz,rentEnd,loanEnd,lastSell);
+  const N=hz+1, QQ=Array.from({length:N},(_,i)=>i);
+  const RECO=[1,2,3,4];
+
+  // Выборка кредита
+  const drw=QQ.map(q=>q===0?cBuy*lev:(RECO.includes(q)?(cReno/4)*lev:0));
+  const eqQ=QQ.map(q=>q===0?cBuy*(1-lev):(RECO.includes(q)?(cReno/4)*(1-lev):0));
+
+  // ── КРЕДИТ: installment = cred / (lt - rps + 1) ──
+  // Q{rps}..Q{hz-1}: равные доли, Q{hz}: balloon (остаток)
+  // Проценты в drawdown-кварталах = avg(opening, closing)*rQ
+  // Проценты в остальных = opening*rQ
+  const inst=cred/Math.max(1,lt-rps+1);
+  let balPrev=0;
+  const intr=new Array(N).fill(0),repay=new Array(N).fill(0),balE=new Array(N).fill(0);
+  for(let q=0;q<N;q++){
+    const isDraw=drw[q]>0;
+    const balAfterDraw=balPrev+drw[q];
+    let rep=0;
+    if(q>=rps && q<hz) rep=Math.min(inst,balAfterDraw);
+    else if(q===hz && balAfterDraw>0.01) rep=balAfterDraw; // balloon
+    repay[q]=rep;
+    const balClose=balAfterDraw-rep;
+    // Гибридный метод процентов (как в Excel)
+    intr[q]=isDraw?(balPrev+balClose)/2*rQ:balPrev*rQ;
+    balE[q]=Math.max(0,balClose);
+    balPrev=balE[q];
+  }
+
+  // Аренда: рамп Q0→50%, Q1→80%, Q2+→100% от occ (слайдер)
+  const rentR=QQ.map(q=>{
+    if(q<rs||q>rentEnd)return 0;
+    const idx=q-rs;
+    const effOcc=idx===0?Math.min(occ,.5):idx===1?Math.min(occ,.8):occ;
+    return rent*apts*3*effOcc;
+  });
+
+  // Продажа
+  const sellR=QQ.map(q=>{const r=sr.find(x=>x.q===q);return r?r.n*sqA*sell:0;});
+
+  // OPEX: от начала операционного периода до конца
+  const opEnd=Math.max(rentEnd,lastSell);
+  const opQ=QQ.map(q=>(q>=rs&&q<=opEnd)?op:0);
+
+  // Амортизация: 3%/год от cTot, начиная с rs, CAPEX[4]=cTot
+  const amortQrate=0.03/4;
+  const amrt=QQ.map(q=>q>=rs?cTot*amortQrate:0);
+
+  // Налог на имущество: 2.2%/год от ОСТАТОЧНОЙ СТОИМОСТИ на конец квартала
+  // ОС на конец Q = cTot - накопл.амортизация(до этого квартала включительно)
+  const propT=QQ.map(q=>{
+    if(q<rs)return 0;
+    const periodsOfDepr=q-rs+1; // кол-во кварталов амортизации включая q
+    const bookValEnd=cTot-cTot*amortQrate*periodsOfDepr;
+    return bookValEnd*0.022/4;
+  });
+
+  // УСН: max(1% от выручки, 15% от (выручка-OPEX))
+  const usnQ=QQ.map(q=>{
+    const inc=rentR[q]+sellR[q];
+    if(inc<=0)return 0;
+    const base=inc-opQ[q];
+    return base>0?Math.max(base*.15,inc*.01):inc*.01;
+  });
+  // Итого налоги = УСН + НИ
+  const taxQ=QQ.map(q=>usnQ[q]+propT[q]);
+
+  // FCFF (проектный, без финансирования)
+  const fcff=QQ.map(q=>
+    rentR[q]+sellR[q]
+    -(q===0?cBuy:0)
+    -(RECO.includes(q)?cReno/4:0)
+    -opQ[q]-taxQ[q]
+  );
+  // NCF (для инвестора/Equity)
+  const ncf=QQ.map(q=>fcff[q]+drw[q]-eqQ[q]-intr[q]-repay[q]);
+  let c=0; const cum=ncf.map(v=>{c+=v;return c;});
+
+  // NPV: квартальная ставка = (1+disc)^0.25 - 1
+  const dQ=Math.pow(1+disc,.25)-1;
+  const npv=fcff.reduce((s,v,q)=>s+v/Math.pow(1+dQ,q),0);
+
+  // IRR стандартный бисекционный (как в Excel)
+  function irrQ(fl){
+    if(!fl.some(v=>v>0))return null;
+    let lo=-0.9999,hi=5;
+    for(let i=0;i<200;i++){
+      const m=(lo+hi)/2;
+      const pv=fl.reduce((s,f,q)=>s+f/Math.pow(1+m,q),0);
+      if(Math.abs(pv)<1)break;
+      pv>0?lo=m:hi=m;
+    }
+    return(lo+hi)/2;
+  }
+  const irrQv=irrQ(fcff);
+  const irr=irrQv!==null?Math.pow(1+irrQv,4)-1:-1;
+  const eIrrQv=irrQ(ncf);
+  const eIrr=eIrrQv!==null?Math.pow(1+eIrrQv,4)-1:-1;
+
+  // PI
+  const pi=(npv+cTot)/cTot; // PI = (NPV + CAPEX) / CAPEX — стандартная формула
+
+  // Срок окупаемости
+  let pb='не окупается';let run=0;
+  for(let q=0;q<N;q++){run+=ncf[q];if(run>=0){pb=q+' кв.';break;}}
+
+  // DSCR по всем кварталам (как в оригинале)
+  const dsArr=QQ.map(q=>{
+    const ds=intr[q]+repay[q];
+    if(ds<=0)return null;
+    const cfads=rentR[q]+sellR[q]-opQ[q]-taxQ[q];
+    return cfads/ds;
+  }).filter(v=>v!==null);
+  const dscr=dsArr.length?Math.min(...dsArr):0;
+
+  const totR=rentR.reduce((s,v)=>s+v,0)+sellR.reduce((s,v)=>s+v,0);
+  const totT=taxQ.reduce((s,v)=>s+v,0);
+  const totO=opQ.reduce((s,v)=>s+v,0);
+  const totI=intr.reduce((s,v)=>s+v,0);
+  const totAmrt=amrt.reduce((s,v)=>s+v,0);
+  const totPropT=propT.reduce((s,v)=>s+v,0);
+  const totUsn=usnQ.reduce((s,v)=>s+v,0);
+  const netP=totR-cTot-totT-totO-totI;
+
+  return{npv,irr,eIrr,pi,pb,dscr,cBuy,cReno,cTot,cred,eq,
+    totR,totT,totO,totI,totAmrt,totPropT,totUsn,netP,
+    rentR,sellR,opQ,taxQ,usnQ,propT,amrt,fcff,ncf,cum,
+    intr,repay,drw,eqQ,balE,
+    hz,N,QQ,QL:QQ.map(q=>'Q'+q),rentEnd,loanEnd,lastSell,opEnd};
+}
+// ══════════════════════════════════════════
+// CHARTS
+// ══════════════════════════════════════════
+let CHS={};
+const CD={responsive:true,maintainAspectRatio:false,animation:{duration:0},
+  plugins:{legend:{labels:{color:'#6b7280',font:{size:10},boxWidth:9,padding:7}}},
+  scales:{x:{ticks:{color:'#6b7280',font:{size:9}},grid:{color:'rgba(0,0,0,.05)'}},
+          y:{ticks:{color:'#6b7280',font:{size:9},callback:v=>(v/1e6).toFixed(1)+'M'},grid:{color:'rgba(0,0,0,.05)'}}}};
+
+function initCh(){
+  CHS.cf=new Chart(document.getElementById('c-cf'),{type:'bar',
+    data:{labels:[],datasets:[
+      {label:'Аренда',data:[],backgroundColor:'rgba(5,150,105,.7)',stack:'i'},
+      {label:'Продажа',data:[],backgroundColor:'rgba(26,86,219,.7)',stack:'i'},
+      {label:'Расходы',data:[],backgroundColor:'rgba(220,38,38,.5)',stack:'o'},
+      {label:'NCF',data:[],type:'line',borderColor:'#d97706',backgroundColor:'transparent',pointRadius:2,borderWidth:2},
+    ]},
+    options:{...CD,scales:{...CD.scales,x:{...CD.scales.x},y:{...CD.scales.y,stacked:true}}}});
+
+  CHS.dn=new Chart(document.getElementById('c-dn'),{type:'doughnut',
+    data:{labels:['Покупка','Реконструкция','Проценты','Налоги','OPEX','Прибыль'],
+      datasets:[{data:[],backgroundColor:['#1a56db','#0891b2','#dc2626','#d97706','#6b7280','#059669'],borderWidth:3,borderColor:'#fff',hoverOffset:5}]},
+    options:{responsive:true,maintainAspectRatio:false,animation:{duration:0},cutout:'55%',
+      plugins:{legend:{position:'bottom',labels:{color:'#6b7280',font:{size:9},boxWidth:9,padding:4}}}}});
+
+  CHS.bar2=new Chart(document.getElementById('c-bar2'),{type:'bar',
+    data:{labels:['CAPEX','Кредит%','Налоги','OPEX','Выручка','Прибыль'],
+      datasets:[{data:[],backgroundColor:['#dc2626','#ef4444','#d97706','#6b7280','#059669','#1a56db'],borderRadius:5}]},
+    options:{...CD,plugins:{legend:{display:false}}}});
+
+  CHS.cu=new Chart(document.getElementById('c-cu'),{type:'line',
+    data:{labels:[],datasets:[
+      {label:'Кумулятивный NCF',data:[],borderColor:'#1a56db',backgroundColor:'rgba(26,86,219,.08)',fill:true,tension:.3,pointRadius:2,pointBackgroundColor:'#1a56db'},
+      {label:'Нулевая линия',data:[],borderColor:'rgba(220,38,38,.4)',borderDash:[5,5],pointRadius:0,borderWidth:1.5},
+    ]},options:{...CD}});
+
+  CHS.sc=new Chart(document.getElementById('c-sc'),{type:'scatter',data:{datasets:[]},
+    options:{responsive:true,maintainAspectRatio:false,animation:{duration:0},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'NPV: '+(c.raw.npv?.toFixed(1))+' млн'}}},
+      scales:{
+        x:{title:{display:true,text:'Продажа, тыс ₽/м²',color:'#6b7280',font:{size:10}},ticks:{color:'#6b7280',font:{size:9}},grid:{color:'rgba(0,0,0,.05)'}},
+        y:{title:{display:true,text:'Покупка, тыс ₽/м²',color:'#6b7280',font:{size:10}},ticks:{color:'#6b7280',font:{size:9}},grid:{color:'rgba(0,0,0,.05)'}},
+      }}});
+}
+
+function updCh(m,p){
+  // All charts use m.QL which reflects actual hz
+  const expQ=m.QQ.map(q=>-((q===0?m.cBuy:0)+(RECO.includes(q)?m.cReno/4:0)+m.opQ[q]+m.taxQ[q]+m.intr[q]+m.repay[q]));
+  CHS.cf.data.labels=m.QL;
+  [m.rentR,m.sellR,expQ,m.ncf].forEach((d,i)=>CHS.cf.data.datasets[i].data=d);
+  CHS.cf.update('none');
+
+  CHS.dn.data.datasets[0].data=[m.cBuy,m.cReno,m.totI,m.totT,m.totO,Math.max(0,m.netP)];
+  CHS.dn.update('none');
+
+  CHS.bar2.data.datasets[0].data=[m.cTot/1e6,m.totI/1e6,m.totT/1e6,m.totO/1e6,m.totR/1e6,Math.max(0,m.netP)/1e6];
+  CHS.bar2.update('none');
+
+  CHS.cu.data.labels=m.QL;
+  CHS.cu.data.datasets[0].data=m.cum;
+  const col=m.cum[m.N-1]>=0?'#059669':'#1a56db';
+  CHS.cu.data.datasets[0].borderColor=col;
+  CHS.cu.data.datasets[0].backgroundColor=m.cum[m.N-1]>=0?'rgba(5,150,105,.08)':'rgba(26,86,219,.08)';
+  CHS.cu.data.datasets[1].data=m.QQ.map(()=>0);
+  CHS.cu.update('none');
+
+  const pts=[];
+  for(let sp=150;sp<=320;sp+=20)for(let bp=60;bp<=190;bp+=15){
+    const mm=calc({...p,buy:bp*1000,sell:sp*1000});
+    pts.push({x:sp,y:bp,npv:mm.npv/1e6,g:mm.npv>=0?0:mm.npv>=-20?1:2});
+  }
+  const cols=['rgba(5,150,105,.6)','rgba(217,119,6,.6)','rgba(220,38,38,.6)'];
+  CHS.sc.data.datasets=[
+    ...[0,1,2].map(g=>({data:pts.filter(d=>d.g===g).map(d=>({x:d.x,y:d.y,npv:d.npv})),backgroundColor:cols[g],pointRadius:8})),
+    {data:[{x:p.sell/1000,y:p.buy/1000}],backgroundColor:'#111',pointRadius:11,pointStyle:'crossRot',borderColor:'#111',borderWidth:2},
+  ];
+  CHS.sc.update('none');
+}
+
+// ══════════════════════════════════════════
+// KPI
+// ══════════════════════════════════════════
+function kpiHTML(m,p){
+  function kc(v,pos,neg){return v>=0?pos:neg;}
+  const npP=m.npv>=0,iG=m.irr>=p.disc,eP=m.eIrr>=0,piP=m.pi>=1,pbP=m.pb!=='не окупается',dP=m.dscr>=1;
+  return`
+    <div class="kpi k-${npP?'green':'red'}"><div class="kpi-lbl">NPV проекта</div>
+      <div class="kpi-val cv-${npP?'green':'red'}">${(m.npv/1e6).toFixed(1)} млн</div>
+      <div class="kpi-sub">диск. ${Math.round(p.disc*100)}%</div></div>
+    <div class="kpi k-${iG?'green':m.irr>=0?'amber':'red'}"><div class="kpi-lbl">IRR проекта</div>
+      <div class="kpi-val cv-${iG?'green':m.irr>=0?'amber':'red'}">${m.irr>=0?(m.irr*100).toFixed(1)+'%':'< 0%'}</div>
+      <div class="kpi-sub">FCFF год.</div></div>
+    <div class="kpi k-${eP?'green':'red'}"><div class="kpi-lbl">Equity IRR</div>
+      <div class="kpi-val cv-${eP?'green':'red'}">${m.eIrr>=0?(m.eIrr*100).toFixed(1)+'%':'< 0%'}</div>
+      <div class="kpi-sub">инвестор (станд.)</div></div>
+    <div class="kpi k-${piP?'green':'amber'}"><div class="kpi-lbl">PI рентаб.</div>
+      <div class="kpi-val cv-${piP?'green':'amber'}">${m.pi.toFixed(3)}</div>
+      <div class="kpi-sub">норма ≥ 1.0</div></div>
+    <div class="kpi k-${pbP?'green':'red'}"><div class="kpi-lbl">Окупаемость</div>
+      <div class="kpi-val cv-${pbP?'green':'red'}" style="font-size:16px">${m.pb}</div>
+      <div class="kpi-sub">из ${m.N-1} кв.</div></div>
+    <div class="kpi k-${dP?'green':'red'}"><div class="kpi-lbl">Мин. DSCR</div>
+      <div class="kpi-val cv-${dP?'green':'red'}">${m.dscr.toFixed(3)}</div>
+      <div class="kpi-sub">по всем кварталам</div></div>`;
+}
+
+function rendDashKPI(m,p){
+  ['npv','irr','eirr','pi','pb','dscr'].forEach(id=>{
+    const el=document.getElementById('k-'+id);if(el)el.className='kpi k-blue';
+  });
+  const h=kpiHTML(m,p);
+  const tmp=document.createElement('div');tmp.innerHTML=h;
+  ['npv','irr','eirr','pi','pb','dscr'].forEach((id,i)=>{
+    const src=tmp.children[i];
+    const dst=document.getElementById('k-'+id);
+    if(dst){dst.className=src.className;dst.innerHTML=src.innerHTML;}
+  });
+
+  let badge,vtxt;
+  if(m.npv>=0&&m.irr>=p.disc){badge='<span class="vbadge vg">✅ Проект привлекателен</span>';vtxt=`NPV <strong>${(m.npv/1e6).toFixed(1)} млн ₽</strong> · IRR <strong>${(m.irr*100).toFixed(1)}%</strong> выше ставки дисконтирования. Окупаемость: <strong>${m.pb}</strong>.`;}
+  else if(m.npv>=-30e6){badge='<span class="vbadge vy">⚠️ Пограничная ситуация</span>';vtxt=`NPV <strong>${(m.npv/1e6).toFixed(1)} млн ₽</strong>. Рычаги: ↑ цена продажи, ↓ ставка кредита.`;}
+  else{badge='<span class="vbadge vr">❌ Проект убыточен</span>';vtxt=`NPV <strong>${(m.npv/1e6).toFixed(1)} млн ₽</strong> · Equity IRR <strong>${(m.eIrr*100).toFixed(1)}%</strong>. Кассовый разрыв.`;}
+
+  document.getElementById('verdict-bar').innerHTML=`${badge}
+    <div class="vtxt">${vtxt}</div>
+    <div class="vstats">
+      <div class="vs"><div class="vs-val">${(m.cTot/1e6).toFixed(0)} млн</div><div class="vs-lbl">CAPEX</div></div>
+      <div class="vs"><div class="vs-val">${(m.cred/1e6).toFixed(0)} млн</div><div class="vs-lbl">Кредит</div></div>
+      <div class="vs"><div class="vs-val">${(m.eq/1e6).toFixed(0)} млн</div><div class="vs-lbl">Equity</div></div>
+      <div class="vs"><div class="vs-val">${(m.totR/1e6).toFixed(0)} млн</div><div class="vs-lbl">Выручка</div></div>
+      <div class="vs"><div class="vs-val">${(m.totT/1e6).toFixed(0)} млн</div><div class="vs-lbl">Налоги</div></div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════
+// SHEET HELPERS
+// ══════════════════════════════════════════
+const fM=v=>v===0?'—':(v<0?'(':'')+Math.abs(v/1e6).toFixed(2)+'M'+(v<0?')':'');
+const fN=v=>v.toLocaleString('ru');
+const fP=v=>(v*100).toFixed(2)+'%';
+
+function mkTbl(hs,rows){
+  let h='<table class="dtbl"><thead><tr>'+hs.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>';
+  rows.forEach(r=>{h+='<tr class="'+(r.c||'')+'">'+r.d.map(x=>'<td>'+x+'</td>').join('')+'</tr>';});
+  return h+'</tbody></table>';
+}
+function igrid(items){
+  return'<div class="igrid">'+items.map(it=>'<div class="ic"><div class="ic-l">'+it.l+'</div><div class="ic-v">'+it.v+'</div>'+(it.s?'<div class="ic-s">'+it.s+'</div>':'')+'</div>').join('')+'</div>';
+}
+
+function rendSheets(m,p){
+  const QL=m.QL;
+  // Render KPI bar on all sheet tabs
+  const kHtml=kpiHTML(m,p);
+  ['vvod','pok','rek','ar','pr','kr','nal','df','opiu','chuvst'].forEach(id=>{
+    const el=document.getElementById('kb-'+id);if(el)el.innerHTML=kHtml;
+  });
+
+  // ── ВВОДНЫЕ ──
+  document.getElementById('c-vvod').innerHTML=igrid([
+    {l:'Площадь',v:fN(p.area)+' м²'},{l:'Квартир',v:p.apts+' шт',s:'~'+(p.area/p.apts).toFixed(0)+' м²/кв.'},
+    {l:'Цена покупки',v:fN(p.buy)+' ₽/м²'},{l:'Реконструкция',v:fN(p.reno)+' ₽/м²'},
+    {l:'Цена продажи',v:fN(p.sell)+' ₽/м²'},{l:'Аренда',v:fN(p.rent)+' ₽/мес'},
+    {l:'Заполняемость',v:Math.round(p.occ*100)+'%'},{l:'Аренда период',v:'Q'+p.rs+'–Q'+(p.rs+p.rd-1)},
+    {l:'Доля кредита',v:Math.round(p.lev*100)+'%'},{l:'Ставка кредита',v:fP(p.rate)},
+    {l:'Срок кредита',v:p.lt+' кв.'},{l:'Начало погашения',v:'Q'+p.rps},
+    {l:'Ставка диск.',v:Math.round(p.disc*100)+'%'},{l:'Горизонт (авто)',v:m.hz+' кв.',s:'слайдер: '+p.hz+' кв.'},
+  ])+mkTbl(['Параметр','Значение','Комментарий'],[
+    {d:['CAPEX покупки',fM(m.cBuy),'Площадь × Цена + Доп.']},
+    {d:['CAPEX реконструкции',fM(m.cReno),'Площадь × Цена рек.']},
+    {c:'rt',d:['ИТОГО CAPEX',fM(m.cTot),'']},
+    {d:['Кредит',fM(m.cred),Math.round(p.lev*100)+'% от CAPEX']},
+    {d:['Equity',fM(m.eq),(100-Math.round(p.lev*100))+'% от CAPEX']},
+    {d:['Всего квартир к продаже',p.sr.reduce((s,r)=>s+r.n,0)+' шт','']},
+    {d:['Выручка от продаж',fM(m.sellR.reduce((s,v)=>s+v,0)),'']},
+    {d:['Выручка от аренды',fM(m.rentR.reduce((s,v)=>s+v,0)),'']},
+    {c:'rt',d:['Итого выручка',fM(m.totR),'']},
+  ]);
+
+  // ── ПОКУПКА ──
+  document.getElementById('c-pok').innerHTML=igrid([
+    {l:'CAPEX покупки',v:fM(m.cBuy)},{l:'Кредит на покупку',v:fM(m.cBuy*p.lev)},{l:'Equity',v:fM(m.cBuy*(1-p.lev))},
+  ])+mkTbl(['Показатель','Значение','Комментарий'],[
+    {d:['Площадь',fN(p.area)+' м²','']},{d:['Цена покупки за м²',fN(p.buy)+' ₽','']},
+    {d:['Стоимость покупки',fN(p.area*p.buy)+' ₽','']},{d:['Доп. расходы',fN(p.ex)+' ₽','МКД, нотариус, юристы']},
+    {c:'rt',d:['ИТОГО CAPEX покупка',fM(m.cBuy),'']},
+  ]);
+
+  // ── РЕКОНСТРУКЦИЯ ──
+  document.getElementById('c-rek').innerHTML=igrid([
+    {l:'CAPEX реконструкции',v:fM(m.cReno)},{l:'За квартал Q1–Q4',v:fM(m.cReno/4)},
+  ])+mkTbl(['Показатель',...QL,'ИТОГО'],[
+    {c:'rp',d:['Выборка кредита',...m.drw.map(fM),fM(m.cred)]},
+    {c:'rn',d:['Расходы реконструкция',...m.QQ.map(q=>RECO.includes(q)?fM(-m.cReno/4):'—'),fM(-m.cReno)]},
+    {d:['CAPEX накопит.',...m.QQ.map(q=>{let s=0;for(let i=0;i<=q;i++){if(i===0)s+=m.cBuy;if(RECO.includes(i))s+=m.cReno/4;}return fM(s);}),'—']},
+  ]);
+
+  // ── АРЕНДА ──
+  document.getElementById('c-ar').innerHTML=igrid([
+    {l:'Выручка от аренды',v:fM(m.rentR.reduce((s,v)=>s+v,0))},
+    {l:'Период',v:'Q'+p.rs+'–Q'+(p.rs+p.rd-1)},{l:'OPEX итого',v:fM(m.totO)},
+  ])+mkTbl(['Показатель',...QL,'ИТОГО'],[
+    {c:'rp',d:['Доход от аренды',...m.rentR.map(fM),fM(m.rentR.reduce((s,v)=>s+v,0))]},
+    {c:'rn',d:['OPEX',...m.opQ.map(v=>fM(-v)),fM(-m.totO)]},
+    {c:'rt',d:['Чистый доход',...m.QQ.map(q=>fM(m.rentR[q]-m.opQ[q])),fM(m.rentR.reduce((s,v)=>s+v,0)-m.totO)]},
+  ]);
+
+  // ── ПРОДАЖА ──
+  document.getElementById('c-pr').innerHTML=igrid([
+    {l:'Выручка от продаж',v:fM(m.sellR.reduce((s,v)=>s+v,0))},
+    {l:'Цена квартиры',v:fN(Math.round(p.area/p.apts*p.sell))+' ₽'},
+    {l:'Квартир',v:p.sr.reduce((s,r)=>s+r.n,0)+' шт'},
+  ])+mkTbl(['Показатель',...QL,'ИТОГО'],[
+    {d:['Квартир к продаже',...m.QQ.map(q=>{const r=p.sr.find(x=>x.q===q);return r?r.n:'—';}),p.sr.reduce((s,r)=>s+r.n,0)]},
+    {c:'rp',d:['Выручка',...m.sellR.map(fM),fM(m.sellR.reduce((s,v)=>s+v,0))]},
+  ]);
+
+  // ── КРЕДИТ ──
+  document.getElementById('c-kr').innerHTML=igrid([
+    {l:'Сумма кредита',v:fM(m.cred)},{l:'Ставка',v:fP(p.rate)},
+    {l:'Срок',v:p.lt+' кв.'},{l:'Начало погашения',v:'Q'+p.rps},{l:'Итого проценты',v:fM(m.totI)},
+  ])+mkTbl(['Показатель',...QL,'ИТОГО'],[
+    {c:'rp',d:['Выборка кредита',...m.drw.map(fM),fM(m.cred)]},
+    {d:['Остаток нач.',...m.QQ.map(q=>q===0?'—':fM(m.balE[q-1])),'—']},
+    {c:'rn',d:['Проценты',...m.intr.map(v=>fM(-v)),fM(-m.totI)]},
+    {c:'rn',d:['Погашение тела',...m.repay.map(v=>v>0?fM(-v):'—'),fM(-m.cred)]},
+    {d:['Остаток кон.',...m.balE.map(fM),'—']},
+  ]);
+
+  // ── НАЛОГИ ──
+  document.getElementById('c-nal').innerHTML=mkTbl(['Показатель',...QL,'ИТОГО'],[
+    {c:'rp',d:['Доходы (аренда+продажи)',...m.QQ.map(q=>fM(m.rentR[q]+m.sellR[q])),fM(m.totR)]},
+    {c:'rn',d:['OPEX (расходы для УСН)',...m.opQ.map(v=>fM(-v)),fM(-m.totO)]},
+    {d:['База УСН 15% (Дох−Расх)',...m.QQ.map(q=>fM(m.rentR[q]+m.sellR[q]-m.opQ[q])),'—']},
+    {d:['УСН 1% (мин. налог)',...m.QQ.map(q=>fM((m.rentR[q]+m.sellR[q])*.01)),'—']},
+    {c:'rn',d:['УСН к уплате MAX(1%,15%)',...m.usnQ.map(v=>fM(-v)),fM(-m.totUsn)]},
+    {d:['Амортизация (3%/год)',...m.amrt.map(fM),fM(m.totAmrt)]},
+    {d:['CAPEX накопит. (ОС до аморт.)',fM(m.cTot),...m.QQ.slice(1).map(()=>'—'),'—']},
+    {d:['Остаточная стоимость на к.кв.',...m.QQ.map(q=>{
+      if(q<m.hz?(q<p.rs):q<p.rs)return'—';
+      const bv=m.cTot-m.cTot*(0.03/4)*(q-p.rs+1);
+      return q>=p.rs?fM(bv):'—';
+    }),'—']},
+    {c:'rn',d:['Налог на имущество (2.2%/год)',...m.propT.map(v=>fM(-v)),fM(-m.totPropT)]},
+    {c:'rt',d:['ИТОГО НАЛОГИ к уплате',...m.taxQ.map(v=>fM(-v)),fM(-m.totT)]},
+  ]);
+
+  // ── ДЕН ПОТОК ──
+  document.getElementById('c-df').innerHTML=igrid([
+    {l:'NPV',v:(m.npv/1e6).toFixed(2)+' млн ₽'},{l:'IRR',v:m.irr>=0?fP(m.irr):'< 0%'},
+    {l:'Equity IRR',v:m.eIrr>=0?fP(m.eIrr):'< 0%'},{l:'PI',v:m.pi.toFixed(4)},
+    {l:'Окупаемость',v:m.pb},{l:'Мин. DSCR',v:m.dscr.toFixed(4)},
+  ])+mkTbl(['Показатель',...QL],[
+    {c:'rp',d:['Аренда',...m.rentR.map(fM)]},
+    {c:'rp',d:['Продажа',...m.sellR.map(fM)]},
+    {c:'rp',d:['Выборка кредита',...m.drw.map(fM)]},
+    {c:'rn',d:['Покупка здания',...m.QQ.map(q=>q===0?fM(-m.cBuy):'—')]},
+    {c:'rn',d:['Реконструкция',...m.QQ.map(q=>RECO.includes(q)?fM(-m.cReno/4):'—')]},
+    {c:'rn',d:['Equity взносы',...m.eqQ.map(v=>fM(-v))]},
+    {c:'rn',d:['OPEX',...m.opQ.map(v=>fM(-v))]},
+    {c:'rn',d:['Налоги',...m.taxQ.map(v=>fM(-v))]},
+    {c:'rn',d:['Проценты',...m.intr.map(v=>fM(-v))]},
+    {c:'rn',d:['Погашение',...m.repay.map(v=>v>0?fM(-v):'—')]},
+    {c:'rt',d:['ЧИСТЫЙ ДП (Equity)',...m.ncf.map(fM)]},
+    {c:'rt',d:['Кумулятивный NCF',...m.cum.map(fM)]},
+    {c:'rt',d:['FCFF (проектный)',...m.fcff.map(fM)]},
+  ]);
+
+  // ── ОПиУ ──
+  document.getElementById('c-opiu').innerHTML=mkTbl(['Показатель',...QL,'ИТОГО'],[
+    {c:'rp',d:['ВЫРУЧКА',...m.QQ.map(q=>fM(m.rentR[q]+m.sellR[q])),fM(m.totR)]},
+    {c:'rt',d:['ВАЛОВАЯ ПРИБЫЛЬ',...m.QQ.map(q=>fM(m.rentR[q]+m.sellR[q])),fM(m.totR)]},
+    {c:'rn',d:['OPEX',...m.opQ.map(v=>fM(-v)),fM(-m.totO)]},
+    {c:'rn',d:['Амортизация',...m.amrt.map(v=>fM(-v)),'—']},
+    {c:'rn',d:['Налог на имущество',...m.propT.map(v=>fM(-v)),'—']},
+    {c:'rt',d:['EBIT',...m.QQ.map(q=>fM(m.rentR[q]+m.sellR[q]-m.opQ[q]-m.amrt[q]-m.propT[q])),'—']},
+    {c:'rn',d:['Проценты',...m.intr.map(v=>fM(-v)),fM(-m.totI)]},
+    {c:'rt',d:['EBT',...m.QQ.map(q=>fM(m.rentR[q]+m.sellR[q]-m.opQ[q]-m.amrt[q]-m.propT[q]-m.intr[q])),'—']},
+    {c:'rn',d:['УСН',...m.usnQ.map(v=>fM(-v)),fM(-m.totUsn)]},
+    {c:'rt',d:['ЧИСТАЯ ПРИБЫЛЬ',...m.QQ.map(q=>fM(m.rentR[q]+m.sellR[q]-m.opQ[q]-m.amrt[q]-m.propT[q]-m.intr[q]-m.taxQ[q])),fM(m.netP)]},
+  ]);
+
+  // ── ЧУВСТВИТЕЛЬНОСТЬ ──
+  function mkMat(rVals,cVals,rFmt,cFmt,rKey,cKey,title){
+    let h='<table class="mtbl"><thead><tr><th>'+title+'</th>'+cVals.map(c=>'<th>'+cFmt(c)+'</th>').join('')+'</tr></thead><tbody>';
+    rVals.forEach(rv=>{
+      h+='<tr><th>'+rFmt(rv)+'</th>';
+      cVals.forEach(cv=>{
+        const mm=calc({...p,[rKey]:rv,[cKey]:cv}),v=mm.npv/1e6;
+        const iR=Math.abs(rv-p[rKey])===Math.min(...rVals.map(x=>Math.abs(x-p[rKey])));
+        const iC=Math.abs(cv-p[cKey])===Math.min(...cVals.map(x=>Math.abs(x-p[cKey])));
+        h+='<td class="'+((iR&&iC)?'base':v>=0?'cp':v>=-20?'cw':'cn')+'">'+v.toFixed(0)+'</td>';
+      });h+='</tr>';
+    });
+    return h+'</tbody></table>';
+  }
+  document.getElementById('c-chuvst').innerHTML=
+    '<p style="font-size:12px;color:var(--gray);margin-bottom:11px">NPV в млн ₽ · 🟢 прибыль · 🟡 ≈0 · 🔴 убыток · Рамка = текущие параметры</p>'+
+    '<div class="mg">'+
+    '<div class="mc"><div class="mt">Цена покупки × Цена продажи</div>'+mkMat([80000,95000,110000,125000,140000],[170000,200000,230000,260000,300000],v=>(v/1000).toFixed(0)+'к',v=>(v/1000).toFixed(0)+'к','buy','sell','Покупка↓ / Продажа→')+'</div>'+
+    '<div class="mc"><div class="mt">CAPEX реконструкции × Ставка кредита</div>'+mkMat([30000,37500,45000,52500,60000],[0.10,0.125,0.145,0.165,0.185],v=>(v/1000).toFixed(0)+'к',v=>(v*100).toFixed(2)+'%','reno','rate','CAPEX↓ / Ставка→')+'</div>'+
+    '<div class="mc" style="grid-column:1/-1"><div class="mt">Ставка аренды × Заполняемость</div>'+mkMat([30000,40000,45000,55000,65000],[0.4,0.6,0.75,0.9,1.0],v=>(v/1000).toFixed(0)+'к',v=>Math.round(v*100)+'%','rent','occ','Аренда↓ / Заполн.→')+'</div>'+
+    '</div>';
+}
+
+// ══════════════════════════════════════════
+// LABELS
+// ══════════════════════════════════════════
+function updLbls(p){
+  document.getElementById('v-area').textContent=fN(p.area)+' м²';
+  document.getElementById('v-apts').textContent=p.apts+' шт';
+  document.getElementById('v-buy').textContent=fN(p.buy);
+  document.getElementById('v-reno').textContent=fN(p.reno);
+  document.getElementById('v-sell').textContent=fN(p.sell);
+  document.getElementById('v-rent').textContent=fN(p.rent);
+  document.getElementById('v-occ').textContent=Math.round(p.occ*100)+'%';
+  document.getElementById('v-lev').textContent=Math.round(p.lev*100)+'%';
+  document.getElementById('v-rate').textContent=(p.rate*100).toFixed(2)+'%';
+  document.getElementById('v-disc').textContent=Math.round(p.disc*100)+'%';
+  document.getElementById('v-ex').textContent=(p.ex/1e6).toFixed(1)+' млн';
+  document.getElementById('v-op').textContent=(p.op/1000).toFixed(0)+' тыс';
+  document.getElementById('v-hz').textContent=p.hz+' кв.';
+  document.getElementById('v-rs').textContent='Q'+p.rs;
+  document.getElementById('v-rd').textContent=p.rd+' кв.';
+  document.getElementById('v-lt').textContent=p.lt+' кв.';
+  document.getElementById('v-rps').textContent='Q'+p.rps;
+}
+
+// ══════════════════════════════════════════
+// SAVED SCENARIOS & COMPARE
+// ══════════════════════════════════════════
+let saved=[];
+function saveScenario(){
+  const name=document.getElementById('save-name').value.trim()||('Сценарий '+(saved.length+1));
+  const p=getP(),m=calc(p);
+  saved.push({name,p,m,time:new Date().toLocaleTimeString('ru')});
+  document.getElementById('save-name').value='';
+  rendSaved();
+}
+function clearSaved(){saved=[];rendSaved();}
+function rendSaved(){
+  document.getElementById('saved-list').innerHTML=saved.map((s,i)=>`
+    <div class="sb2" onclick="loadSaved(${i})">
+      <span>${s.name}</span><span style="font-size:9px;opacity:.6">${s.time}</span>
+      <span class="rm" onclick="event.stopPropagation();saved.splice(${i},1);rendSaved()">x</span>
+    </div>`).join('');
+  rendCompare();
+}
+function loadSaved(i){
+  const{p}=saved[i];
+  ['area','apts','hz'].forEach(k=>document.getElementById('s-'+k).value=p[k]);
+  ['buy','reno','sell','rent','ex','op'].forEach(k=>document.getElementById('s-'+k).value=p[k]);
+  document.getElementById('s-occ').value=Math.round(p.occ*100);
+  document.getElementById('s-lev').value=Math.round(p.lev*100);
+  document.getElementById('s-rate').value=(p.rate*100).toFixed(2);
+  document.getElementById('s-disc').value=Math.round(p.disc*100);
+  document.getElementById('s-rs').value=p.rs;
+  document.getElementById('s-rd').value=p.rd;
+  document.getElementById('s-lt').value=p.lt||16;
+  document.getElementById('s-rps').value=p.rps||5;
+  lastRs=p.rs;lastRd=p.rd;
+  sellRows=p.sr.map(r=>({...r}));
+  renderSellRows();upd();
+}
+function rendCompare(){
+  const ct=document.getElementById('compare-table');
+  if(!saved.length){ct.innerHTML='<p style="color:var(--gray);font-size:13px;margin-top:8px">Сохраните несколько сценариев для сравнения.</p>';return;}
+  const metrics=[
+    {l:'NPV, млн ₽',fn:m=>(m.npv/1e6).toFixed(2),num:m=>m.npv,b:'max'},
+    {l:'IRR проекта',fn:m=>m.irr>=0?(m.irr*100).toFixed(1)+'%':'<0',num:m=>m.irr,b:'max'},
+    {l:'Equity IRR',fn:m=>m.eIrr>=0?(m.eIrr*100).toFixed(1)+'%':'<0',num:m=>m.eIrr,b:'max'},
+    {l:'PI',fn:m=>m.pi.toFixed(3),num:m=>m.pi,b:'max'},
+    {l:'Окупаемость',fn:m=>m.pb,num:null},
+    {l:'DSCR мин.',fn:m=>m.dscr.toFixed(3),num:m=>m.dscr,b:'max'},
+    {l:'CAPEX, млн',fn:m=>(m.cTot/1e6).toFixed(1),num:m=>m.cTot,b:'min'},
+    {l:'Выручка, млн',fn:m=>(m.totR/1e6).toFixed(1),num:m=>m.totR,b:'max'},
+    {l:'Налоги, млн',fn:m=>(m.totT/1e6).toFixed(1),num:m=>m.totT,b:'min'},
+    {l:'Чист. прибыль, млн',fn:m=>(m.netP/1e6).toFixed(1),num:m=>m.netP,b:'max'},
+  ];
+  let h='<table class="ctbl"><thead><tr><th>Показатель</th>'+saved.map(s=>'<th>'+s.name+'</th>').join('')+'</tr></thead><tbody>';
+  metrics.forEach(mt=>{
+    h+='<tr><td>'+mt.l+'</td>';
+    const vals=saved.map(s=>mt.num?mt.num(s.m):null);
+    saved.forEach((s,i)=>{
+      let cls='';
+      if(mt.num&&vals.filter(v=>v!==null).length>1){
+        const v=vals[i],best=mt.b==='max'?Math.max(...vals):Math.min(...vals),worst=mt.b==='max'?Math.min(...vals):Math.max(...vals);
+        if(v===best)cls='best';else if(v===worst)cls='worst';
+      }
+      h+='<td class="'+cls+'">'+mt.fn(s.m)+'</td>';
+    });h+='</tr>';
+  });
+  ct.innerHTML=h+'</tbody></table>';
+}
+
+// ══════════════════════════════════════════
+// EXCEL EXPORT (SheetJS) — all sheets in one workbook
+// ══════════════════════════════════════════
+function exportXLS(){
+  const p=getP(),m=calc(p);
+  const wb=XLSX.utils.book_new();
+
+  // Color helpers
+  function hdr(v){return{v,t:'s',s:{font:{bold:true,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'1A56DB'}},alignment:{horizontal:'center'}}}}
+  function tot(v,isNum){return{v,t:isNum?'n':'s',s:{font:{bold:true,color:{rgb:'1A56DB'}},fill:{fgColor:{rgb:'E8F0FE'}}}}}
+  function pos(v){return{v,t:'n',s:{font:{bold:true,color:{rgb:'0A7C42'}},fill:{fgColor:{rgb:'DCFAE6'}}}}}
+  function neg(v){return{v,t:'n',s:{font:{bold:true,color:{rgb:'C0392B'}},fill:{fgColor:{rgb:'FDE8E8'}}}}}
+  function sec(v){return{v,t:'s',s:{font:{bold:true,color:{rgb:'1A56DB'},size:12},fill:{fgColor:{rgb:'DBEAFE'},patternType:'solid'},border:{bottom:{style:'medium',color:{rgb:'1A56DB'}}}}}}
+  function lbl(v){return{v,t:'s',s:{font:{color:{rgb:'1E3A5F'},bold:true},fill:{fgColor:{rgb:'EFF6FF'},patternType:'solid'},alignment:{wrapText:true}}}}
+  function num(v){return{v:parseFloat(v?.toFixed(4)||0),t:'n'}}
+  function unt(v){return{v,t:'s',s:{font:{color:{rgb:'6B7280'},italic:true},fill:{fgColor:{rgb:'F9FAFB'},patternType:'solid'}}}}
+  function val(v){return{v,t:typeof v==='number'?'n':'s',s:{font:{bold:true,color:{rgb:'111827'}},fill:{fgColor:{rgb:'FFFFFF'},patternType:'solid'}}}}
+  function mnum(v){return{v:parseFloat((v/1e6).toFixed(4)),t:'n'}} // millions
+  function pct(v){return{v:parseFloat((v*100).toFixed(2)),t:'n',z:'0.00"%"'}}
+
+  function addSheet(name,aoaRaw){
+    // Build worksheet cell by cell to preserve styles (xlsx-js-style)
+    const ws={};
+    let maxR=0,maxC=0;
+    aoaRaw.forEach((row,r)=>{
+      row.forEach((cell,c)=>{
+        const addr=XLSX.utils.encode_cell({r,c});
+        if(typeof cell==='object'&&cell!==null&&'v' in cell){
+          // Ensure fill has patternType for xlsx-js-style
+          const style=cell.s?JSON.parse(JSON.stringify(cell.s)):undefined;
+          if(style&&style.fill&&style.fill.fgColor&&!style.fill.patternType){
+            style.fill.patternType='solid';
+          }
+          ws[addr]={v:cell.v,t:cell.t||'s'};
+          if(style)ws[addr].s=style;
+        } else if(cell!==null&&cell!==undefined&&cell!==''){
+          ws[addr]={v:cell,t:typeof cell==='number'?'n':'s'};
+        }
+        if(c>maxC)maxC=c;
+      });
+      if(row.length>0)maxR=r;
+    });
+    ws['!ref']=XLSX.utils.encode_range({s:{r:0,c:0},e:{r:maxR,c:maxC}});
+    // Column widths
+    ws['!cols']=Array.from({length:maxC+1},(_,ci)=>({
+      wch:Math.max(12,...aoaRaw.map(r=>{const cell=r[ci];const v=typeof cell==='object'&&cell!==null?cell.v:cell;return String(v||'').length+2;}))
+    }));
+    XLSX.utils.book_append_sheet(wb,ws,name);
+  }
+
+  const QL=m.QL;
+
+  // ── 1. ВВОДНЫЕ И МЕТРИКИ ──
+  const npvColor=m.npv>=0?pos:neg;
+  addSheet('Вводные',[
+    [hdr('ФИНАНСОВАЯ МОДЕЛЬ · КАЗАНЬ 2026 · ВВОДНЫЕ ДАННЫЕ И МЕТРИКИ'),hdr(''),hdr('')],
+    [],[],
+    [sec('ПАРАМЕТРЫ ОБЪЕКТА'),sec(''),sec('')],
+    [lbl('Площадь здания'),val(p.area),unt('м²')],
+    [lbl('Количество квартир'),val(p.apts),unt('шт')],
+    [lbl('Средняя площадь квартиры'),val(Math.round(p.area/p.apts)),unt('м²')],
+    [],[],
+    [sec('ЦЕНЫ'),sec(''),sec('')],
+    [lbl('Цена покупки'),val(p.buy),unt('₽/м²')],
+    [lbl('Цена реконструкции'),val(p.reno),unt('₽/м²')],
+    [lbl('Цена продажи'),val(p.sell),unt('₽/м²')],
+    [],[],
+    [sec('АРЕНДА'),sec(''),sec('')],
+    [lbl('Ставка аренды'),val(p.rent),unt('₽/мес')],
+    [lbl('Заполняемость'),val(Math.round(p.occ*100)),unt('%')],
+    [lbl('Начало аренды'),val('Q'+p.rs),unt('')],
+    [lbl('Продолжительность аренды'),val(p.rd),unt('кв. (Q'+p.rs+'–Q'+(p.rs+p.rd-1)+')')],
+    [],[],
+    [sec('ПРОДАЖА'),sec(''),sec('')],
+    ...p.sr.map(r=>[lbl('Продажа в Q'+r.q),val(r.n),unt('квартир · '+(r.n*Math.round(p.area/p.apts)*p.sell/1e6).toFixed(1)+' млн ₽')]),
+    [lbl('Итого квартир к продаже'),tot(p.sr.reduce((s,r)=>s+r.n,0),true),unt('шт')],
+    [],[],
+    [sec('ФИНАНСИРОВАНИЕ'),sec(''),sec('')],
+    [lbl('Доля кредита'),val(Math.round(p.lev*100)),unt('%')],
+    [lbl('Ставка кредита'),val((p.rate*100).toFixed(2)),unt('% год. / '+(p.rate/4*100).toFixed(3)+'% кв.')],
+    [lbl('Срок кредита'),val(p.lt),unt('кв.')],
+    [lbl('Начало погашения'),val('Q'+p.rps),unt('')],
+    [lbl('Ставка дисконтирования'),val(Math.round(p.disc*100)),unt('%')],
+    [lbl('Эффективный горизонт'),val(m.hz),unt('кв. (авто, слайдер: '+p.hz+' кв.)')],
+    [],[],
+    [sec('CAPEX'),sec(''),sec('')],
+    [lbl('CAPEX покупки'),val(parseFloat((m.cBuy/1e6).toFixed(2))),unt('млн ₽')],
+    [lbl('CAPEX реконструкции'),val(parseFloat((m.cReno/1e6).toFixed(2))),unt('млн ₽')],
+    [lbl('ИТОГО CAPEX'),tot(parseFloat((m.cTot/1e6).toFixed(2)),true),unt('млн ₽')],
+    [lbl('в т.ч. кредит'),val(parseFloat((m.cred/1e6).toFixed(2))),unt('млн ₽')],
+    [lbl('в т.ч. equity (собств.)'),val(parseFloat((m.eq/1e6).toFixed(2))),unt('млн ₽')],
+    [],[],
+    [sec('КЛЮЧЕВЫЕ РЕЗУЛЬТАТЫ'),sec(''),sec('')],
+    [lbl('NPV проекта'),npvColor(parseFloat((m.npv/1e6).toFixed(3))),unt('млн ₽')],
+    [lbl('IRR проекта (FCFF)'),{v:m.irr>=0?parseFloat((m.irr*100).toFixed(2)):0,t:'n',s:{font:{bold:true,color:{rgb:m.irr>=0?'0A7C42':'C0392B'}},fill:{fgColor:{rgb:m.irr>=0?'DCFAE6':'FDE8E8'},patternType:'solid'}}},unt('%')],
+    [lbl('Equity IRR'),{v:m.eIrr>=0?parseFloat((m.eIrr*100).toFixed(2)):0,t:'n',s:{font:{bold:true,color:{rgb:m.eIrr>=0?'0A7C42':'C0392B'}},fill:{fgColor:{rgb:m.eIrr>=0?'DCFAE6':'FDE8E8'},patternType:'solid'}}},unt('%')],
+    [lbl('PI (индекс рентабельности)'),{v:parseFloat(m.pi.toFixed(4)),t:'n',s:{font:{bold:true,color:{rgb:m.pi>=1?'0A7C42':'C0392B'}},fill:{fgColor:{rgb:m.pi>=1?'DCFAE6':'FDE8E8'},patternType:'solid'}}},unt(m.pi>=1?'✓ норма выполнена':'✗ норма < 1.0')],
+    [lbl('DSCR минимальный'),{v:parseFloat(m.dscr.toFixed(4)),t:'n',s:{font:{bold:true,color:{rgb:m.dscr>=1?'0A7C42':'C0392B'}},fill:{fgColor:{rgb:m.dscr>=1?'DCFAE6':'FDE8E8'},patternType:'solid'}}},unt(m.dscr>=1?'✓ норма выполнена':'✗ норма < 1.0')],
+    [lbl('Срок окупаемости'),val(m.pb),unt('из '+m.hz+' кв.')],
+    [lbl('Итого выручка'),pos(parseFloat((m.totR/1e6).toFixed(2))),unt('млн ₽')],
+    [lbl('Итого налоги'),{v:parseFloat((m.totT/1e6).toFixed(2)),t:'n',s:{font:{bold:true,color:{rgb:'B45309'}},fill:{fgColor:{rgb:'FEF3C7'},patternType:'solid'}}},unt('млн ₽')],
+    [lbl('Чистая прибыль'),(m.netP>=0?pos:neg)(parseFloat((m.netP/1e6).toFixed(2))),unt('млн ₽')],
+    [lbl('Итого проценты по кредиту'),neg(parseFloat((m.totI/1e6).toFixed(2))),unt('млн ₽')],
+    [lbl('Итого OPEX'),neg(parseFloat((m.totO/1e6).toFixed(2))),unt('млн ₽')],
+  ]);
+
+  // ── 2. ДЕНЕЖНЫЙ ПОТОК ──
+  const dfRows=[
+    [hdr('Показатель (млн ₽)'),...QL.map(q=>hdr(q)),hdr('ИТОГО')],
+    [lbl('Доход от аренды'),...m.rentR.map(v=>pos(parseFloat((v/1e6).toFixed(3)))),pos(parseFloat((m.rentR.reduce((s,v)=>s+v,0)/1e6).toFixed(3)))],
+    [lbl('Доход от продаж'),...m.sellR.map(v=>pos(parseFloat((v/1e6).toFixed(3)))),pos(parseFloat((m.sellR.reduce((s,v)=>s+v,0)/1e6).toFixed(3)))],
+    [lbl('Выборка кредита'),...m.drw.map(v=>v>0?pos(parseFloat((v/1e6).toFixed(3))):{v:0,t:'n'}),pos(parseFloat((m.cred/1e6).toFixed(3)))],
+    [lbl('Покупка здания'),...m.QQ.map(q=>q===0?neg(-parseFloat((m.cBuy/1e6).toFixed(3))):{v:0,t:'n'}),neg(-parseFloat((m.cBuy/1e6).toFixed(3)))],
+    [lbl('Реконструкция'),...m.QQ.map(q=>RECO.includes(q)?neg(-parseFloat((m.cReno/4/1e6).toFixed(3))):{v:0,t:'n'}),neg(-parseFloat((m.cReno/1e6).toFixed(3)))],
+    [lbl('Equity взносы'),...m.eqQ.map(v=>v>0?neg(-parseFloat((v/1e6).toFixed(3))):{v:0,t:'n'}),neg(-parseFloat((m.eq/1e6).toFixed(3)))],
+    [lbl('OPEX'),...m.opQ.map(v=>v>0?neg(-parseFloat((v/1e6).toFixed(3))):{v:0,t:'n'}),neg(-parseFloat((m.totO/1e6).toFixed(3)))],
+    [lbl('Налоги'),...m.taxQ.map(v=>v>0?neg(-parseFloat((v/1e6).toFixed(3))):{v:0,t:'n'}),neg(-parseFloat((m.totT/1e6).toFixed(3)))],
+    [lbl('Проценты по кредиту'),...m.intr.map(v=>v>0?neg(-parseFloat((v/1e6).toFixed(3))):{v:0,t:'n'}),neg(-parseFloat((m.totI/1e6).toFixed(3)))],
+    [lbl('Погашение кредита'),...m.repay.map(v=>v>0?neg(-parseFloat((v/1e6).toFixed(3))):{v:0,t:'n'}),neg(-parseFloat((m.cred/1e6).toFixed(3)))],
+    [tot('ЧИСТЫЙ ДП (Equity)'),...m.ncf.map(v=>tot(parseFloat((v/1e6).toFixed(3)),true)),tot('—')],
+    [tot('Кумулятивный NCF'),...m.cum.map(v=>tot(parseFloat((v/1e6).toFixed(3)),true)),tot('—')],
+    [tot('Проектный ДП (FCFF)'),...m.fcff.map(v=>tot(parseFloat((v/1e6).toFixed(3)),true)),tot('—')],
+  ];
+  addSheet('Ден.Поток',dfRows);
+
+  // ── 3. КРЕДИТ ──
+  addSheet('Кредит',[
+    [hdr('ГРАФИК КРЕДИТА')],
+    [lbl('Сумма кредита'),parseFloat((m.cred/1e6).toFixed(2)),'млн ₽'],
+    [lbl('Ставка'),(p.rate*100).toFixed(2)+'%'],
+    [lbl('Срок'),p.lt,'кв. (погашение с Q'+p.rps+')'],
+    [],
+    [hdr('Показатель (млн ₽)'),...QL.map(hdr),hdr('ИТОГО')],
+    [lbl('Выборка кредита'),...m.drw.map(v=>v>0?pos(parseFloat((v/1e6).toFixed(3))):{v:0,t:'n'}),pos(parseFloat((m.cred/1e6).toFixed(3)))],
+    [lbl('Остаток на начало кв.'),...m.QQ.map(q=>q===0?{v:0,t:'n'}:{v:parseFloat((m.balE[q-1]/1e6).toFixed(3)),t:'n'}),{v:'—',t:'s'}],
+    [lbl('Проценты начисленные'),...m.intr.map(v=>v>0?neg(-parseFloat((v/1e6).toFixed(3))):{v:0,t:'n'}),neg(-parseFloat((m.totI/1e6).toFixed(3)))],
+    [lbl('Погашение тела долга'),...m.repay.map(v=>v>0?neg(-parseFloat((v/1e6).toFixed(3))):{v:0,t:'n'}),neg(-parseFloat((m.cred/1e6).toFixed(3)))],
+    [lbl('Остаток на конец кв.'),...m.balE.map(v=>({v:parseFloat((v/1e6).toFixed(3)),t:'n'})),{v:'—',t:'s'}],
+  ]);
+
+  // ── 4. ОПиУ ──
+  addSheet('ОПиУ',[
+    [hdr('ОТЧЁТ О ПРИБЫЛЯХ И УБЫТКАХ (млн ₽)')],
+    [],
+    [hdr('Показатель'),...QL.map(hdr),hdr('ИТОГО')],
+    [lbl('ВЫРУЧКА'),...m.QQ.map(q=>pos(parseFloat(((m.rentR[q]+m.sellR[q])/1e6).toFixed(3)))),pos(parseFloat((m.totR/1e6).toFixed(3)))],
+    [lbl('OPEX'),...m.opQ.map(v=>v>0?neg(-parseFloat((v/1e6).toFixed(3))):{v:0,t:'n'}),neg(-parseFloat((m.totO/1e6).toFixed(3)))],
+    [lbl('Амортизация'),...m.amrt.map(v=>v>0?{v:-parseFloat((v/1e6).toFixed(3)),t:'n',s:{font:{color:{rgb:'6B7280'}}}}:{v:0,t:'n'}),{v:'—',t:'s'}],
+    [lbl('Налог на имущество'),...m.propT.map(v=>v>0?{v:-parseFloat((v/1e6).toFixed(3)),t:'n',s:{font:{color:{rgb:'6B7280'}}}}:{v:0,t:'n'}),{v:'—',t:'s'}],
+    [tot('EBIT'),...m.QQ.map(q=>tot(parseFloat(((m.rentR[q]+m.sellR[q]-m.opQ[q]-m.amrt[q]-m.propT[q])/1e6).toFixed(3)),true)),tot('—')],
+    [lbl('Проценты по кредиту'),...m.intr.map(v=>v>0?neg(-parseFloat((v/1e6).toFixed(3))):{v:0,t:'n'}),neg(-parseFloat((m.totI/1e6).toFixed(3)))],
+    [tot('EBT'),...m.QQ.map(q=>tot(parseFloat(((m.rentR[q]+m.sellR[q]-m.opQ[q]-m.amrt[q]-m.propT[q]-m.intr[q])/1e6).toFixed(3)),true)),tot('—')],
+    [lbl('УСН'),...m.taxQ.map(v=>v>0?neg(-parseFloat((v/1e6).toFixed(3))):{v:0,t:'n'}),neg(-parseFloat((m.totT/1e6).toFixed(3)))],
+    [tot('ЧИСТАЯ ПРИБЫЛЬ'),...m.QQ.map(q=>{const v=(m.rentR[q]+m.sellR[q]-m.opQ[q]-m.amrt[q]-m.propT[q]-m.intr[q]-m.taxQ[q])/1e6;return v>=0?pos(parseFloat(v.toFixed(3))):neg(parseFloat(v.toFixed(3)));})
+      ,(m.netP>=0?pos:neg)(parseFloat((m.netP/1e6).toFixed(3)))],
+  ]);
+
+  // ── 5. НАЛОГИ ──
+  addSheet('Налоги',[
+    [hdr('РАСЧЁТ НАЛОГОВ УСН (млн ₽)')],
+    [],
+    [hdr('Показатель'),...QL.map(hdr),hdr('ИТОГО')],
+    [lbl('Выручка (аренда+продажи)'),...m.QQ.map(q=>pos(parseFloat(((m.rentR[q]+m.sellR[q])/1e6).toFixed(3)))),pos(parseFloat((m.totR/1e6).toFixed(3)))],
+    [lbl('OPEX (расходы)'),...m.opQ.map(v=>({v:parseFloat((v/1e6).toFixed(3)),t:'n'})),{v:parseFloat((m.totO/1e6).toFixed(3)),t:'n'}],
+    [lbl('База УСН 15% (Дох−Расх)'),...m.QQ.map(q=>({v:parseFloat(((m.rentR[q]+m.sellR[q]-m.opQ[q])/1e6).toFixed(3)),t:'n'})),{v:'—',t:'s'}],
+    [lbl('УСН 1% (мин. налог)'),...m.QQ.map(q=>({v:parseFloat(((m.rentR[q]+m.sellR[q])*.01/1e6).toFixed(3)),t:'n'})),{v:'—',t:'s'}],
+    [tot('УСН к уплате MAX(1%,15%)'),...m.usnQ.map(v=>neg(parseFloat((v/1e6).toFixed(3)))),neg(parseFloat((m.totUsn/1e6).toFixed(3)))],
+    [lbl('Налог на имущество 2.2%'),...m.propT.map(v=>({v:parseFloat((v/1e6).toFixed(3)),t:'n'})),{v:'—',t:'s'}],
+    [lbl('Амортизация 3%'),...m.amrt.map(v=>({v:parseFloat((v/1e6).toFixed(3)),t:'n'})),{v:parseFloat((m.totAmrt/1e6).toFixed(3)),t:'n'}],
+    [lbl('Налог на имущество 2.2%'),...m.propT.map(v=>neg(parseFloat((v/1e6).toFixed(3)))),neg(parseFloat((m.totPropT/1e6).toFixed(3)))],
+    [tot('ИТОГО НАЛОГИ к уплате'),...m.taxQ.map(v=>neg(parseFloat((v/1e6).toFixed(3)))),neg(parseFloat((m.totT/1e6).toFixed(3)))],
+  ]);
+
+  // ── 6. ЧУВСТВИТЕЛЬНОСТЬ ──
+  const bP=[80000,95000,110000,125000,140000];
+  const sP=[170000,200000,230000,260000,300000];
+  const rP=[30000,37500,45000,52500,60000];
+  const rtP=[0.10,0.125,0.145,0.165,0.185];
+  const rentP=[30000,40000,45000,55000,65000];
+  const occP=[0.4,0.6,0.75,0.9,1.0];
+
+  function sensCell(v){
+    if(v>=0) return{v:parseFloat(v.toFixed(1)),t:'n',s:{font:{bold:true,color:{rgb:'065F46'}},fill:{fgColor:{rgb:'D1FAE5'}}}};
+    if(v>=-20) return{v:parseFloat(v.toFixed(1)),t:'n',s:{font:{bold:true,color:{rgb:'92400E'}},fill:{fgColor:{rgb:'FEF3C7'}}}};
+    return{v:parseFloat(v.toFixed(1)),t:'n',s:{font:{bold:true,color:{rgb:'991B1B'}},fill:{fgColor:{rgb:'FEE2E2'}}}};
+  }
+  function baseCell(v){return{v:parseFloat(v.toFixed(1)),t:'n',s:{font:{bold:true,color:{rgb:'1241B0'}},fill:{fgColor:{rgb:'BFDBFE'}},border:{top:{style:'medium',color:{rgb:'1A56DB'}},bottom:{style:'medium',color:{rgb:'1A56DB'}},left:{style:'medium',color:{rgb:'1A56DB'}},right:{style:'medium',color:{rgb:'1A56DB'}}}}};}
+
+  const sens=[[hdr('АНАЛИЗ ЧУВСТВИТЕЛЬНОСТИ NPV (млн ₽)')],[],
+    [sec('Матрица 1: Цена покупки × Цена продажи')],
+    [hdr('Покупка ↓ / Продажа →'),...sP.map(s=>hdr((s/1000).toFixed(0)+'к'))],
+    ...bP.map(bp=>[lbl((bp/1000).toFixed(0)+'к'),...sP.map(sp=>{
+      const v=calc({...p,buy:bp,sell:sp}).npv/1e6;
+      const isBp=Math.abs(bp-p.buy)===Math.min(...bP.map(x=>Math.abs(x-p.buy)));
+      const isSp=Math.abs(sp-p.sell)===Math.min(...sP.map(x=>Math.abs(x-p.sell)));
+      return (isBp&&isSp)?baseCell(v):sensCell(v);
+    })]),
+    [],[sec('Матрица 2: CAPEX реконструкции × Ставка кредита')],
+    [hdr('CAPEX ↓ / Ставка →'),...rtP.map(r=>hdr((r*100).toFixed(2)+'%'))],
+    ...rP.map(rp=>[lbl((rp/1000).toFixed(0)+'к'),...rtP.map(rt=>{
+      const v=calc({...p,reno:rp,rate:rt}).npv/1e6;
+      const isRp=Math.abs(rp-p.reno)===Math.min(...rP.map(x=>Math.abs(x-p.reno)));
+      const isRt=Math.abs(rt-p.rate)===Math.min(...rtP.map(x=>Math.abs(x-p.rate)));
+      return (isRp&&isRt)?baseCell(v):sensCell(v);
+    })]),
+    [],[sec('Матрица 3: Ставка аренды × Заполняемость')],
+    [hdr('Аренда ↓ / Заполн. →'),...occP.map(o=>hdr(Math.round(o*100)+'%'))],
+    ...rentP.map(rn=>[lbl((rn/1000).toFixed(0)+'к'),...occP.map(oc=>{
+      const v=calc({...p,rent:rn,occ:oc}).npv/1e6;
+      return sensCell(v);
+    })]),
+  ];
+  addSheet('Чувствительность',sens);
+
+  // ── 7. СРАВНЕНИЕ (если есть) ──
+  if(saved.length>0){
+    const metrics=[
+      {l:'NPV, млн ₽',fn:m=>(m.npv/1e6).toFixed(2),num:m=>m.npv,b:'max'},
+      {l:'IRR проекта',fn:m=>m.irr>=0?(m.irr*100).toFixed(1)+'%':'<0',num:m=>m.irr,b:'max'},
+      {l:'Equity IRR',fn:m=>m.eIrr>=0?(m.eIrr*100).toFixed(1)+'%':'<0',num:m=>m.eIrr,b:'max'},
+      {l:'PI',fn:m=>m.pi.toFixed(3),num:m=>m.pi,b:'max'},
+      {l:'Окупаемость',fn:m=>m.pb},
+      {l:'DSCR мин.',fn:m=>m.dscr.toFixed(3),num:m=>m.dscr,b:'max'},
+      {l:'CAPEX, млн ₽',fn:m=>(m.cTot/1e6).toFixed(1),num:m=>m.cTot,b:'min'},
+      {l:'Выручка, млн ₽',fn:m=>(m.totR/1e6).toFixed(1),num:m=>m.totR,b:'max'},
+      {l:'Налоги, млн ₽',fn:m=>(m.totT/1e6).toFixed(1),num:m=>m.totT,b:'min'},
+      {l:'Чист. прибыль, млн ₽',fn:m=>(m.netP/1e6).toFixed(1),num:m=>m.netP,b:'max'},
+    ];
+    const cmpRows=[[hdr('СРАВНЕНИЕ СЦЕНАРИЕВ')],[],
+      [hdr('Показатель'),...saved.map(s=>hdr(s.name))],
+      ...metrics.map(mt=>{
+        const vals=saved.map(s=>mt.num?mt.num(s.m):null);
+        return[lbl(mt.l),...saved.map((s,i)=>{
+          if(!mt.num) return{v:mt.fn(s.m),t:'s'};
+          const v=vals[i];
+          const isB=v===Math.max(...vals)&&mt.b==='max'||v===Math.min(...vals)&&mt.b==='min';
+          const isW=v===Math.min(...vals)&&mt.b==='max'||v===Math.max(...vals)&&mt.b==='min';
+          const disp=mt.fn(s.m);
+          if(isB) return{v:disp,t:'s',s:{font:{bold:true,color:{rgb:'0A7C42'}},fill:{fgColor:{rgb:'DCFAE6'}}}};
+          if(isW) return{v:disp,t:'s',s:{font:{bold:true,color:{rgb:'C0392B'}},fill:{fgColor:{rgb:'FDE8E8'}}}};
+          return{v:disp,t:'s'};
+        })];
+      })
+    ];
+    addSheet('Сравнение',cmpRows);
+  }
+
+  XLSX.writeFile(wb,'finmodel_kazan_'+new Date().toLocaleDateString('ru').replace(/\./g,'-')+'.xlsx',{bookType:'xlsx',type:'binary'});
+}
+
+function exportCompareXLS(){
+  if(!saved.length){alert('Сохраните хотя бы один сценарий для сравнения.');return;}
+  exportXLS();
+}
+
+// ══════════════════════════════════════════
+// PDF — landscape print with all tabs
+// ══════════════════════════════════════════
+function doPrint(){
+  // Render all sheets before printing
+  const p=getP(),m=calc(p);
+  rendSheets(m,p);
+  setTimeout(()=>window.print(),300);
+}
+
+// ══════════════════════════════════════════
+// TAB SWITCH
+// ══════════════════════════════════════════
+let curTab='dash';
+function showTab(id,btn){
+  document.querySelectorAll('.tab-pane').forEach(el=>el.classList.remove('show'));
+  document.getElementById('tab-dash').classList.remove('show');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('act'));
+  if(id==='dash')document.getElementById('tab-dash').classList.add('show');
+  else document.getElementById('tab-'+id).classList.add('show');
+  btn.classList.add('act');
+  curTab=id;
+  document.getElementById('par-panel').classList.toggle('hid',id==='dash'||id==='compare');
+  if(id!=='dash'&&id!=='compare'){const p=getP();rendSheets(calc(p),p);}
+  if(id==='compare')rendCompare();
+}
+
+// ══════════════════════════════════════════
+// MAIN UPDATE LOOP
+// ══════════════════════════════════════════
+let raf=null;
+function upd(){
+  if(raf)cancelAnimationFrame(raf);
+  raf=requestAnimationFrame(()=>{
+    const p=getP();updLbls(p);
+    const m=calc(p);
+    rendDashKPI(m,p);updCh(m,p);
+    if(curTab!=='dash'&&curTab!=='compare')rendSheets(m,p);
+    raf=null;
+  });
+}
+
+function applyScen(key,btn){
+  document.querySelectorAll('.scen-btn').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+  const s=SCEN[key];
+  ['area','apts','hz'].forEach(k=>document.getElementById('s-'+k).value=s[k]);
+  ['buy','reno','sell','rent','ex','op'].forEach(k=>document.getElementById('s-'+k).value=s[k]);
+  document.getElementById('s-occ').value=s.occ;
+  document.getElementById('s-lev').value=s.lev;
+  document.getElementById('s-rate').value=s.rate;
+  document.getElementById('s-disc').value=s.disc;
+  document.getElementById('s-rs').value=s.rs;
+  document.getElementById('s-rd').value=s.rd;
+  document.getElementById('s-lt').value=s.lt||16;
+  document.getElementById('s-rps').value=s.rps||5;
+  lastRs=s.rs;lastRd=s.rd;
+  sellRows=s.sr.map(r=>({...r}));
+  renderSellRows();upd();
+}
+
+// INIT
+renderSellRows();
+initCh();
+upd();
+</script>
+</body>
+</html>
