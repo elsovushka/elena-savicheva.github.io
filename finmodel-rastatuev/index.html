@@ -53,7 +53,9 @@ body{display:grid;grid-template-columns:340px 1fr;min-height:100vh}
 @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
 /* KPI cards */
-.kpis{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-bottom:16px}
+.kpis{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;margin-bottom:16px}
+.kpi{min-width:0}
+.kpi .v{font-size:18px}
 .kpi{background:#fff;border-radius:8px;padding:12px 14px;border-left:4px solid var(--blue);box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .kpi.red{border-left-color:var(--red)} .kpi.red .v{color:var(--red)}
 .kpi.green{border-left-color:var(--green)} .kpi.green .v{color:var(--green)}
@@ -132,7 +134,7 @@ td.warn{color:var(--orange);font-weight:700;background:var(--orange-l)}
 <aside class="sidebar">
   <div class="sb-head">
     <h1>📊 Финмодель-калькулятор</h1>
-    <div class="sub">ИП Растатуев · гирлянды на WB · сезон 01.11 – 15.12.2026</div>
+    <div class="sub">ИП Растатуев · гирлянды на WB · сезон 20.11 – 20.12.2026 (30 дн)</div>
   </div>
 
   <div class="sb-actions">
@@ -215,7 +217,7 @@ td.warn{color:var(--orange);font-weight:700;background:var(--orange-l)}
     <div class="page" id="p3">
       <div class="tbl-wrap">
         <div class="tbl-head">
-          <h2>📅 План распродажи — темп шт/день к 15.12.2026</h2>
+          <h2>📅 План распродажи — темп шт/день к 20.12.2026 (период 20.11 – 20.12, 30 дней)</h2>
           <div class="sub">🟢 РЕАЛЬНО ≤ среднего темпа 2025. 🟡 НУЖЕН ПИК — нужен агрессивный маркетинг. 🔴 НЕ РЕАЛЬНО — снижать цену для разгона спроса.</div>
         </div>
         <table id="t-plan"></table>
@@ -244,23 +246,24 @@ td.warn{color:var(--orange);font-weight:700;background:var(--orange-l)}
 // ============================================================================
 // ДАННЫЕ
 // ============================================================================
+// Остатки обновлены 22.06.2026 (BE Гуслица + BF WB сейчас, файл Сравнение 22.06.26.xlsx)
 const SKU = [
-  {art:541939232,name:"Бахрома 25 м. жёлтая",sebs:600,ost:2829,maxP:1688,avgP:1429,maxQty:87,avgQty:26.7},
-  {art:42516034, name:"Бахрома 25 м. мульти",sebs:600,ost:2588,maxP:1721,avgP:1464,maxQty:87,avgQty:25.3},
-  {art:42516035, name:"Катушка 50 м. мульти",sebs:280,ost:1653,maxP:1492,avgP:1071,maxQty:134,avgQty:42.9},
-  {art:42626759, name:"Штора 3х3 м. жёлтая",sebs:400,ost:1020,maxP:1190,avgP:1036,maxQty:207,avgQty:73.6},
-  {art:547660178,name:"Катушка 100 м. мульти",sebs:700,ost:997,maxP:1654,avgP:1419,maxQty:136,avgQty:78.5},
-  {art:555397501,name:"Хвойная лапа 50 м. мульти",sebs:580,ost:893,maxP:1693,avgP:1494,maxQty:38,avgQty:11.2},
-  {art:42946628, name:"Хвойная лапа 100 м. мульти",sebs:950,ost:811,maxP:1862,avgP:1463,maxQty:78,avgQty:39.1},
-  {art:45516441, name:"Катушка 100 м. жёлтая",sebs:700,ost:703,maxP:1547,avgP:1416,maxQty:63,avgQty:43.3},
-  {art:45515019, name:"Катушка 50 м. жёлтая",sebs:280,ost:512,maxP:1312,avgP:1034,maxQty:79,avgQty:26.1},
-  {art:42516036, name:"Бахрома 12 м. мульти",sebs:350,ost:243,maxP:1464,avgP:1197,maxQty:49,avgQty:15.6},
-  {art:179339439,name:"Штора 3х3 м. белая",sebs:400,ost:146,maxP:1162,avgP:980,maxQty:112,avgQty:48.5},
-  {art:42538276, name:"Хвойная лапа 50 м. жёлтая",sebs:580,ost:133,maxP:1451,avgP:1340,maxQty:38,avgQty:13.6},
-  {art:541489753,name:"Бахрома 12 м. жёлтая",sebs:350,ost:116,maxP:1464,avgP:1204,maxQty:59,avgQty:13.5},
-  {art:541994184,name:"Бахрома 50 м. мульти",sebs:1050,ost:0,maxP:2105,avgP:1989,maxQty:88,avgQty:52.8},
+  {art:42516034, name:"Бахрома 25 м. мульти",sebs:600,ost:2560,maxP:1721,avgP:1464,maxQty:87,avgQty:25.3},
+  {art:541939232,name:"Бахрома 25 м. жёлтая",sebs:600,ost:1741,maxP:1688,avgP:1429,maxQty:87,avgQty:26.7},
+  {art:42516035, name:"Катушка 50 м. мульти",sebs:280,ost:1695,maxP:1492,avgP:1071,maxQty:134,avgQty:42.9},
+  {art:547660178,name:"Катушка 100 м. мульти",sebs:700,ost:1056,maxP:1654,avgP:1419,maxQty:136,avgQty:78.5},
+  {art:45516441, name:"Катушка 100 м. жёлтая",sebs:700,ost:661,maxP:1547,avgP:1416,maxQty:63,avgQty:43.3},
+  {art:45515019, name:"Катушка 50 м. жёлтая",sebs:280,ost:492,maxP:1312,avgP:1034,maxQty:79,avgQty:26.1},
+  {art:42946628, name:"Хвойная лапа 100 м. мульти",sebs:950,ost:499,maxP:1862,avgP:1463,maxQty:78,avgQty:39.1},
+  {art:555397501,name:"Хвойная лапа 50 м. мульти",sebs:580,ost:459,maxP:1693,avgP:1494,maxQty:38,avgQty:11.2},
+  {art:42538276, name:"Хвойная лапа 50 м. жёлтая",sebs:580,ost:142,maxP:1451,avgP:1340,maxQty:38,avgQty:13.6},
+  {art:179339439,name:"Штора 3х3 м. белая",sebs:400,ost:127,maxP:1162,avgP:980,maxQty:112,avgQty:48.5},
+  {art:42626759, name:"Штора 3х3 м. жёлтая",sebs:400,ost:101,maxP:1190,avgP:1036,maxQty:207,avgQty:73.6},
+  {art:42648831, name:"Хвойная лапа 100 м. жёлтая",sebs:950,ost:18,maxP:1532,avgP:1358,maxQty:423,avgQty:112.3},
+  {art:541994184,name:"Бахрома 50 м. мульти",sebs:1050,ost:4,maxP:2105,avgP:1989,maxQty:88,avgQty:52.8},
+  {art:42516036, name:"Бахрома 12 м. мульти",sebs:350,ost:1,maxP:1464,avgP:1197,maxQty:49,avgQty:15.6},
+  {art:541489753,name:"Бахрома 12 м. жёлтая",sebs:350,ost:0,maxP:1464,avgP:1204,maxQty:59,avgQty:13.5},
   {art:541991330,name:"Бахрома 50 м. жёлтая",sebs:1050,ost:0,maxP:2178,avgP:2016,maxQty:73,avgQty:43.1},
-  {art:42648831, name:"Хвойная лапа 100 м. жёлтая",sebs:950,ost:0,maxP:1532,avgP:1358,maxQty:423,avgQty:112.3},
 ];
 
 // ============================================================================
@@ -272,15 +275,15 @@ const P = {
   equa:   {v:0.022,min:0,max:0.05,step:0.001,fmt:'pct',lbl:'Эквайринг %',fact:'2,2%',hint:'Берётся с выручки нетто'},
   log:    {v:200,min:0,max:500,step:10,fmt:'rub',lbl:'Логистика ₽/шт',fact:'200,8',hint:'Доставка «к клиенту», возвраты учитываются ниже'},
   ret:    {v:0.05,min:0,max:0.3,step:0.01,fmt:'pct',lbl:'% возвратов',fact:'~5%',hint:'Доля возвратов от продаж'},
-  stor:   {v:25,min:0,max:100,step:5,fmt:'rub',lbl:'Хранение ₽/шт/мес',fact:'1,5',hint:'Сезон ≈0, межсезонье 30-40'},
-  storm:  {v:1.5,min:0.5,max:6,step:0.5,fmt:'num',lbl:'Срок хранения, мес',fact:'1,5',hint:'Сколько в среднем лежит до продажи'},
+  stor:   {v:8,min:0,max:50,step:1,fmt:'rub',lbl:'Хранение ₽/шт/мес',fact:'8 (среднее несезон)',hint:'Факт несезон Фев-Апр: 230 тыс / 3 мес / 9556 шт ≈ 8 ₽/шт/мес. Сезон ≈0 (быстро уходит)'},
+  storm:  {v:4,min:0.5,max:12,step:0.5,fmt:'num',lbl:'Срок хранения, мес',fact:'~4',hint:'Хранение до старта сезона + во время продаж. По умолчанию 4 мес'},
   reimb:  {v:28,min:0,max:100,step:1,fmt:'rub',lbl:'Возмещения ПВЗ ₽/шт',fact:'28,5',hint:'Доп. удержания ВБ'},
   ff:     {v:43,min:0,max:200,step:1,fmt:'rub',lbl:'Фулфилмент ₽/шт',fact:'43,0',hint:'1 858 000 ₽ / 43 000 шт'},
   drr:    {v:0.15,min:0,max:0.5,step:0.01,fmt:'pct',lbl:'ДРР % (реклама)',fact:'37% (катастрофа)',hint:'KPI ≤15-17%. Факт 2025 был 37%'},
-  tax:    {v:0.12,min:0,max:0.3,step:0.005,fmt:'pct',lbl:'Налоги % от выручки',fact:'6,9%',hint:'АУСН 8% + НДС 5% при обороте >60 млн'},
-  opex:   {v:0.08,min:0,max:0.3,step:0.005,fmt:'pct',lbl:'Опер. расходы %',fact:'13%',hint:'ФОТ + сервисы. % от выручки нетто'},
-  days:   {v:45,min:7,max:120,step:1,fmt:'num',lbl:'Дней до целевой даты',fact:null,hint:'01.11.2026 → 15.12.2026'},
-  target: {v:0.20,min:0,max:0.5,step:0.01,fmt:'pct',lbl:'Целевая маржинальность',fact:null,hint:'Для цены +20% маржи = БЕЗУБ × 1,20'},
+  tax:    {v:0.08,min:0,max:0.3,step:0.005,fmt:'pct',lbl:'Налоги % от выручки',fact:'6,9% (АУСН)',hint:'АУСН 8% (по умолчанию). НДС пока нет. Если оборот превысит 60 млн/год — +НДС 5%, поставить 13%'},
+  opex:   {v:687000,min:0,max:5000000,step:10000,fmt:'rub',lbl:'Опер. расходы, ₽ за сезон',fact:'687 000',hint:'ФОТ 592К + сервисы 75К + сторон.реклама 20К = 687К на 3 мес'},
+  days:   {v:30,min:7,max:120,step:1,fmt:'num',lbl:'Дней на распродажу',fact:null,hint:'20.11.2026 → 20.12.2026 = 30 дней'},
+  target: {v:0.20,min:0,max:0.5,step:0.01,fmt:'pct',lbl:'Целевая маржинальность',fact:null,hint:'Для цены +20% маржи (от выручки нетто)'},
 };
 
 // Per-SKU переопределения {art: {key: value}}
@@ -361,7 +364,7 @@ function calcAll(){
   rows.forEach(r=>{
     ['rev_gr','sppDisc','rev_net','ekv','voznagr','kperech','rekl','nalog','logist','hran','reimb','cogs','marzh','qty'].forEach(k=>T[k]+=r[k]);
   });
-  T.opex=T.rev_net*P.opex.v;
+  T.opex=P.opex.v;  // фиксированная сумма за сезон
   T.finrez=T.marzh-T.opex;
   T.marzhPct=T.rev_net>0?T.marzh/T.rev_net:0;
   T.drrAvg=T.rev_net>0?T.rekl/T.rev_net:0;
@@ -434,13 +437,14 @@ function renderKpis(T, rows){
   const pPct = pRev>0 ? pMar/pRev : 0;
   c.innerHTML=`
     <div class="kpi"><div class="l">Выручка нетто</div><div class="v">${FMT.int(T.rev_net)} ₽</div><div class="vs">${FMT.int(T.qty)} шт</div></div>
-    <div class="kpi"><div class="l">Себестоимость + ФФ</div><div class="v">${FMT.int(T.cogs)} ₽</div><div class="vs">${FMT.pct(T.rev_net>0?T.cogs/T.rev_net:0)} от выручки</div></div>
+    <div class="kpi"><div class="l">Себест + ФФ</div><div class="v">${FMT.int(T.cogs)} ₽</div><div class="vs">${FMT.pct(T.rev_net>0?T.cogs/T.rev_net:0)} от выручки</div></div>
     <div class="kpi orange"><div class="l">Расходы МП (без рекламы)</div><div class="v">${FMT.int(rmpNoRekl)} ₽</div><div class="vs">Комис+эквайр+лог+хран+возмещ</div></div>
     <div class="kpi orange"><div class="l">Реклама ВБ</div><div class="v">${FMT.int(T.rekl)} ₽</div><div class="vs">ДРР ${FMT.pct(T.drrAvg)}</div></div>
-    <div class="kpi ${T.marzh<0?'red':'green'}"><div class="l">Маржа (с учётом рекламы)</div><div class="v">${FMT.int(T.marzh)} ₽</div><div class="vs">${FMT.pct(T.marzhPct)} от выручки</div></div>
-    <div class="kpi red"><div class="l">Опер. расходы</div><div class="v">${FMT.int(T.opex)} ₽</div><div class="vs">${FMT.pct(P.opex.v)} от выручки</div></div>
+    <div class="kpi" style="border-left-color:#7c3aed"><div class="l" style="color:#7c3aed">Налоги</div><div class="v" style="color:#7c3aed">${FMT.int(T.nalog)} ₽</div><div class="vs">${FMT.pct(P.tax.v)} от выручки</div></div>
+    <div class="kpi ${T.marzh<0?'red':'green'}"><div class="l">Маржа (после рекламы)</div><div class="v">${FMT.int(T.marzh)} ₽</div><div class="vs">${FMT.pct(T.marzhPct)} от выручки</div></div>
+    <div class="kpi red"><div class="l">Опер. расходы</div><div class="v">${FMT.int(T.opex)} ₽</div><div class="vs">фикс. за сезон</div></div>
     <div class="kpi ${fin<0?'red':'green'}"><div class="l">💰 Финрезультат</div><div class="v">${FMT.int(fin)} ₽</div><div class="vs">${FMT.pct(T.rev_net>0?fin/T.rev_net:0)}</div></div>
-    <div class="kpi green"><div class="l">🎯 Маржа при Цене +20%</div><div class="v">${FMT.int(pMar)} ₽</div><div class="vs">${FMT.pct(pPct)} — идеальный сценарий</div></div>
+    <div class="kpi green"><div class="l">🎯 Маржа при Цене +20%</div><div class="v">${FMT.int(pMar)} ₽</div><div class="vs">${FMT.pct(pPct)} — идеал</div></div>
   `;
 }
 
@@ -638,7 +642,7 @@ function updPerSku(el){
 
 function renderPlan(rows){
   let h=`<thead><tr>
-    <th class="l">SKU</th><th>Остаток шт</th><th>Дней</th><th>Нужно шт/день</th>
+    <th class="l">SKU</th><th>Остаток шт</th><th>Дней (20.11 → 20.12)</th><th>Нужно шт/день</th>
     <th>Макс шт/день 2025</th><th>Сред шт/день 2025</th><th class="c">Реалистично?</th><th class="l">Пояснение</th>
     </tr></thead><tbody>`;
   let tOst=0;
@@ -670,7 +674,7 @@ function renderFin(T){
     <tbody>
       <tr><td>Выручка нетто (всего)</td><td><strong>${FMT.int(T.rev_net)}</strong></td><td class="calc">100%</td></tr>
       <tr><td>Маржа товарная (до опер. расходов)</td><td class="${T.marzh<0?'neg':'pos'}">${FMT.int(T.marzh)}</td><td>${FMT.pct(T.marzhPct)}</td></tr>
-      <tr><td>Опер. расходы (% от выручки)</td><td class="neg">−${FMT.int(T.opex)}</td><td>${FMT.pct(P.opex.v)}</td></tr>
+      <tr><td>Опер. расходы (фикс. за сезон: ФОТ + сервисы + сторон. реклама)</td><td class="neg">−${FMT.int(T.opex)}</td><td>${FMT.pct(T.rev_net>0?T.opex/T.rev_net:0)}</td></tr>
       <tr class="tot"><td>💰 ФИНРЕЗУЛЬТАТ СЕЗОНА</td><td>${FMT.int(T.finrez)}</td><td>${FMT.pct(T.rev_net>0?T.finrez/T.rev_net:0)}</td></tr>
     </tbody>`;
   document.getElementById('t-fin').innerHTML=h;
