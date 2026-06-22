@@ -1,0 +1,893 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Финмодель-калькулятор · ИП Растатуев · гирлянды на WB</title>
+<meta name="viewport" content="width=1400">
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --blue:#1F4E79; --blue2:#2E75B6; --blue-d:#0f2a4d;
+  --green:#15803d; --green-l:#dcfce7;
+  --red:#b91c1c; --red-l:#fee2e2;
+  --orange:#b45309; --orange-l:#fef3c7;
+  --gray:#475569; --gray-l:#f1f5f9; --gray-b:#cbd5e1;
+  --bg:#f8fafc;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:#0f172a;background:var(--bg);font-size:14px}
+body{display:grid;grid-template-columns:340px 1fr;min-height:100vh}
+
+/* ===== Sidebar ===== */
+.sidebar{background:#fff;border-right:1px solid var(--gray-b);overflow-y:auto;height:100vh;position:sticky;top:0}
+.sb-head{padding:14px 18px;background:linear-gradient(135deg,#0a1929,var(--blue));color:#fff}
+.sb-head h1{font-size:15px;font-weight:700;line-height:1.25}
+.sb-head .sub{font-size:11px;opacity:.85;margin-top:3px}
+
+.sb-actions{padding:10px;border-bottom:1px solid var(--gray-b);display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.sb-actions button{padding:8px 6px;border:1px solid var(--gray-b);background:#fff;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;color:var(--blue)}
+.sb-actions button:hover{background:var(--gray-l)}
+.sb-actions .full{grid-column:1/3}
+
+.sb-section{padding:8px 14px 4px;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--gray);letter-spacing:.5px;background:#fafbfc;border-top:1px solid var(--gray-b);border-bottom:1px solid var(--gray-b);margin-top:0}
+.sb-row{padding:8px 14px;border-bottom:1px solid #eef2f6}
+.sb-row .lbl{font-size:12px;color:#1e293b;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center}
+.sb-row .lbl .fact{font-size:10px;color:var(--orange);font-style:italic;font-weight:600}
+.sb-row .ctrl{display:grid;grid-template-columns:1fr 70px;gap:8px;align-items:center}
+.sb-row input[type=range]{width:100%;accent-color:var(--blue)}
+.sb-row input[type=number]{width:70px;padding:4px 6px;border:1px solid var(--gray-b);border-radius:4px;font-size:12px;text-align:right;background:#fff8e1;font-weight:700;color:var(--blue-d)}
+.sb-row input[type=number].pct::after{content:'%'}
+.sb-row .hint{font-size:10px;color:var(--gray);margin-top:3px;font-style:italic;line-height:1.3}
+
+/* ===== Main ===== */
+.main{padding:0;overflow:auto}
+.tabs{display:flex;gap:2px;background:#fff;border-bottom:2px solid var(--blue);padding:0 16px;position:sticky;top:0;z-index:10}
+.tab{padding:10px 18px;background:transparent;border:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--gray);border-radius:6px 6px 0 0;border-bottom:3px solid transparent;transition:all .15s}
+.tab:hover{background:var(--gray-l)}
+.tab.active{color:var(--blue);background:#fff;border-bottom:3px solid var(--blue)}
+
+.content{padding:16px 20px;max-width:none}
+.page{display:none}
+.page.active{display:block;animation:fade .2s}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* KPI cards */
+.kpis{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-bottom:16px}
+.kpi{background:#fff;border-radius:8px;padding:12px 14px;border-left:4px solid var(--blue);box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.kpi.red{border-left-color:var(--red)} .kpi.red .v{color:var(--red)}
+.kpi.green{border-left-color:var(--green)} .kpi.green .v{color:var(--green)}
+.kpi.orange{border-left-color:var(--orange)} .kpi.orange .v{color:var(--orange)}
+.kpi .l{font-size:10px;color:var(--gray);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.kpi .v{font-size:22px;font-weight:800;color:var(--blue);line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi .vs{font-size:11px;color:var(--gray);margin-top:3px}
+
+/* Tables */
+.tbl-wrap{background:#fff;border-radius:8px;overflow:auto;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:16px}
+.tbl-head{padding:12px 16px;border-bottom:2px solid var(--gray-b);display:flex;justify-content:space-between;align-items:center}
+.tbl-head h2{font-size:15px;font-weight:700;color:var(--blue)}
+.tbl-head .sub{font-size:11px;color:var(--gray);font-style:italic;margin-top:2px}
+table{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+th{background:var(--blue);color:#fff;padding:8px 10px;text-align:right;font-weight:600;font-size:11px;border-bottom:1px solid var(--gray-b);position:sticky;top:0;white-space:nowrap}
+th:first-child{text-align:left}
+th.l{text-align:left} th.c{text-align:center}
+td{padding:6px 10px;text-align:right;border-bottom:1px solid #eef2f6}
+td:first-child{text-align:left;font-weight:600}
+td.c{text-align:center}
+td.l{text-align:left}
+tr.tot td{background:var(--blue);color:#fff;font-weight:700;font-size:12px}
+tr:hover:not(.tot) td{background:#f8fafc}
+td.in-cell{background:#fff8e1;font-weight:700;color:var(--blue-d);position:relative}
+td.in-cell input{background:transparent;border:none;width:100%;text-align:right;font-family:inherit;font-size:12px;font-weight:700;color:var(--blue-d);font-variant-numeric:tabular-nums}
+td.in-cell input:focus{outline:1px solid var(--blue);outline-offset:-1px}
+td.in-cell .suf{position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--gray);pointer-events:none}
+td.in-cell.has-suf input{padding-right:12px}
+.set-btn{border:1px solid var(--gray-b);background:#fff;color:var(--blue);font-size:9px;font-weight:700;padding:2px 4px;border-radius:3px;cursor:pointer;margin-left:1px;line-height:1}
+.set-btn:hover{background:var(--blue);color:#fff}
+.set-btn.pos{color:var(--green);border-color:var(--green)}
+.set-btn.pos:hover{background:var(--green);color:#fff}
+td.calc{background:var(--gray-l);color:var(--gray);font-style:italic;font-weight:600}
+td.pos{color:var(--green);font-weight:700;background:var(--green-l)}
+td.neg{color:var(--red);font-weight:700;background:var(--red-l)}
+td.warn{color:var(--orange);font-weight:700;background:var(--orange-l)}
+
+/* Status cells */
+.st{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700}
+.st.g{background:var(--green-l);color:var(--green)}
+.st.y{background:var(--orange-l);color:var(--orange)}
+.st.r{background:var(--red-l);color:var(--red)}
+
+/* SKU details (Calculator) */
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.card{background:#fff;border-radius:8px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.card h3{font-size:13px;color:var(--blue);font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--gray-b)}
+.calc-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px dashed #eef2f6}
+.calc-row:last-child{border-bottom:none}
+.calc-row .n{color:var(--gray);font-style:italic;font-size:11px;margin-left:8px}
+.calc-row .v{font-weight:700;color:var(--blue-d);font-variant-numeric:tabular-nums;white-space:nowrap}
+.calc-row.tot{font-weight:700;background:var(--green-l);padding:8px;margin:6px -16px;padding-left:16px;padding-right:16px;border-radius:0}
+.calc-row.tot .v{color:var(--green);font-size:15px}
+.calc-row.exp .v{color:var(--red)}
+
+.sku-select{padding:10px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:8px;margin-bottom:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.sku-select label{font-weight:700;color:var(--blue);font-size:13px}
+.sku-select select{padding:8px 14px;border-radius:6px;border:1px solid var(--blue);background:#fff;font-size:14px;font-weight:600;color:var(--blue-d);min-width:280px;cursor:pointer}
+
+/* Footer */
+.footer{padding:14px 20px;text-align:center;color:var(--gray);font-size:11px;border-top:1px solid var(--gray-b);margin-top:20px}
+
+/* Print */
+@media print{
+  body{display:block;background:#fff}
+  .sidebar,.tabs,.sb-actions{display:none}
+  .main{padding:0}
+  .page{display:block !important;page-break-after:always;padding:20px}
+  .page:last-child{page-break-after:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ====== SIDEBAR ====== -->
+<aside class="sidebar">
+  <div class="sb-head">
+    <h1>📊 Финмодель-калькулятор</h1>
+    <div class="sub">ИП Растатуев · гирлянды на WB · сезон 01.11 – 15.12.2026</div>
+  </div>
+
+  <div class="sb-actions">
+    <button onclick="expExcel()">📥 Скачать Excel</button>
+    <button onclick="loadExcel()">📤 Загрузить Excel</button>
+    <button class="full" onclick="window.print()">🖨️ Печать</button>
+  </div>
+  <div style="padding:6px 10px;font-size:10px;color:var(--gray);font-style:italic;background:#fef9c3;border-bottom:1px solid var(--gray-b)">
+    💡 Расчёт автоматический: любое изменение параметра → пересчёт мгновенно
+  </div>
+
+  <div id="sbParams"></div>
+
+  <div class="footer">
+    Елена Савичева<br>
+    @elenasovetnik · +7 927 230 39 94
+  </div>
+</aside>
+
+<input type="file" id="fileInp" accept=".xlsx" style="display:none">
+
+<!-- ====== MAIN ====== -->
+<div class="main">
+  <div class="tabs">
+    <button class="tab active" onclick="goTab(0)">📋 Сводка</button>
+    <button class="tab" onclick="goTab(1)">🎯 Калькулятор SKU</button>
+    <button class="tab" onclick="goTab(2)">📦 Per-SKU настройки</button>
+    <button class="tab" onclick="goTab(3)">📅 План распродажи</button>
+    <button class="tab" onclick="goTab(4)">💰 Финрезультат</button>
+  </div>
+
+  <div class="content">
+    <!-- KPI всегда вверху -->
+    <div class="kpis" id="kpis"></div>
+
+    <!-- TAB 0: Сводка -->
+    <div class="page active" id="p0">
+      <div class="tbl-wrap">
+        <div class="tbl-head">
+          <h2>🟢 БЛОК 1 — Сводка по SKU (быстрый обзор)</h2>
+          <div class="sub">★ — ввод вручную. БЕЗУБ = цена для маржи 0%. <b style="color:var(--green)">Цена +20% = цена для маржи РОВНО 20%</b> (формула учитывает СПП). Кнопки 🎯 в столбце «Своя цена» подставляют БЕЗУБ или +20%.</div>
+        </div>
+        <table id="t-sum1"></table>
+      </div>
+
+      <div class="tbl-wrap">
+        <div class="tbl-head">
+          <h2>🔵 БЛОК 2 — Детальная разбивка по статьям (как ABC из ОПиУ)</h2>
+          <div class="sub">Все компоненты выручки, расходов и маржи по каждой SKU. Цена тянется из Блока 1.</div>
+        </div>
+        <table id="t-sum2"></table>
+      </div>
+    </div>
+
+    <!-- TAB 1: Калькулятор -->
+    <div class="page" id="p1">
+      <div class="sku-select">
+        <label>Выберите SKU:</label>
+        <select id="skuSel" onchange="renderCalc()"></select>
+        <span style="color:var(--gray);font-size:11px;font-style:italic">Цена и ДРР меняются на вкладке «📋 Сводка»</span>
+      </div>
+      <div class="calc-grid">
+        <div class="card" id="c-params"></div>
+        <div class="card" id="c-calc"></div>
+      </div>
+    </div>
+
+    <!-- TAB 2: Per-SKU -->
+    <div class="page" id="p2">
+      <div class="tbl-wrap">
+        <div class="tbl-head">
+          <h2>📦 Индивидуальные параметры по каждой SKU</h2>
+          <div class="sub">Пусто = берётся глобал из левой панели. Введено число → перебивает только для этой SKU. Пример: ДРР глобал 15%, для Бахромы 50м поставили 20% → у неё считается по 20%, у остальных по 15%.</div>
+        </div>
+        <table id="t-perscu"></table>
+      </div>
+    </div>
+
+    <!-- TAB 3: План -->
+    <div class="page" id="p3">
+      <div class="tbl-wrap">
+        <div class="tbl-head">
+          <h2>📅 План распродажи — темп шт/день к 15.12.2026</h2>
+          <div class="sub">🟢 РЕАЛЬНО ≤ среднего темпа 2025. 🟡 НУЖЕН ПИК — нужен агрессивный маркетинг. 🔴 НЕ РЕАЛЬНО — снижать цену для разгона спроса.</div>
+        </div>
+        <table id="t-plan"></table>
+      </div>
+    </div>
+
+    <!-- TAB 4: Финрезультат -->
+    <div class="page" id="p4">
+      <div class="tbl-wrap">
+        <div class="tbl-head">
+          <h2>💰 Финансовый результат сезона</h2>
+          <div class="sub">По «Своим ценам» из Сводки. Опер. расходы = % от выручки нетто.</div>
+        </div>
+        <table id="t-fin"></table>
+      </div>
+
+      <div class="tbl-wrap" style="margin-top:14px">
+        <div class="tbl-head"><h2>📊 Структура расходов</h2></div>
+        <div style="padding:20px;height:340px"><canvas id="chExp"></canvas></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================================
+// ДАННЫЕ
+// ============================================================================
+const SKU = [
+  {art:541939232,name:"Бахрома 25 м. жёлтая",sebs:600,ost:2829,maxP:1688,avgP:1429,maxQty:87,avgQty:26.7},
+  {art:42516034, name:"Бахрома 25 м. мульти",sebs:600,ost:2588,maxP:1721,avgP:1464,maxQty:87,avgQty:25.3},
+  {art:42516035, name:"Катушка 50 м. мульти",sebs:280,ost:1653,maxP:1492,avgP:1071,maxQty:134,avgQty:42.9},
+  {art:42626759, name:"Штора 3х3 м. жёлтая",sebs:400,ost:1020,maxP:1190,avgP:1036,maxQty:207,avgQty:73.6},
+  {art:547660178,name:"Катушка 100 м. мульти",sebs:700,ost:997,maxP:1654,avgP:1419,maxQty:136,avgQty:78.5},
+  {art:555397501,name:"Хвойная лапа 50 м. мульти",sebs:580,ost:893,maxP:1693,avgP:1494,maxQty:38,avgQty:11.2},
+  {art:42946628, name:"Хвойная лапа 100 м. мульти",sebs:950,ost:811,maxP:1862,avgP:1463,maxQty:78,avgQty:39.1},
+  {art:45516441, name:"Катушка 100 м. жёлтая",sebs:700,ost:703,maxP:1547,avgP:1416,maxQty:63,avgQty:43.3},
+  {art:45515019, name:"Катушка 50 м. жёлтая",sebs:280,ost:512,maxP:1312,avgP:1034,maxQty:79,avgQty:26.1},
+  {art:42516036, name:"Бахрома 12 м. мульти",sebs:350,ost:243,maxP:1464,avgP:1197,maxQty:49,avgQty:15.6},
+  {art:179339439,name:"Штора 3х3 м. белая",sebs:400,ost:146,maxP:1162,avgP:980,maxQty:112,avgQty:48.5},
+  {art:42538276, name:"Хвойная лапа 50 м. жёлтая",sebs:580,ost:133,maxP:1451,avgP:1340,maxQty:38,avgQty:13.6},
+  {art:541489753,name:"Бахрома 12 м. жёлтая",sebs:350,ost:116,maxP:1464,avgP:1204,maxQty:59,avgQty:13.5},
+  {art:541994184,name:"Бахрома 50 м. мульти",sebs:1050,ost:0,maxP:2105,avgP:1989,maxQty:88,avgQty:52.8},
+  {art:541991330,name:"Бахрома 50 м. жёлтая",sebs:1050,ost:0,maxP:2178,avgP:2016,maxQty:73,avgQty:43.1},
+  {art:42648831, name:"Хвойная лапа 100 м. жёлтая",sebs:950,ost:0,maxP:1532,avgP:1358,maxQty:423,avgQty:112.3},
+];
+
+// ============================================================================
+// ПАРАМЕТРЫ (глобал)
+// ============================================================================
+const P = {
+  spp:    {v:0.36,min:0,max:0.6,step:0.005,fmt:'pct',lbl:'СПП %',fact:'36,5%',hint:'Скидка постоянного покупателя. Компенсируется через вознаграждение ВБ'},
+  komis:  {v:0.21,min:0,max:0.4,step:0.005,fmt:'pct',lbl:'Комиссия ВБ %',fact:'21%',hint:'Категория гирлянды 18-22%'},
+  equa:   {v:0.022,min:0,max:0.05,step:0.001,fmt:'pct',lbl:'Эквайринг %',fact:'2,2%',hint:'Берётся с выручки нетто'},
+  log:    {v:200,min:0,max:500,step:10,fmt:'rub',lbl:'Логистика ₽/шт',fact:'200,8',hint:'Доставка «к клиенту», возвраты учитываются ниже'},
+  ret:    {v:0.05,min:0,max:0.3,step:0.01,fmt:'pct',lbl:'% возвратов',fact:'~5%',hint:'Доля возвратов от продаж'},
+  stor:   {v:25,min:0,max:100,step:5,fmt:'rub',lbl:'Хранение ₽/шт/мес',fact:'1,5',hint:'Сезон ≈0, межсезонье 30-40'},
+  storm:  {v:1.5,min:0.5,max:6,step:0.5,fmt:'num',lbl:'Срок хранения, мес',fact:'1,5',hint:'Сколько в среднем лежит до продажи'},
+  reimb:  {v:28,min:0,max:100,step:1,fmt:'rub',lbl:'Возмещения ПВЗ ₽/шт',fact:'28,5',hint:'Доп. удержания ВБ'},
+  ff:     {v:43,min:0,max:200,step:1,fmt:'rub',lbl:'Фулфилмент ₽/шт',fact:'43,0',hint:'1 858 000 ₽ / 43 000 шт'},
+  drr:    {v:0.15,min:0,max:0.5,step:0.01,fmt:'pct',lbl:'ДРР % (реклама)',fact:'37% (катастрофа)',hint:'KPI ≤15-17%. Факт 2025 был 37%'},
+  tax:    {v:0.12,min:0,max:0.3,step:0.005,fmt:'pct',lbl:'Налоги % от выручки',fact:'6,9%',hint:'АУСН 8% + НДС 5% при обороте >60 млн'},
+  opex:   {v:0.08,min:0,max:0.3,step:0.005,fmt:'pct',lbl:'Опер. расходы %',fact:'13%',hint:'ФОТ + сервисы. % от выручки нетто'},
+  days:   {v:45,min:7,max:120,step:1,fmt:'num',lbl:'Дней до целевой даты',fact:null,hint:'01.11.2026 → 15.12.2026'},
+  target: {v:0.20,min:0,max:0.5,step:0.01,fmt:'pct',lbl:'Целевая маржинальность',fact:null,hint:'Для цены +20% маржи = БЕЗУБ × 1,20'},
+};
+
+// Per-SKU переопределения {art: {key: value}}
+const PERSKU = {};
+SKU.forEach(s=>{
+  PERSKU[s.art]={sebs:s.sebs, ost:s.ost, ownPrice:s.maxP, ownDrr:null,
+                 drr:null, ret:null, log:null, stor:null, storm:null, tax:null, komis:null, reimb:null};
+});
+
+// ============================================================================
+// ХЕЛПЕРЫ
+// ============================================================================
+const FMT={
+  rub: v=> (v==null||isNaN(v))?'':v.toLocaleString('ru-RU',{maximumFractionDigits:0}),
+  rub2:v=> (v==null||isNaN(v))?'':v.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2}),
+  pct: v=> (v==null||isNaN(v))?'':(v*100).toLocaleString('ru-RU',{maximumFractionDigits:1})+'%',
+  num: v=> (v==null||isNaN(v))?'':v.toLocaleString('ru-RU',{maximumFractionDigits:1}),
+  int: v=> (v==null||isNaN(v))?'':Math.round(v).toLocaleString('ru-RU'),
+};
+const eff = (artVal, globalVal)=> (artVal==null || artVal==='' || isNaN(artVal)) ? globalVal : artVal;
+
+// Эффективные параметры для SKU
+function effParams(art){
+  const ps=PERSKU[art];
+  return {
+    sebs:  ps.sebs,
+    drr:   eff(ps.drr, P.drr.v),
+    ret:   eff(ps.ret, P.ret.v),
+    log:   eff(ps.log, P.log.v),
+    stor:  eff(ps.stor, P.stor.v),
+    storm: eff(ps.storm,P.storm.v),
+    tax:   eff(ps.tax, P.tax.v),
+    komis: eff(ps.komis,P.komis.v),
+    reimb: eff(ps.reimb,P.reimb.v),
+    spp:   P.spp.v,
+    equa:  P.equa.v,
+    ff:    P.ff.v,
+  };
+}
+
+// Расчёт одной SKU: A, B, БЕЗУБ, маржа
+function calcSKU(art, ownDrrOverride){
+  const e=effParams(art);
+  const ps=PERSKU[art];
+  if(ownDrrOverride!=null && !isNaN(ownDrrOverride)) e.drr=ownDrrOverride;
+  const A=(1-e.spp)*(1-e.equa-e.drr-e.tax)-(e.komis-e.spp);
+  const B=e.sebs+e.ff+e.log*(1+e.ret)+e.stor*e.storm+e.reimb;
+  const price=ps.ownPrice;
+  const qty=ps.ost;
+  const beub=A>0?B/A:0;
+  // Цена для МАРЖИ ровно target% — учитывает СПП
+  // Маржа = target × Выручка_нетто = target × Цена × (1−СПП)
+  // Цена × A − B = target × Цена × (1−СПП) → Цена = B / (A − target × (1−СПП))
+  const denomTarget = A - P.target.v*(1-e.spp);
+  const p20 = denomTarget>0 ? B/denomTarget : 0;
+  // Финансы при своей цене:
+  const rev_gr=price*qty;                       // доходы (ц × шт)
+  const sppDisc=rev_gr*e.spp;                   // скидка СПП
+  const rev_net=rev_gr*(1-e.spp);               // выручка нетто
+  const ekv=rev_net*e.equa;                     // эквайринг
+  const voznagr=(e.komis-e.spp)*rev_gr;         // вознаграждение (может быть < 0)
+  const kperech=rev_net-ekv-voznagr;
+  const rekl=rev_net*e.drr;
+  const nalog=rev_net*e.tax;
+  const logist=qty*e.log*(1+e.ret);
+  const hran=qty*e.stor*e.storm;
+  const reimb=qty*e.reimb;
+  const cogs=qty*(e.sebs+e.ff);
+  const marzh=kperech-rekl-nalog-logist-hran-reimb-cogs;
+  const marzhPct=rev_net>0?marzh/rev_net:0;
+  return {e,price,qty,A,B,beub,p20,rev_gr,sppDisc,rev_net,ekv,voznagr,kperech,rekl,nalog,logist,hran,reimb,cogs,marzh,marzhPct};
+}
+
+// Суммарный расчёт по всем SKU
+function calcAll(){
+  const rows=SKU.map(s=>({...s, ...calcSKU(s.art, PERSKU[s.art].ownDrr)}));
+  const T={rev_gr:0,sppDisc:0,rev_net:0,ekv:0,voznagr:0,kperech:0,rekl:0,nalog:0,logist:0,hran:0,reimb:0,cogs:0,marzh:0,qty:0};
+  rows.forEach(r=>{
+    ['rev_gr','sppDisc','rev_net','ekv','voznagr','kperech','rekl','nalog','logist','hran','reimb','cogs','marzh','qty'].forEach(k=>T[k]+=r[k]);
+  });
+  T.opex=T.rev_net*P.opex.v;
+  T.finrez=T.marzh-T.opex;
+  T.marzhPct=T.rev_net>0?T.marzh/T.rev_net:0;
+  T.drrAvg=T.rev_net>0?T.rekl/T.rev_net:0;
+  return {rows, T};
+}
+
+// ============================================================================
+// РЕНДЕР
+// ============================================================================
+function renderSidebar(){
+  const cont=document.getElementById('sbParams');
+  const sections=[
+    ['СКИДКА ПЛОЩАДКИ',['spp']],
+    ['МАРКЕТПЛЕЙС',['komis','equa','log','ret','stor','storm','reimb']],
+    ['ПРОДАВЕЦ',['ff','drr']],
+    ['НАЛОГИ',['tax']],
+    ['ОПЕРАЦИОННЫЕ',['opex']],
+    ['ПЛАН РАСПРОДАЖИ',['days','target']],
+  ];
+  let html='';
+  sections.forEach(([title,keys])=>{
+    html+=`<div class="sb-section">${title}</div>`;
+    keys.forEach(k=>{
+      const p=P[k];
+      const dispV = p.fmt==='pct' ? (p.v*100).toFixed(p.step<0.01?1:1) : p.v;
+      const rngV = p.v;
+      html+=`<div class="sb-row">
+        <div class="lbl"><span>${p.lbl}</span>${p.fact?`<span class="fact">факт ${p.fact}</span>`:''}</div>
+        <div class="ctrl">
+          <input type="range" min="${p.min}" max="${p.max}" step="${p.step}" value="${rngV}" data-k="${k}" oninput="updP(this)">
+          <input type="number" step="${p.fmt==='pct'?0.5:p.step}" value="${dispV}" data-k="${k}" data-fmt="${p.fmt}" onchange="updPnum(this)">
+        </div>
+        <div class="hint">${p.hint||''}</div>
+      </div>`;
+    });
+  });
+  cont.innerHTML=html;
+}
+
+function updP(el){
+  const k=el.dataset.k;
+  P[k].v=parseFloat(el.value);
+  // обновить числовое поле
+  const num=document.querySelector(`input[type=number][data-k="${k}"]`);
+  if(num) num.value = P[k].fmt==='pct' ? (P[k].v*100).toFixed(1) : P[k].v;
+  recalc();
+}
+function updPnum(el){
+  const k=el.dataset.k;
+  let v=parseFloat(el.value)||0;
+  if(P[k].fmt==='pct') v=v/100;
+  P[k].v=v;
+  const rng=document.querySelector(`input[type=range][data-k="${k}"]`);
+  if(rng) rng.value=v;
+  recalc();
+}
+
+function renderKpis(T, rows){
+  const c=document.getElementById('kpis');
+  const fin=T.finrez;
+  // Расходы МП без рекламы = эквайринг + вознагр.ВБ + логистика + хранение + возмещения
+  const rmpNoRekl = T.ekv + T.voznagr + T.logist + T.hran + T.reimb;
+  // Расчёт «потенциальной маржи» — что было бы, если бы все SKU стояли по Цене +20%
+  let pRev=0, pMar=0;
+  rows.forEach(r=>{
+    const rev_net_p = r.p20 * r.qty * (1-r.e.spp);
+    const mar_p = (r.p20 * r.A - r.B) * r.qty;
+    pRev += rev_net_p; pMar += mar_p;
+  });
+  const pPct = pRev>0 ? pMar/pRev : 0;
+  c.innerHTML=`
+    <div class="kpi"><div class="l">Выручка нетто</div><div class="v">${FMT.int(T.rev_net)} ₽</div><div class="vs">${FMT.int(T.qty)} шт</div></div>
+    <div class="kpi"><div class="l">Себестоимость + ФФ</div><div class="v">${FMT.int(T.cogs)} ₽</div><div class="vs">${FMT.pct(T.rev_net>0?T.cogs/T.rev_net:0)} от выручки</div></div>
+    <div class="kpi orange"><div class="l">Расходы МП (без рекламы)</div><div class="v">${FMT.int(rmpNoRekl)} ₽</div><div class="vs">Комис+эквайр+лог+хран+возмещ</div></div>
+    <div class="kpi orange"><div class="l">Реклама ВБ</div><div class="v">${FMT.int(T.rekl)} ₽</div><div class="vs">ДРР ${FMT.pct(T.drrAvg)}</div></div>
+    <div class="kpi ${T.marzh<0?'red':'green'}"><div class="l">Маржа (с учётом рекламы)</div><div class="v">${FMT.int(T.marzh)} ₽</div><div class="vs">${FMT.pct(T.marzhPct)} от выручки</div></div>
+    <div class="kpi red"><div class="l">Опер. расходы</div><div class="v">${FMT.int(T.opex)} ₽</div><div class="vs">${FMT.pct(P.opex.v)} от выручки</div></div>
+    <div class="kpi ${fin<0?'red':'green'}"><div class="l">💰 Финрезультат</div><div class="v">${FMT.int(fin)} ₽</div><div class="vs">${FMT.pct(T.rev_net>0?fin/T.rev_net:0)}</div></div>
+    <div class="kpi green"><div class="l">🎯 Маржа при Цене +20%</div><div class="v">${FMT.int(pMar)} ₽</div><div class="vs">${FMT.pct(pPct)} — идеальный сценарий</div></div>
+  `;
+}
+
+function statusCell(beub, price, marzhPct){
+  if(price<beub) return `<span class="st r">🔴 убыток</span>`;
+  if(marzhPct>=P.target.v) return `<span class="st g">🟢 цель ${FMT.pct(P.target.v)}</span>`;
+  if(marzhPct>0) return `<span class="st y">🟡 в плюсе</span>`;
+  return `<span class="st r">🔴 убыток</span>`;
+}
+
+function renderSum1(rows){
+  let h=`<thead><tr>
+    <th class="l">SKU</th><th>Остаток</th><th>MAX 2025</th><th>БЕЗУБ</th><th>Цена +20%</th>
+    <th>Своя цена ★</th><th>Маржа %</th><th>Маржа ₽</th>
+    <th>ДРР глобал</th><th>ДРР % ★</th><th>Реклама ₽</th><th class="c">Статус</th></tr></thead><tbody>`;
+  let tQty=0,tMar=0,tRek=0;
+  rows.forEach(r=>{
+    const ownDrrRaw=PERSKU[r.art].ownDrr;
+    const ownDrrDisp = ownDrrRaw!=null && !isNaN(ownDrrRaw) ? (ownDrrRaw*100).toFixed(1) : '';
+    const drrGlob = eff(PERSKU[r.art].drr, P.drr.v);
+    h+=`<tr>
+      <td>${r.name}</td>
+      <td>${FMT.int(r.ost)}</td>
+      <td class="calc">${FMT.int(r.maxP)}</td>
+      <td>${FMT.int(r.beub)}</td>
+      <td class="pos">${FMT.int(r.p20)}</td>
+      <td class="in-cell" style="white-space:nowrap"><input type="number" value="${r.price.toFixed(0)}" data-art="${r.art}" data-fld="ownPrice" data-fmt="rub" onchange="updPerSku(this)" style="width:calc(100% - 56px)"><button class="set-btn" title="Подставить БЕЗУБ" onclick="setPrice(${r.art},${Math.round(r.beub)})">🎯Б</button><button class="set-btn pos" title="Подставить Цена +20%" onclick="setPrice(${r.art},${Math.round(r.p20)})">🎯+20</button></td>
+      <td class="${r.marzhPct<0?'neg':(r.marzhPct>=P.target.v?'pos':'warn')}">${FMT.pct(r.marzhPct)}</td>
+      <td class="${r.marzh<0?'neg':'pos'}">${FMT.int(r.marzh)}</td>
+      <td class="calc">${FMT.pct(drrGlob)}</td>
+      <td class="in-cell has-suf"><input type="number" step="0.5" min="0" max="100" value="${ownDrrDisp}" placeholder="${(drrGlob*100).toFixed(0)}" data-art="${r.art}" data-fld="ownDrr" data-fmt="pct" onchange="updPerSku(this)"><span class="suf">%</span></td>
+      <td>${FMT.int(r.rekl)}</td>
+      <td class="c">${statusCell(r.beub,r.price,r.marzhPct)}</td>
+    </tr>`;
+    tQty+=r.ost; tMar+=r.marzh; tRek+=r.rekl;
+  });
+  h+=`<tr class="tot"><td>ИТОГО</td><td>${FMT.int(tQty)}</td><td></td><td></td><td></td><td></td><td></td><td>${FMT.int(tMar)}</td><td></td><td></td><td>${FMT.int(tRek)}</td><td></td></tr>`;
+  h+='</tbody>';
+  document.getElementById('t-sum1').innerHTML=h;
+}
+
+function renderSum2(rows){
+  let h=`<thead><tr>
+    <th class="l">SKU</th><th>Шт</th><th>Цена ДО СПП</th>
+    <th>Доходы (Ц×шт)</th><th>(−)Скидка СПП</th><th>Выручка нетто</th>
+    <th>(−)Эквайр</th><th>(−)Вознагр.ВБ</th><th>К перечислению</th>
+    <th>(−)Реклама</th><th>(−)Налог</th><th>(−)Логистика</th><th>(−)Хранение</th><th>(−)Возмещ</th><th>(−)Себест+ФФ</th>
+    <th>МАРЖА ₽</th><th>МАРЖА %</th><th>БЕЗУБ</th>
+    </tr></thead><tbody>`;
+  const T={rev_gr:0,sppDisc:0,rev_net:0,ekv:0,voznagr:0,kperech:0,rekl:0,nalog:0,logist:0,hran:0,reimb:0,cogs:0,marzh:0,qty:0};
+  rows.forEach(r=>{
+    h+=`<tr>
+      <td>${r.name}</td>
+      <td>${FMT.int(r.qty)}</td>
+      <td>${FMT.int(r.price)}</td>
+      <td>${FMT.int(r.rev_gr)}</td>
+      <td class="neg">−${FMT.int(r.sppDisc)}</td>
+      <td>${FMT.int(r.rev_net)}</td>
+      <td class="neg">−${FMT.int(r.ekv)}</td>
+      <td class="${r.voznagr<0?'pos':'neg'}">${r.voznagr<0?'+':'−'}${FMT.int(Math.abs(r.voznagr))}</td>
+      <td class="pos">${FMT.int(r.kperech)}</td>
+      <td class="neg">−${FMT.int(r.rekl)}</td>
+      <td class="neg">−${FMT.int(r.nalog)}</td>
+      <td class="neg">−${FMT.int(r.logist)}</td>
+      <td class="neg">−${FMT.int(r.hran)}</td>
+      <td class="neg">−${FMT.int(r.reimb)}</td>
+      <td class="neg">−${FMT.int(r.cogs)}</td>
+      <td class="${r.marzh<0?'neg':'pos'}">${FMT.int(r.marzh)}</td>
+      <td class="${r.marzhPct<0?'neg':(r.marzhPct>=P.target.v?'pos':'warn')}">${FMT.pct(r.marzhPct)}</td>
+      <td>${FMT.int(r.beub)}</td>
+    </tr>`;
+    Object.keys(T).forEach(k=>T[k]+=r[k]||0);
+  });
+  T.marzhPct=T.rev_net>0?T.marzh/T.rev_net:0;
+  h+=`<tr class="tot">
+    <td>ИТОГО</td><td>${FMT.int(T.qty)}</td><td></td>
+    <td>${FMT.int(T.rev_gr)}</td><td>−${FMT.int(T.sppDisc)}</td><td>${FMT.int(T.rev_net)}</td>
+    <td>−${FMT.int(T.ekv)}</td><td>${T.voznagr<0?'+':'−'}${FMT.int(Math.abs(T.voznagr))}</td><td>${FMT.int(T.kperech)}</td>
+    <td>−${FMT.int(T.rekl)}</td><td>−${FMT.int(T.nalog)}</td><td>−${FMT.int(T.logist)}</td><td>−${FMT.int(T.hran)}</td><td>−${FMT.int(T.reimb)}</td><td>−${FMT.int(T.cogs)}</td>
+    <td>${FMT.int(T.marzh)}</td><td>${FMT.pct(T.marzhPct)}</td><td></td>
+  </tr></tbody>`;
+  document.getElementById('t-sum2').innerHTML=h;
+}
+
+function renderCalc(){
+  const sel=document.getElementById('skuSel');
+  if(!sel.options.length){
+    SKU.forEach((s,i)=>{
+      const o=document.createElement('option');
+      o.value=s.art; o.text=`${s.name} (${s.art})`;
+      sel.add(o);
+    });
+  }
+  const art=parseInt(sel.value)||SKU[0].art;
+  const s=SKU.find(x=>x.art===art);
+  const r=calcSKU(art, PERSKU[art].ownDrr);
+  const ownDrrDisp = PERSKU[art].ownDrr!=null && !isNaN(PERSKU[art].ownDrr) ? FMT.pct(PERSKU[art].ownDrr) : 'из глобала';
+
+  // Левая карточка: параметры
+  document.getElementById('c-params').innerHTML=`
+    <h3>📋 Параметры ${s.name}</h3>
+    <div class="calc-row"><span>Артикул</span><span class="v">${s.art}</span></div>
+    <div class="calc-row"><span>Себестоимость</span><span class="v">${FMT.int(r.e.sebs)} ₽/шт</span></div>
+    <div class="calc-row"><span>+ ФФ</span><span class="v">${FMT.int(r.e.ff)} ₽/шт</span></div>
+    <div class="calc-row"><span>Остаток шт</span><span class="v">${FMT.int(r.qty)}</span></div>
+    <div class="calc-row"><span>Цена факт. ср. 2025</span><span class="v">${FMT.int(s.avgP)} ₽</span></div>
+    <div class="calc-row"><span>MAX цена 2025</span><span class="v">${FMT.int(s.maxP)} ₽</span></div>
+    <div class="calc-row tot"><span>Цена ДО СПП (своя)</span><span class="v">${FMT.int(r.price)} ₽</span></div>
+    <div class="calc-row"><span>ДРР %</span><span class="v">${FMT.pct(r.e.drr)} <span class="n">${ownDrrDisp==='из глобала'?'(из глобала)':'(своё)'}</span></span></div>
+    <div class="calc-row"><span>СПП %</span><span class="v">${FMT.pct(r.e.spp)}</span></div>
+    <div class="calc-row"><span>Комиссия ВБ %</span><span class="v">${FMT.pct(r.e.komis)}</span></div>
+    <div class="calc-row"><span>Эквайринг %</span><span class="v">${FMT.pct(r.e.equa)}</span></div>
+    <div class="calc-row"><span>Налоги %</span><span class="v">${FMT.pct(r.e.tax)}</span></div>
+    <div class="calc-row"><span>Логистика ₽/шт</span><span class="v">${FMT.int(r.e.log)}</span></div>
+    <div class="calc-row"><span>% возвратов</span><span class="v">${FMT.pct(r.e.ret)}</span></div>
+    <div class="calc-row"><span>Хранение ₽/шт/мес × мес</span><span class="v">${FMT.int(r.e.stor)} × ${r.e.storm}</span></div>
+    <div class="calc-row"><span>Возмещ ПВЗ ₽/шт</span><span class="v">${FMT.int(r.e.reimb)}</span></div>
+  `;
+
+  // Правая карточка: расчёт с пояснениями
+  document.getElementById('c-calc').innerHTML=`
+    <h3>💰 Расчёт по выбранной SKU</h3>
+    <div class="calc-row"><span>Цена ДО СПП × шт = Доходы</span><span class="v">${FMT.int(r.rev_gr)} ₽</span></div>
+    <div class="calc-row exp"><span>(−) Скидка СПП <span class="n">${FMT.pct(r.e.spp)}</span></span><span class="v">−${FMT.int(r.sppDisc)}</span></div>
+    <div class="calc-row tot"><span>= Выручка нетто (заплатили покуп.)</span><span class="v">${FMT.int(r.rev_net)} ₽</span></div>
+    <div class="calc-row exp"><span>(−) Эквайринг <span class="n">${FMT.pct(r.e.equa)}</span></span><span class="v">−${FMT.int(r.ekv)}</span></div>
+    <div class="calc-row ${r.voznagr<0?'':'exp'}"><span>${r.voznagr<0?'(+)':'(−)'} Вознагр. ВБ <span class="n">(Комис − СПП)</span></span><span class="v" style="color:${r.voznagr<0?'var(--green)':'var(--red)'}">${r.voznagr<0?'+':'−'}${FMT.int(Math.abs(r.voznagr))}</span></div>
+    <div class="calc-row tot" style="background:#dcfce7"><span>= К ПЕРЕЧИСЛЕНИЮ (первый чек)</span><span class="v" style="color:var(--green)">${FMT.int(r.kperech)} ₽</span></div>
+    <div class="calc-row exp"><span>(−) Реклама ДРР <span class="n">${FMT.pct(r.e.drr)}</span></span><span class="v">−${FMT.int(r.rekl)}</span></div>
+    <div class="calc-row exp"><span>(−) Налоги <span class="n">${FMT.pct(r.e.tax)}</span></span><span class="v">−${FMT.int(r.nalog)}</span></div>
+    <div class="calc-row exp"><span>(−) Логистика <span class="n">${FMT.int(r.e.log)} × шт × (1+возвр)</span></span><span class="v">−${FMT.int(r.logist)}</span></div>
+    <div class="calc-row exp"><span>(−) Хранение</span><span class="v">−${FMT.int(r.hran)}</span></div>
+    <div class="calc-row exp"><span>(−) Возмещения ПВЗ</span><span class="v">−${FMT.int(r.reimb)}</span></div>
+    <div class="calc-row exp"><span>(−) Себест + ФФ</span><span class="v">−${FMT.int(r.cogs)}</span></div>
+    <div class="calc-row tot" style="background:${r.marzh<0?'var(--red-l)':'var(--green-l)'}"><span>= МАРЖА ₽</span><span class="v" style="color:${r.marzh<0?'var(--red)':'var(--green)'}">${FMT.int(r.marzh)} ₽</span></div>
+    <div class="calc-row tot" style="background:${r.marzh<0?'var(--red-l)':'var(--green-l)'}"><span>= МАРЖА %</span><span class="v" style="color:${r.marzh<0?'var(--red)':'var(--green)'}">${FMT.pct(r.marzhPct)}</span></div>
+    <div class="calc-row"><span>Маржа на 1 шт</span><span class="v">${FMT.int(r.marzh/r.qty)} ₽</span></div>
+    <hr style="margin:10px 0;border:none;border-top:1px solid var(--gray-b)">
+    <div class="calc-row"><span>Цена БЕЗУБ <span class="n">(маржа 0)</span></span><span class="v">${FMT.int(r.beub)} ₽</span></div>
+    <div class="calc-row"><span>Цена +20% маржи <span class="n">(БЕЗУБ × 1,20)</span></span><span class="v" style="color:var(--green)">${FMT.int(r.p20)} ₽</span></div>
+  `;
+}
+
+function renderPerSku(){
+  let h=`<thead><tr>
+    <th class="l">SKU</th><th>Себест ★ ₽/шт</th><th>Остаток шт</th>
+    <th>ДРР %</th><th>% возвр</th><th>Лог ₽/шт</th><th>Хран ₽/шт/м</th><th>Срок мес</th><th>Налог %</th><th>Комис %</th><th>Возмещ ₽/шт</th>
+    </tr></thead><tbody>`;
+  SKU.forEach(s=>{
+    const ps=PERSKU[s.art];
+    const inp=(fld,fmt,placeholder)=>{
+      const v=ps[fld];
+      const disp=v==null||isNaN(v)?'':(fmt==='pct'?(v*100).toFixed(1):v);
+      const suf=fmt==='pct'?'<span class="suf">%</span>':'';
+      const cls='in-cell'+(fmt==='pct'?' has-suf':'');
+      return `<td class="${cls}"><input type="number" step="${fmt==='pct'?0.5:1}" value="${disp}" placeholder="${placeholder||''}" data-art="${s.art}" data-fld="${fld}" data-fmt="${fmt}" onchange="updPerSku(this)">${suf}</td>`;
+    };
+    h+=`<tr>
+      <td>${s.name}</td>
+      ${inp('sebs','rub','★')}
+      ${inp('ost','int','')}
+      ${inp('drr','pct',(P.drr.v*100)+'%')}
+      ${inp('ret','pct',(P.ret.v*100)+'%')}
+      ${inp('log','rub',P.log.v)}
+      ${inp('stor','rub',P.stor.v)}
+      ${inp('storm','num',P.storm.v)}
+      ${inp('tax','pct',(P.tax.v*100)+'%')}
+      ${inp('komis','pct',(P.komis.v*100)+'%')}
+      ${inp('reimb','rub',P.reimb.v)}
+    </tr>`;
+  });
+  h+='</tbody>';
+  document.getElementById('t-perscu').innerHTML=h;
+}
+
+function setPrice(art, p){
+  PERSKU[art].ownPrice = p;
+  recalc();
+}
+
+function updPerSku(el){
+  const art=parseInt(el.dataset.art);
+  const fld=el.dataset.fld;
+  const fmt=el.dataset.fmt;
+  let v=el.value.trim();
+  if(v===''){ PERSKU[art][fld]=null; }
+  else{
+    // Разрешаем и точку, и запятую как разделитель
+    v=parseFloat(v.replace(',','.'));
+    if(isNaN(v)){ PERSKU[art][fld]=null; }
+    else PERSKU[art][fld] = fmt==='pct' ? v/100 : v;
+  }
+  recalc();
+}
+
+function renderPlan(rows){
+  let h=`<thead><tr>
+    <th class="l">SKU</th><th>Остаток шт</th><th>Дней</th><th>Нужно шт/день</th>
+    <th>Макс шт/день 2025</th><th>Сред шт/день 2025</th><th class="c">Реалистично?</th><th class="l">Пояснение</th>
+    </tr></thead><tbody>`;
+  let tOst=0;
+  rows.forEach(r=>{
+    const need=r.ost/P.days.v;
+    let cls='g', txt='🟢 реально', note='Темп в пределах среднего 2025 — обычная работа';
+    if(need>r.maxQty){cls='r';txt='🔴 НЕ РЕАЛЬНО';note='Темп ВЫШЕ максимума 2025 — даже в пик столько не продавали. Снижать цену.';}
+    else if(need>r.avgQty){cls='y';txt='🟡 нужен пик';note='Нужен агрессивный маркетинг: реклама A/B, ставки в карточке, акции';}
+    h+=`<tr>
+      <td>${r.name}</td>
+      <td>${FMT.int(r.ost)}</td>
+      <td>${P.days.v}</td>
+      <td>${FMT.num(need)}</td>
+      <td>${FMT.num(r.maxQty)}</td>
+      <td>${FMT.num(r.avgQty)}</td>
+      <td class="c"><span class="st ${cls}">${txt}</span></td>
+      <td class="l" style="font-size:11px;color:var(--gray);font-style:italic">${note}</td>
+    </tr>`;
+    tOst+=r.ost;
+  });
+  h+=`<tr class="tot"><td>ИТОГО</td><td>${FMT.int(tOst)}</td><td>${P.days.v}</td><td>${FMT.int(tOst/P.days.v)}</td><td></td><td></td><td></td><td></td></tr></tbody>`;
+  document.getElementById('t-plan').innerHTML=h;
+}
+
+let chExpInst=null;
+function renderFin(T){
+  const h=`
+    <thead><tr><th class="l">Показатель</th><th>Сумма ₽</th><th>% выручки</th></tr></thead>
+    <tbody>
+      <tr><td>Выручка нетто (всего)</td><td><strong>${FMT.int(T.rev_net)}</strong></td><td class="calc">100%</td></tr>
+      <tr><td>Маржа товарная (до опер. расходов)</td><td class="${T.marzh<0?'neg':'pos'}">${FMT.int(T.marzh)}</td><td>${FMT.pct(T.marzhPct)}</td></tr>
+      <tr><td>Опер. расходы (% от выручки)</td><td class="neg">−${FMT.int(T.opex)}</td><td>${FMT.pct(P.opex.v)}</td></tr>
+      <tr class="tot"><td>💰 ФИНРЕЗУЛЬТАТ СЕЗОНА</td><td>${FMT.int(T.finrez)}</td><td>${FMT.pct(T.rev_net>0?T.finrez/T.rev_net:0)}</td></tr>
+    </tbody>`;
+  document.getElementById('t-fin').innerHTML=h;
+  // График
+  const ctx=document.getElementById('chExp');
+  if(chExpInst) chExpInst.destroy();
+  chExpInst=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:['Себест+ФФ','Реклама','Налог','Логистика','Опер.расх','Хранение','Возмещ','Эквайр'],
+      datasets:[{
+        label:'₽',
+        data:[T.cogs,T.rekl,T.nalog,T.logist,T.opex,T.hran,T.reimb,T.ekv],
+        backgroundColor:['#7c3aed','#ef4444','#f59e0b','#3b82f6','#ec4899','#06b6d4','#84cc16','#64748b']
+      }]
+    },
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:c=>c.parsed.x.toLocaleString('ru-RU')+' ₽ ('+(T.rev_net>0?(c.parsed.x/T.rev_net*100).toFixed(1):0)+'% выручки)'}}},
+      scales:{x:{ticks:{callback:v=>(v/1e6).toFixed(1)+' млн'}}}}
+  });
+}
+
+function recalc(){
+  const {rows,T}=calcAll();
+  renderKpis(T, rows);
+  renderSum1(rows);
+  renderSum2(rows);
+  renderCalc();
+  renderPerSku();
+  renderPlan(rows);
+  renderFin(T);
+}
+
+function goTab(i){
+  document.querySelectorAll('.tab').forEach((b,j)=>b.classList.toggle('active',j===i));
+  document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',j===i));
+}
+
+// ============================================================================
+// EXCEL EXPORT / IMPORT
+// ============================================================================
+function expExcel(){
+  const {rows,T}=calcAll();
+  const wb=XLSX.utils.book_new();
+  const HDR={font:{bold:true,color:{rgb:'FFFFFF'},sz:11},fill:{patternType:'solid',fgColor:{rgb:'1F4E79'}},alignment:{horizontal:'center',vertical:'center',wrapText:true},border:{top:{style:'thin',color:{rgb:'CCCCCC'}},bottom:{style:'thin',color:{rgb:'CCCCCC'}},left:{style:'thin',color:{rgb:'CCCCCC'}},right:{style:'thin',color:{rgb:'CCCCCC'}}}};
+  const TOT={font:{bold:true,color:{rgb:'FFFFFF'}},fill:{patternType:'solid',fgColor:{rgb:'1F4E79'}}};
+  const POS={font:{bold:true,color:{rgb:'15803d'}},fill:{patternType:'solid',fgColor:{rgb:'dcfce7'}}};
+  const NEG={font:{bold:true,color:{rgb:'b91c1c'}},fill:{patternType:'solid',fgColor:{rgb:'fee2e2'}}};
+  const IN ={font:{bold:true,color:{rgb:'0f172a'}},fill:{patternType:'solid',fgColor:{rgb:'fff8e1'}}};
+  const RUB='#,##0';
+  const PCT='0.0%';
+
+  // ===== Лист 1: ПАРАМЕТРЫ =====
+  const p1=[['Параметр','Значение','Факт Ноя25-Янв26','Подсказка']];
+  Object.entries(P).forEach(([k,p])=>{
+    p1.push([p.lbl, p.v, p.fact||'', p.hint||'']);
+  });
+  const ws1=XLSX.utils.aoa_to_sheet(p1);
+  ws1['!cols']=[{wch:35},{wch:14},{wch:18},{wch:50}];
+  for(let c=0;c<4;c++){const a=XLSX.utils.encode_cell({r:0,c});if(ws1[a])ws1[a].s=HDR;}
+  for(let r=1;r<p1.length;r++){
+    const av=XLSX.utils.encode_cell({r,c:1});
+    if(ws1[av]){
+      ws1[av].s=IN;
+      const fmt=Object.values(P)[r-1].fmt;
+      if(fmt==='pct') ws1[av].z=PCT;
+      else if(fmt==='rub') ws1[av].z=RUB;
+    }
+  }
+  XLSX.utils.book_append_sheet(wb,ws1,'Параметры');
+
+  // ===== Лист 2: PER-SKU =====
+  const p2=[['Артикул','Название','Себест ₽/шт','Остаток шт','Своя цена ★','Своё ДРР','ДРР %','% возвр','Лог ₽/шт','Хран ₽/шт/м','Срок мес','Налог %','Комис %','Возмещ ₽/шт']];
+  SKU.forEach(s=>{
+    const ps=PERSKU[s.art];
+    p2.push([s.art, s.name, ps.sebs, ps.ost, ps.ownPrice, ps.ownDrr, ps.drr, ps.ret, ps.log, ps.stor, ps.storm, ps.tax, ps.komis, ps.reimb]);
+  });
+  const ws2=XLSX.utils.aoa_to_sheet(p2);
+  ws2['!cols']=[{wch:12},{wch:28},{wch:12},{wch:11},{wch:12},{wch:11},{wch:9},{wch:9},{wch:11},{wch:13},{wch:10},{wch:9},{wch:10},{wch:13}];
+  for(let c=0;c<14;c++){const a=XLSX.utils.encode_cell({r:0,c});if(ws2[a])ws2[a].s=HDR;}
+  for(let r=1;r<p2.length;r++){
+    for(let c=2;c<14;c++){
+      const a=XLSX.utils.encode_cell({r,c});
+      if(ws2[a]){
+        ws2[a].s=IN;
+        if([5,6,7,11,12].includes(c)) ws2[a].z=PCT;
+        else if([2,4,8,9,13].includes(c)) ws2[a].z=RUB;
+      }
+    }
+  }
+  XLSX.utils.book_append_sheet(wb,ws2,'Per-SKU настройки');
+
+  // ===== Лист 3: СВОДКА (Блок 1) =====
+  const s1=[['SKU','Остаток','MAX 2025','БЕЗУБ','Цена +20%','Своя цена','Маржа %','Маржа ₽','ДРР %','Реклама ₽','Статус']];
+  rows.forEach(r=>{
+    let st='🟢 цель';
+    if(r.price<r.beub || r.marzhPct<=0) st='🔴 убыток';
+    else if(r.marzhPct<P.target.v) st='🟡 в плюсе';
+    s1.push([r.name,r.ost,r.maxP,r.beub,r.p20,r.price,r.marzhPct,r.marzh,r.e.drr,r.rekl,st]);
+  });
+  s1.push(['ИТОГО',T.qty,'','','','',T.marzhPct,T.marzh,T.drrAvg,T.rekl,'']);
+  const ws3=XLSX.utils.aoa_to_sheet(s1);
+  ws3['!cols']=[{wch:28},{wch:9},{wch:11},{wch:11},{wch:11},{wch:12},{wch:10},{wch:13},{wch:9},{wch:13},{wch:14}];
+  for(let c=0;c<11;c++){const a=XLSX.utils.encode_cell({r:0,c});if(ws3[a])ws3[a].s=HDR;}
+  for(let r=1;r<s1.length;r++){
+    const isTot=r===s1.length-1;
+    for(let c=1;c<11;c++){
+      const a=XLSX.utils.encode_cell({r,c});
+      if(!ws3[a])continue;
+      if(isTot){ws3[a].s=TOT;}
+      if([3,4,7,9].includes(c)) ws3[a].z=RUB;
+      if([6,8].includes(c)) ws3[a].z=PCT;
+      if(c===5 && !isTot) ws3[a].s=IN;
+      if(c===7 && !isTot){
+        const m=s1[r][7];
+        if(m<0) ws3[a].s=NEG;
+        else if(m>0) ws3[a].s=POS;
+      }
+    }
+  }
+  XLSX.utils.book_append_sheet(wb,ws3,'Сводка');
+
+  // ===== Лист 4: ДЕТАЛЬНАЯ =====
+  const s2=[['SKU','Шт','Цена ДО СПП','Доходы','Скидка СПП','Выручка нетто','Эквайр','Вознагр.ВБ','К перечислению','Реклама','Налог','Логистика','Хранение','Возмещ','Себест+ФФ','МАРЖА ₽','МАРЖА %','БЕЗУБ']];
+  rows.forEach(r=>{
+    s2.push([r.name,r.qty,r.price,r.rev_gr,-r.sppDisc,r.rev_net,-r.ekv,-r.voznagr,r.kperech,-r.rekl,-r.nalog,-r.logist,-r.hran,-r.reimb,-r.cogs,r.marzh,r.marzhPct,r.beub]);
+  });
+  s2.push(['ИТОГО',T.qty,'',T.rev_gr,-T.sppDisc,T.rev_net,-T.ekv,-T.voznagr,T.kperech,-T.rekl,-T.nalog,-T.logist,-T.hran,-T.reimb,-T.cogs,T.marzh,T.marzhPct,'']);
+  const ws4=XLSX.utils.aoa_to_sheet(s2);
+  const W4=[28,8,11,12,11,12,9,12,13,10,10,10,10,10,12,12,10,11];
+  ws4['!cols']=W4.map(w=>({wch:w}));
+  for(let c=0;c<18;c++){const a=XLSX.utils.encode_cell({r:0,c});if(ws4[a])ws4[a].s=HDR;}
+  for(let r=1;r<s2.length;r++){
+    const isTot=r===s2.length-1;
+    for(let c=1;c<18;c++){
+      const a=XLSX.utils.encode_cell({r,c});
+      if(!ws4[a])continue;
+      if(isTot)ws4[a].s=TOT;
+      if(c===16) ws4[a].z=PCT;
+      else if(c>=2) ws4[a].z=RUB;
+    }
+  }
+  XLSX.utils.book_append_sheet(wb,ws4,'Детальная разбивка');
+
+  // ===== Лист 5: ФИНРЕЗУЛЬТАТ =====
+  const f=[
+    ['Показатель','Сумма ₽','% выручки'],
+    ['Выручка нетто (всего)', T.rev_net, 1],
+    ['Маржа товарная', T.marzh, T.marzhPct],
+    ['Опер. расходы', -T.opex, P.opex.v],
+    ['ФИНРЕЗУЛЬТАТ СЕЗОНА', T.finrez, T.rev_net>0?T.finrez/T.rev_net:0],
+  ];
+  const ws5=XLSX.utils.aoa_to_sheet(f);
+  ws5['!cols']=[{wch:38},{wch:18},{wch:13}];
+  for(let c=0;c<3;c++){const a=XLSX.utils.encode_cell({r:0,c});if(ws5[a])ws5[a].s=HDR;}
+  for(let r=1;r<5;r++){
+    const av=XLSX.utils.encode_cell({r,c:1});
+    const pv=XLSX.utils.encode_cell({r,c:2});
+    if(ws5[av]) ws5[av].z=RUB;
+    if(ws5[pv]) ws5[pv].z=PCT;
+    if(r===4){
+      [0,1,2].forEach(c=>{const a=XLSX.utils.encode_cell({r,c});if(ws5[a])ws5[a].s=T.finrez<0?NEG:POS;});
+    }
+  }
+  XLSX.utils.book_append_sheet(wb,ws5,'Финрезультат');
+
+  XLSX.writeFile(wb,'Финмодель_ИП_Растатуев_'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+
+function loadExcel(){
+  document.getElementById('fileInp').click();
+}
+document.getElementById('fileInp').addEventListener('change',e=>{
+  const f=e.target.files[0];
+  if(!f)return;
+  const rd=new FileReader();
+  rd.onload=ev=>{
+    try{
+      const data=new Uint8Array(ev.target.result);
+      const wb=XLSX.read(data,{type:'array'});
+      // Параметры
+      if(wb.Sheets['Параметры']){
+        const ws=wb.Sheets['Параметры']; const rng=XLSX.utils.decode_range(ws['!ref']);
+        const keys=Object.keys(P);
+        for(let r=1;r<=rng.e.r && r-1<keys.length;r++){
+          const k=keys[r-1]; const a=XLSX.utils.encode_cell({r,c:1});
+          if(ws[a] && typeof ws[a].v==='number') P[k].v=ws[a].v;
+        }
+      }
+      // Per-SKU
+      if(wb.Sheets['Per-SKU настройки']){
+        const ws=wb.Sheets['Per-SKU настройки']; const rng=XLSX.utils.decode_range(ws['!ref']);
+        const cols=['sebs','ost','ownPrice','ownDrr','drr','ret','log','stor','storm','tax','komis','reimb'];
+        for(let r=1;r<=rng.e.r;r++){
+          const aArt=XLSX.utils.encode_cell({r,c:0});
+          if(!ws[aArt])continue;
+          const art=ws[aArt].v;
+          if(!PERSKU[art])continue;
+          cols.forEach((fld,i)=>{
+            const a=XLSX.utils.encode_cell({r,c:2+i});
+            PERSKU[art][fld] = (ws[a] && ws[a].v!==undefined && ws[a].v!=='') ? ws[a].v : null;
+          });
+        }
+      }
+      renderSidebar();
+      recalc();
+      alert('✓ Параметры загружены из Excel');
+    }catch(err){alert('Ошибка загрузки: '+err.message);}
+  };
+  rd.readAsArrayBuffer(f);
+});
+
+// ============================================================================
+// СТАРТ
+// ============================================================================
+renderSidebar();
+recalc();
+</script>
+</body>
+</html>
