@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Елена Савичева — внешний финансовый директор</title>
+<meta name="description" content="Управленческий учёт, себестоимость, автоматизация и интеграции по API для собственников бизнеса. Финдир своих бизнесов и клиентов с 2008 года. Решения на цифрах.">
+<meta name="keywords" content="внешний финансовый директор, управленческий учёт, учёт группы компаний, себестоимость по технологическим картам, юнит-экономика, автоматизация учёта, интеграция API, финансовый анализ, финансовая модель">
+<meta name="author" content="Елена Савичева">
+<meta property="og:title" content="Елена Савичева — внешний финансовый директор">
+<meta property="og:description" content="Система управленческого учёта для собственников, которые выстроили бизнес и хотят расти без хаоса. Решения на цифрах.">
+<meta property="og:image" content="https://elenasavichevafindir.ru/assets/elena.jpg">
+<meta property="og:url" content="https://elenasavichevafindir.ru/">
+<link rel="icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal-900:#0c3138;
+  --teal-800:#103f47;
+  --teal-700:#17535c;
+  --teal-600:#1f6973;
+  --teal-100:#e3eeee;
+  --sand-50:#fbf8f3;
+  --sand-100:#f5efe5;
+  --sand-200:#ebe2d3;
+  --ink:#1b2a2d;
+  --muted:#56676a;
+  --line:#e2d9ca;
+  --gold:#b8924a;
+  --gold-soft:#e9dcc0;
+  --white:#fffdf9;
+  --radius:20px;
+  --shadow:0 18px 40px -24px rgba(12,49,56,.35);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Manrope',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;background:var(--sand-50);color:var(--ink);line-height:1.6;font-size:17px;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+.container{max-width:1160px;margin:0 auto;padding:0 24px}
+h1,h2,h3{font-family:'Playfair Display',Georgia,serif;font-weight:600;line-height:1.2;color:var(--teal-900)}
+h2{font-size:clamp(1.9rem,3.4vw,2.6rem);margin-bottom:18px}
+h3{font-size:1.3rem;margin-bottom:10px}
+.eyebrow{display:inline-block;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--gold);margin-bottom:14px}
+.lead{font-size:1.12rem;color:var(--muted);max-width:720px}
+section{padding:96px 0}
+.section-head{margin-bottom:48px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:15px 28px;border-radius:999px;font-weight:700;font-size:1rem;text-decoration:none;border:1.5px solid transparent;cursor:pointer;transition:transform .15s,background .15s,box-shadow .15s;font-family:inherit}
+.btn-primary{background:var(--teal-800);color:#fff;box-shadow:0 12px 24px -14px var(--teal-800)}
+.btn-primary:hover{background:var(--teal-700);transform:translateY(-1px)}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-gold:hover{background:#a6813d}
+.btn-ghost{border-color:var(--teal-800);color:var(--teal-800);background:transparent}
+.btn-ghost:hover{background:var(--teal-100)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+/* header */
+header{position:sticky;top:0;z-index:50;background:rgba(251,248,243,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:72px;gap:20px}
+.logo{font-family:'Playfair Display',serif;font-weight:700;font-size:1.25rem;color:var(--teal-900);text-decoration:none;line-height:1.1}
+.logo small{display:block;font-family:'Manrope',sans-serif;font-weight:500;font-size:.75rem;color:var(--muted);letter-spacing:.02em}
+.nav-links{display:flex;gap:26px;list-style:none}
+.nav-links a{text-decoration:none;font-weight:600;font-size:.95rem;color:var(--teal-800)}
+.nav-links a:hover{color:var(--gold)}
+.nav .btn{padding:11px 20px;font-size:.92rem}
+
+/* hero */
+.hero{padding:72px 0 88px;background:radial-gradient(1200px 500px at 85% 0%,var(--sand-100),transparent 60%)}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+.hero h1{font-size:clamp(2.6rem,5.4vw,4.2rem);margin-bottom:10px}
+.hero .name{font-size:1.15rem;font-weight:700;color:var(--teal-700);margin-bottom:22px}
+.hero .lead{margin-bottom:34px;color:var(--ink)}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.hero-note{font-size:.92rem;color:var(--muted)}
+.photo-wrap{position:relative;max-width:430px;justify-self:end;width:100%}
+.photo-wrap img{border-radius:28px;box-shadow:var(--shadow);aspect-ratio:4/5;object-fit:cover;object-position:50% 20%;width:100%}
+.photo-wrap::before{content:"";position:absolute;inset:18px -18px -18px 18px;border:1.5px solid var(--gold-soft);border-radius:28px;z-index:-1}
+.photo-tag{position:absolute;left:-24px;bottom:28px;background:var(--white);border:1px solid var(--line);border-radius:16px;padding:14px 18px;box-shadow:var(--shadow);font-size:.9rem;max-width:240px}
+.photo-tag b{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--teal-900);display:block}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:64px}
+.fact{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px}
+.fact b{display:block;font-family:'Manrope',sans-serif;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;font-size:clamp(1.35rem,2.2vw,1.7rem);white-space:nowrap;color:var(--teal-800);line-height:1.15;margin-bottom:6px}
+.fact span{font-size:.92rem;color:var(--muted)}
+
+/* pains */
+.pains{background:var(--white);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.pain-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.pain{display:flex;gap:14px;align-items:flex-start;padding:20px 22px;border-radius:16px;background:var(--sand-50);border:1px solid var(--line)}
+.pain::before{content:"";flex:0 0 10px;height:10px;margin-top:9px;border-radius:50%;background:var(--gold)}
+
+/* idea */
+.idea{background:var(--teal-900);color:#e8f0ef}
+.idea h2{color:#fff}
+.idea .eyebrow{color:var(--gold-soft)}
+.idea-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.idea p{margin-bottom:16px;color:#cfdfdd}
+.quote{border-left:3px solid var(--gold);padding:6px 0 6px 22px;font-family:'Playfair Display',serif;font-size:1.3rem;line-height:1.45;color:#fff;margin:8px 0 20px}
+.quote cite{display:block;font-family:'Manrope',sans-serif;font-style:normal;font-size:.85rem;color:var(--gold-soft);margin-top:10px}
+.gets{list-style:none;display:grid;gap:12px}
+.gets li{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:16px 18px}
+.gets b{color:#fff}
+
+/* method */
+.phases{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.phase{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:28px;position:relative}
+.phase .num{font-family:'Playfair Display',serif;font-size:2.4rem;color:var(--gold);line-height:1}
+.phase .role{font-size:.85rem;font-weight:700;color:var(--teal-600);text-transform:uppercase;letter-spacing:.08em;margin:6px 0 12px}
+.phase ol{padding-left:20px;color:var(--muted)}
+.phase li{margin-bottom:8px}
+.principles{margin-top:28px;display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.principle{padding:18px;border-radius:16px;background:var(--teal-100);font-size:.93rem;color:var(--teal-900);font-weight:600}
+
+/* cases */
+.cases{background:var(--sand-100)}
+.case{background:var(--white);border:1px solid var(--line);border-radius:26px;padding:40px;margin-bottom:28px;box-shadow:var(--shadow)}
+.case-top{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:24px}
+.tag{display:inline-block;font-size:.82rem;font-weight:700;padding:6px 14px;border-radius:999px;background:var(--teal-100);color:var(--teal-800)}
+.case h3{font-size:1.6rem;margin-top:12px}
+.case-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px}
+.case-cols h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:10px}
+.case-cols ul{list-style:none}
+.case-cols li{padding-left:18px;position:relative;margin-bottom:9px;font-size:.96rem}
+.case-cols li::before{content:"—";position:absolute;left:0;color:var(--teal-600)}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:28px}
+.metric{border-radius:16px;background:var(--sand-50);border:1px solid var(--line);padding:18px 20px}
+.metric b{display:block;font-family:'Manrope',sans-serif;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;font-size:clamp(1.3rem,2.2vw,1.75rem);white-space:nowrap;color:var(--teal-800);line-height:1.2;margin-bottom:4px}
+.metric span{font-size:.9rem;color:var(--muted)}
+.case-quote{margin-top:24px;padding:20px 24px;border-radius:16px;background:var(--teal-100);color:var(--teal-900)}
+.mini-case{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start;background:var(--teal-800);color:#e3eeee;border-radius:26px;padding:34px 40px}
+.mini-case h3{color:#fff}
+.mini-case .num{font-family:'Manrope',sans-serif;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;font-size:clamp(2rem,4vw,2.8rem);white-space:nowrap;color:var(--gold-soft);line-height:1}
+.next-box{margin-top:24px;padding:22px 24px;border-radius:16px;border:1.5px dashed var(--gold);background:var(--sand-50)}
+.next-box h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:10px}
+.next-box ul{list-style:none}
+.next-box li{padding-left:18px;position:relative;margin-bottom:8px}
+.next-box li::before{content:"→";position:absolute;left:0;color:var(--teal-600)}
+
+/* reviews */
+.reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.review{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:26px;display:flex;flex-direction:column;justify-content:space-between}
+.review p{font-size:.98rem;margin-bottom:16px}
+.review p::before{content:"«";font-family:'Playfair Display',serif;color:var(--gold);font-size:1.6rem;line-height:0;vertical-align:-.35em;margin-right:2px}
+.review small{color:var(--muted);font-weight:600}
+
+/* services */
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.service{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:28px;display:flex;flex-direction:column}
+.service p{color:var(--muted);font-size:.96rem;flex:1}
+.price{margin-top:18px;padding-top:16px;border-top:1px dashed var(--line);font-weight:700;color:var(--teal-800)}
+.price small{display:block;font-weight:500;color:var(--muted);font-size:.85rem}
+.service.accent{background:var(--teal-800);border-color:var(--teal-800)}
+.service.accent h3{color:#fff}
+.service.accent p{color:#cfdfdd}
+.service.accent .price{color:var(--gold-soft);border-color:rgba(255,255,255,.2)}
+.service.accent .price small{color:#cfdfdd}
+.price-note{margin-top:28px;display:grid;grid-template-columns:1.2fr .8fr;gap:20px}
+.note-box{border-radius:var(--radius);padding:26px 28px;background:var(--sand-100);border:1px solid var(--line)}
+.note-box h3{font-size:1.15rem}
+.note-box ul{padding-left:20px;color:var(--muted)}
+.note-box li{margin-bottom:6px}
+.expert{margin-top:20px;border-radius:var(--radius);padding:28px;border:1.5px solid var(--gold-soft);background:var(--white);display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
+
+
+.profi-row{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:18px}
+/* works */
+.works-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.work{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.work .shot{display:block;aspect-ratio:16/10;overflow:hidden;background:var(--sand-100);border-bottom:1px solid var(--line)}
+.work .shot img{width:100%;height:100%;object-fit:cover;object-position:top left;transition:transform .4s}
+.work:hover .shot img{transform:scale(1.03)}
+.work .body{padding:22px 24px 24px;display:flex;flex-direction:column;flex:1}
+.work .kind{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:8px}
+.work p{color:var(--muted);font-size:.95rem;flex:1;margin-bottom:16px}
+.work .btn{align-self:flex-start;padding:11px 20px;font-size:.92rem}
+.works-note{margin-top:22px;color:var(--muted);font-size:.95rem}
+/* process + tools */
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;counter-reset:s}
+.step{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:22px 20px;counter-increment:s}
+.step::before{content:counter(s);display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--gold);color:#fff;font-weight:700;margin-bottom:12px}
+.step b{display:block;color:var(--teal-900);margin-bottom:6px}
+.step span{font-size:.92rem;color:var(--muted)}
+.tools{margin-top:40px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.tool{border-radius:var(--radius);padding:26px;background:var(--white);border:1px solid var(--line)}
+.tool .who{font-size:.85rem;font-weight:700;color:var(--teal-600);margin-bottom:8px}
+.tool p{font-size:.95rem;color:var(--muted)}
+
+/* about */
+.about{background:var(--white);border-top:1px solid var(--line)}
+.about-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:start}
+.about-grid img{border-radius:24px;box-shadow:var(--shadow)}
+.timeline{list-style:none;margin:22px 0}
+.timeline li{display:grid;grid-template-columns:130px 1fr;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
+.timeline b{color:var(--teal-800)}
+.callout{margin-top:22px;padding:22px 24px;border-radius:18px;background:var(--teal-100);color:var(--teal-900)}
+.callout p+p{margin-top:10px}
+
+/* quiz */
+.quiz-section{background:var(--teal-900)}
+.quiz-section h2,.quiz-section .lead{color:#fff}
+.quiz-section .lead{color:#cfdfdd}
+.quiz-section .eyebrow{color:var(--gold-soft)}
+.quiz{max-width:780px;margin:0 auto;background:var(--white);border-radius:28px;padding:40px;box-shadow:0 30px 60px -30px rgba(0,0,0,.5)}
+.q-progress{display:flex;align-items:center;gap:14px;margin-bottom:28px;font-size:.88rem;font-weight:700;color:var(--muted)}
+.q-bar{flex:1;height:8px;background:var(--sand-200);border-radius:99px;overflow:hidden}
+.q-bar i{display:block;height:100%;width:0;background:var(--gold);transition:width .3s}
+.q-title{font-family:'Playfair Display',serif;font-size:1.45rem;color:var(--teal-900);margin-bottom:6px;line-height:1.3}
+.q-hint{color:var(--muted);font-size:.92rem;margin-bottom:20px}
+.opts{display:grid;gap:10px;margin-bottom:28px}
+.opt{display:flex;align-items:center;gap:14px;padding:15px 18px;border:1.5px solid var(--line);border-radius:14px;cursor:pointer;background:#fff;transition:border-color .15s,background .15s;font-size:.98rem}
+.opt:hover{border-color:var(--teal-600)}
+.opt input{accent-color:var(--teal-800);width:18px;height:18px;flex:0 0 18px}
+.opt.sel{border-color:var(--teal-800);background:var(--teal-100)}
+.q-nav{display:flex;justify-content:space-between;gap:12px}
+.zone-badge{display:inline-block;padding:7px 16px;border-radius:99px;background:var(--gold-soft);color:var(--teal-900);font-weight:700;font-size:.88rem;margin-bottom:14px}
+.ladder{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:18px 0 24px}
+.ladder div{padding:12px;border-radius:12px;background:var(--sand-100);font-size:.82rem;font-weight:600;color:var(--muted);text-align:center}
+.ladder div.on{background:var(--teal-800);color:#fff}
+.result-block{margin-bottom:18px}
+.result-block h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:8px}
+.result-block ul{padding-left:20px}
+.result-block li{margin-bottom:6px}
+.fit{padding:16px 18px;border-radius:14px;background:var(--sand-100);margin:18px 0 24px;font-size:.96rem}
+.field{margin-bottom:14px}
+.field label{display:block;font-weight:600;font-size:.9rem;margin-bottom:6px;color:var(--teal-900)}
+.field input{width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:12px;font:inherit;background:#fff}
+.field input:focus{outline:none;border-color:var(--teal-700)}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:.88rem;color:var(--muted);margin:16px 0 22px}
+.consent input{margin-top:4px;accent-color:var(--teal-800);width:18px;height:18px;flex:0 0 18px}
+.form-msg{font-size:.9rem;margin-top:12px;color:#a33}
+.messengers{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+.hp{position:absolute;left:-9999px}
+
+/* faq */
+.faq-list{max-width:860px}
+details{border-bottom:1px solid var(--line);padding:20px 0}
+summary{cursor:pointer;font-weight:700;font-size:1.08rem;color:var(--teal-900);list-style:none;display:flex;justify-content:space-between;gap:16px}
+summary::after{content:"+";color:var(--gold);font-size:1.5rem;line-height:1}
+details[open] summary::after{content:"–"}
+details p{margin-top:12px;color:var(--muted)}
+
+/* footer */
+footer{background:var(--teal-900);color:#cfdfdd;padding:64px 0 32px}
+.foot-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:40px;margin-bottom:40px}
+footer h3{color:#fff;font-size:1.15rem}
+footer a{color:#e9dcc0;text-decoration:none}
+footer a:hover{text-decoration:underline}
+footer li{list-style:none;margin-bottom:8px}
+.copy{border-top:1px solid rgba(255,255,255,.12);padding-top:24px;font-size:.85rem;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s,transform .6s}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+
+@media (max-width:1000px){
+  .hero-grid,.idea-grid,.about-grid,.price-note{grid-template-columns:1fr}
+  .facts{grid-template-columns:repeat(2,1fr)}
+  .phases,.services-grid,.reviews-grid,.tools,.works-grid{grid-template-columns:1fr 1fr}
+  .principles{grid-template-columns:1fr 1fr}
+  .steps{grid-template-columns:1fr 1fr}
+  .case-cols{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .photo-wrap{max-width:420px}
+}
+@media (max-width:640px){
+  body{font-size:16px}
+  .container{padding:0 16px}
+  section{padding:68px 0}
+  .hero{padding:40px 0 60px}
+  .facts,.phases,.services-grid,.reviews-grid,.tools,.works-grid,.principles,.steps,.pain-grid,.ladder{grid-template-columns:1fr}
+  .metric b,.fact b{white-space:normal}
+  .case,.quiz{padding:26px 20px}
+  .mini-case,.expert{grid-template-columns:1fr;padding:26px 22px}
+  .photo-tag{left:12px;bottom:12px}
+  .photo-wrap::before{display:none}
+  .timeline li{grid-template-columns:1fr;gap:2px}
+  .foot-grid{grid-template-columns:1fr}
+  .nav .btn{padding:10px 14px;font-size:.85rem}
+  .q-nav .btn{padding:13px 18px}
+  .hero-actions .btn{width:100%}
+  .hide-sm{display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <a class="logo" href="#top">Елена Савичева<small>внешний финансовый директор</small></a>
+    <ul class="nav-links">
+      <li><a href="#approach">Подход</a></li>
+      <li><a href="#cases">Кейсы</a></li>
+      <li><a href="#works">Мои работы</a></li>
+      <li><a href="#services">Услуги</a></li>
+      <li><a href="#about">Обо мне</a></li>
+      <li><a href="#faq">Вопросы</a></li>
+    </ul>
+    <a class="btn btn-primary" href="#test">Записаться<span class="hide-sm"> на созвон</span></a>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="reveal">
+        <span class="eyebrow">Внешний финансовый директор</span>
+        <h1>Решения на цифрах</h1>
+        <p class="name">Елена Савичева — финдир своих бизнесов и клиентов с 2008 года</p>
+        <p class="lead">Выстраиваю систему управленческого учёта для собственников, которые уже построили бизнес и хотят расти. Чтобы было видно, на чём бизнес зарабатывает, где теряет и какие решения принять, — без хаоса и стресса.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#test">Пройти тест и записаться на созвон</a>
+          <a class="btn btn-ghost" href="#cases">Посмотреть кейсы</a>
+        </div>
+        <p class="hero-note">Тест — 2–3 минуты. По ответам я заранее увижу Вашу ситуацию, и созвон 20–30 минут пройдёт по делу.</p>
+      </div>
+      <div class="photo-wrap reveal">
+        <img src="assets/elena.jpg" alt="Елена Савичева, внешний финансовый директор" width="720" height="900">
+        <div class="photo-tag"><b>«Елена Советник»</b>так меня записывают в телефонах</div>
+      </div>
+    </div>
+    <div class="facts reveal">
+      <div class="fact"><b>с 2008</b><span>финдир своих бизнесов и клиентов</span></div>
+      <div class="fact"><b>6 лет</b><span>главный налоговый инспектор отдела выездных проверок</span></div>
+      <div class="fact"><b>12 лет</b><span>своя аудиторская компания</span></div>
+      <div class="fact"><b>3 + 1</b><span>клиента на сопровождении и один на внедрении — не больше</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PAINS -->
+<section class="pains">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">С чем приходят</span>
+      <h2>Бизнес вырос, а цифры за ним не успели</h2>
+    </div>
+    <div class="pain-grid reveal">
+      <div class="pain">Деньги на счёте есть, а на чём бизнес зарабатывает — непонятно.</div>
+      <div class="pain">Обороты растут, а цифры у бухгалтера, у менеджеров и у Вас в голове разные.</div>
+      <div class="pain">1С и бухгалтерия — отдельный мир. Бухгалтерии некогда: ей нужно отчитываться перед налоговой.</div>
+      <div class="pain">Сервисы аналитики показывают примерную маржу, а доверия к их цифрам нет.</div>
+      <div class="pain">Группа компаний: переводы, перемещения и продажи друг другу задваивают обороты, общей картины не видно.</div>
+      <div class="pain">Хочется расти, но страшно потерять контроль: больше людей, больше поставок, больше расходов.</div>
+    </div>
+  </div>
+</section>
+
+<!-- IDEA -->
+<section class="idea" id="approach">
+  <div class="container idea-grid">
+    <div class="reveal">
+      <span class="eyebrow">Главное</span>
+      <h2>Рост без системы — это хаос</h2>
+      <p>Обороты могут вырасти и без системы. Но вместе с ними растёт всё остальное: людей больше, поставок больше, задач больше. Кто за что отвечает и как это делать — непонятно. Контроль теряется, и это стресс для собственника и команды.</p>
+      <p>Вместе с оборотами растут и расходы — и часто быстрее, чем продажи. Выручка выросла, а прибыли с каждого рубля осталось меньше, чем раньше. Деньги проходят через бизнес, но до собственника доходит всё меньше.</p>
+      <p>Система нужна, чтобы при росте расходы оставались под контролем, а прибыль росла вместе с оборотами, а не таяла. Я выстраиваю такую систему с нуля или привожу существующую к понятным механизмам — для собственника, руководителей и персонала.</p>
+      <div class="quote">«Несмотря на то, что обороты снизились, мы на плаву, мы с прибылью, с планами на перспективу. Мы внутри выстраиваем систему, чтобы вернуться к прежним объёмам и быстро вырасти».<cite>— моя фраза на встрече с собственником бренда одежды, осень 2026</cite></div>
+    </div>
+    <div class="reveal">
+      <h3 style="color:#fff">Что Вы получаете</h3>
+      <ul class="gets">
+        <li><b>Понимание, на чём растёт бизнес</b> — какие направления, товары и площадки приносят прибыль, а какие живут за счёт других.</li>
+        <li><b>Рычаги управления через цифры</b> — сколько можно закладывать на зарплату, рекламу и развитие и не съесть свою прибыль.</li>
+        <li><b>Сколько взять себе</b> — без ущерба для бизнеса, с запасом на жизнь, личные планы и развитие.</li>
+        <li><b>Расходы, которые можно сократить</b> — без ущерба для качества и сервиса.</li>
+        <li><b>Не таблицу, а решения</b> — презентацию с выводами и вариантами. Решение всегда за собственником.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- METHOD -->
+<section id="method">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Метод</span>
+      <h2>От интуиции к оцифрованному росту</h2>
+      <p class="lead">Три этапа. Первые два проходим один раз — это разработка и настройка системы учёта. Третий — постоянное сопровождение.</p>
+    </div>
+    <div class="phases reveal">
+      <div class="phase">
+        <div class="num">1</div>
+        <div class="role">Этап 1 · фундамент</div>
+        <h3>Понять, как есть</h3>
+        <ol>
+          <li>Созвон 20–30 минут и коммерческое предложение с этапами и ценой.</li>
+          <li>Аудит «как есть»: где лежат данные, кто что делает, что хочется видеть.</li>
+          <li>Архитектура: где теряется информация и каких блоков не хватает.</li>
+        </ol>
+      </div>
+      <div class="phase">
+        <div class="num">2</div>
+        <div class="role">Этап 2 · система</div>
+        <h3>Собрать и запустить</h3>
+        <ol>
+          <li>Сборка и проверка на Ваших реальных данных — с доработкой под то, как Вы видите цифры.</li>
+          <li>Передача команде: инструкция живёт внутри файла, роли распределены.</li>
+        </ol>
+      </div>
+      <div class="phase">
+        <div class="num">3</div>
+        <div class="role">Этап 3 · сопровождение</div>
+        <h3>Управлять на цифрах</h3>
+        <ol>
+          <li>Презентация решений: графики, выводы, варианты.</li>
+          <li>Цикл управления: цифры каждую неделю, корректировки в моменте, развитие системы под задачи роста.</li>
+        </ol>
+      </div>
+    </div>
+    <div class="principles reveal">
+      <div class="principle">Собственнику не нужно разбираться в учёте — нужно понимать, зачем ему управленческие цифры</div>
+      <div class="principle">Вывод — из данных, а не из моего мнения</div>
+      <div class="principle">Система под бизнес, а не бизнес под систему</div>
+      <div class="principle">Любой документ понятен неспециалисту</div>
+      <div class="principle">Управлять в моменте, а не разбирать убытки постфактум</div>
+    </div>
+  </div>
+</section>
+
+<!-- CASES -->
+<section class="cases" id="cases">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Кейсы 2026 года</span>
+      <h2>Что было, что сделали, что получилось</h2>
+      <p class="lead">Названия компаний не раскрываю — цифры и ход работы реальные.</p>
+    </div>
+
+    <article class="case reveal">
+      <div class="case-top">
+        <div>
+          <span class="tag">Постановка учёта и сопровождение с апреля 2026</span>
+          <h3>Бренд женской одежды: 4 канала продаж, 1 000+ артикулов</h3>
+        </div>
+      </div>
+      <div class="case-cols">
+        <div>
+          <h4>Было</h4>
+          <ul>
+            <li>Не было понимания, сколько бизнес зарабатывает.</li>
+            <li>Сервисы аналитики ВБ и Озона давали только примерную маржу — без операционных расходов.</li>
+            <li>Ламода работала без цифр, «по интуиции».</li>
+            <li>После окончания зимнего сезона — склады, перегруженные зимним ассортиментом, и плата за хранение.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Сделали</h4>
+          <ul>
+            <li>Управленческую отчётность по каждой площадке и сводную: прибыли и убытки, движение денег, все расходы, учёт наличных.</li>
+            <li>Планирование пошива по фактическим продажам, заказам и выкупу — без перезаказа и недозаказа. Данные МойСклада и маркетплейсов приходят по API каждое утро.</li>
+            <li>Премирование менеджеров на показателях, важных бизнесу: доля расходов площадки, точная заявка в пошив — без лишнего пошива и без нехватки ходовых моделей и размеров. Сотрудники стали рычагами развития бизнеса.</li>
+            <li>Еженедельные стратегические встречи с собственником и РОП: анализ продаж и операционных процессов за прошлую неделю, презентация, обсуждение результатов и решения — что сделать, чтобы улучшить результат или удержать его. За неделю фокус руководства обычно уходит в оперативку — встреча на реальных цифрах возвращает его к стратегии.</li>
+            <li>Сейчас — порядок в МойСкладе: процессы, регламенты, чек-листы.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Результат</h4>
+          <ul>
+            <li>Ламода из «непонятной площадки» стала растущей: маржинальность с 3,9% в июне до 27,7% в октябре.</li>
+            <li>Осенью оборот снизился вдвое к лету после известного форс-мажора на маркетплейсах — бизнес в прибыли и закупается без кредитов за счёт накопленного запаса денег.</li>
+            <li>Собственник видит, сколько можно закладывать на зарплату, рекламу и развитие — и сколько взять себе без ущерба для бизнеса.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric"><b>3,9% → 27,7%</b><span>маржинальность Ламоды, июнь → октябрь</span></div>
+        <div class="metric"><b>29 → 264 тыс. ₽</b><span>валовая маржа Ламоды за месяц после налогов</span></div>
+        <div class="metric"><b>14–17%</b><span>чистая прибыль осенью при обороте вдвое ниже летнего</span></div>
+      </div>
+      <div class="next-box">
+        <h4>Перспектива развития</h4>
+        <ul>
+          <li>Отчётность по собственному сайту — продажи без маркетплейсов.</li>
+          <li>Финансовая модель: какая система налогообложения выгоднее при растущих закупках ткани.</li>
+          <li>МойСклад, связанный с учётом производства, — остатки, которым можно доверять.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="case reveal">
+      <div class="case-top">
+        <div>
+          <span class="tag">Постановка учёта, июнь–октябрь 2026</span>
+          <h3>Группа из 7 компаний: бетон, ЖБИ, стройка</h3>
+        </div>
+      </div>
+      <div class="case-cols">
+        <div>
+          <h4>Было</h4>
+          <ul>
+            <li>В 1С каждая компания живёт отдельно — внутренние переводы, перемещения и продажи друг другу задваивают обороты.</li>
+            <li>Себестоимость «одним котлом», без разреза по изделиям.</li>
+            <li>Готовые сервисы протестировали — с внутригрупповыми расчётами и тех.картами не справились.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Сделали</h4>
+          <ul>
+            <li>Учёт группы как одной компании — без внутренних оборотов денег, материалов и изделий. Любая сумма раскрывается до операции.</li>
+            <li>Себестоимость по технологическим картам и юнит-экономику почти по 300 изделиям.</li>
+            <li>Склад готовой продукции по себестоимости.</li>
+            <li>Excel без абонентской платы: экономист группы ведёт учёт сама.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Что увидели собственники</h4>
+          <ul>
+            <li>Прибыль делают ЖБИ, а не бетон: 68% прибыли при 40% выручки.</li>
+            <li>80% прибыли ЖБИ дают 23 изделия из 295, а 18 изделий продаются в минус.</li>
+            <li>Стройка идёт в долг — и видно, сколько это стоит в процентах.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric"><b>360,7 млн ₽</b><span>выручка группы за полгода — впервые одной цифрой</span></div>
+        <div class="metric"><b>23 из 295</b><span>изделий дают 80% прибыли ЖБИ</span></div>
+        <div class="metric"><b>29,5 млн ₽</b><span>заморожено в складе готовой продукции</span></div>
+      </div>
+      <div class="next-box">
+        <h4>Перспектива развития — система растёт вместе с бизнесом</h4>
+        <ul>
+          <li>Автоматизация загрузки данных средствами Excel — отчёт за месяц к 3–5 числу.</li>
+          <li>Дашборды для собственников и руководства в Google Таблицах — с компьютера и телефона.</li>
+          <li>Интеграция по API с банками, 1С и Битрикс24 — деньги и продажи видны на сегодня.</li>
+          <li>Платёжный календарь на каждый день, бюджет и план-факт, учёт материалов против норм.</li>
+        </ul>
+        <p style="margin-top:10px;color:var(--muted)">Excel — «двигатель», где всё считается, Google — «экран», где это видят все, кому нужно.</p>
+      </div>
+    </article>
+
+    <div class="section-head reveal" style="margin:56px 0 24px">
+      <span class="eyebrow">Управленческие решения на цифрах</span>
+      <h3 style="font-size:1.6rem">Не моё мнение и не интуиция — расчёт</h3>
+    </div>
+    <div class="mini-case reveal">
+      <div class="num">2,1 млн ₽</div>
+      <div>
+        <h3>Бренд женской одежды: страховать товар на маркетплейсах</h3>
+        <p>РОП был против страховки. Я настояла, и решение было на цифрах: стоимость страховки известна — от 5 000 ₽ в день в зависимости от стоимости остатков товара, при таком обороте это небольшой расход по сравнению с риском потери товара.</p>
+        <p style="margin-top:10px">После форс-мажора на маркетплейсах на ВБ, где страховки не было, утрата — больше 8 млн ₽ по себестоимости. Посчитать её точно удалось только потому, что учёт уже был выстроен. На Озоне товар был застрахован: компенсация — уже 2,1 млн ₽, вдвое больше себестоимости. Расходы на страховку окупились за месяц и даже близко не сопоставимы с полученной компенсацией.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Отзывы на profi.ru</span>
+      <h2>Глазами клиентов</h2>
+      <div class="profi-row">
+        <div><div class="profi-widget" data-id="b19133ea1f74eb06f57bcb67fc82d1ba" data-type="300x100" data-emit-events="1"></div><script src="https://profi.ru/jqs/widget/widget.js"></script></div>
+        <a class="btn btn-ghost" href="https://profi.ru/profile/SavichevaYL" target="_blank" rel="noopener">Все отзывы и профиль на profi.ru</a>
+      </div>
+    </div>
+    <div class="reviews-grid reveal">
+      <div class="review"><p>Предполагал, что это будет просто эксель табличка. Получил подробнейший отчет с презентацией и 1,5 часовым созвоном с разъяснениями и рекомендациями.</p><small>Григорий, май 2026</small></div>
+      <div class="review"><p>Не просто сделала общий расчёт, а разложила всё по товарам и по статьям расходов, показала логику цифр… Получился не просто отчёт, а понятная финансовая картина, с которой уже можно работать дальше.</p><small>Руслан, сентябрь 2026</small></div>
+      <div class="review"><p>На сегодняшний день единого сервиса, который отвечал бы поставленным задачам, на рынке нет. Но Елена сделала невозможное — совместила все в единую систему… Рутинные расчеты проводятся за тебя.</p><small>Анастасия, октябрь 2026</small></div>
+      <div class="review"><p>Сама предлагает решения, если видит, что можно что-то улучшить… не ограничивается формальным выполнением заказа, а действительно заинтересована в результате.</p><small>Александр, октябрь 2026</small></div>
+      <div class="review"><p>Отдельная благодарность за качество подачи материала: подробное объяснение каждого этапа, инструкции по эксплуатации!</p><small>Анастасия, октябрь 2026</small></div>
+      <div class="review"><p>Понимающая задачу и проблемы клиента с полуслова.</p><small>Маргарита, апрель 2026</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- WORKS -->
+<section id="works">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Мои работы</span>
+      <h2>Как выглядят инструменты, которые я делаю</h2>
+      <p class="lead">Демо-версии на условных данных: названия и цифры клиентов заменены. Рабочая версия каждый раз делается под задачу конкретного бизнеса.</p>
+    </div>
+    <div class="works-grid reveal">
+      <article class="work">
+        <a class="shot" href="assets/work-dashboard.jpg" target="_blank" rel="noopener"><img src="assets/work-dashboard.jpg" alt="Дашборд управленческого учёта группы компаний в Excel" loading="lazy"></a>
+        <div class="body">
+          <div class="kind">Excel · учёт группы компаний</div>
+          <h3>Управленческий учёт группы</h3>
+          <p>Деньги, прибыль, стройка, долги и динамика по месяцам за любой период на одном экране. Группа — как одна компания, без внутренних оборотов. Любую сумму можно раскрыть до операций.</p>
+          <a class="btn btn-ghost" href="assets/work-dashboard.jpg" target="_blank" rel="noopener">Открыть скриншот</a>
+        </div>
+      </article>
+      <article class="work">
+        <a class="shot" href="demo/invest-model.html" target="_blank" rel="noopener"><img src="assets/work-invest.jpg" alt="Финансовая модель инвестпроекта: дашборд" loading="lazy"></a>
+        <div class="body">
+          <div class="kind">Веб · финансовая модель</div>
+          <h3>Модель инвестпроекта</h3>
+          <p>Покупка, реконструкция, аренда, продажа, кредит. Три сценария, денежный поток по кварталам, окупаемость и чувствительность — двигаете ползунки и сразу видите результат.</p>
+          <a class="btn btn-ghost" href="demo/invest-model.html" target="_blank" rel="noopener">Открыть демо</a>
+        </div>
+      </article>
+      <article class="work">
+        <a class="shot" href="demo/seller-calculator.html" target="_blank" rel="noopener"><img src="assets/work-seller.jpg" alt="Калькулятор цен и распродажи для селлера маркетплейса" loading="lazy"></a>
+        <div class="body">
+          <div class="kind">Веб · калькулятор для селлера</div>
+          <h3>Цены и распродажа остатков</h3>
+          <p>Маржа по каждому товару после всех расходов площадки, цена безубыточности и цена под нужную маржу, план распродажи и финансовый результат сезона.</p>
+          <a class="btn btn-ghost" href="demo/seller-calculator.html" target="_blank" rel="noopener">Открыть демо</a>
+        </div>
+      </article>
+    </div>
+    <p class="works-note reveal">Файлы с рабочими версиями инструментов показываю на созвоне.</p>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="cases" id="services">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Услуги и ориентиры по цене</span>
+      <h2>Работаю под задачи клиента</h2>
+      <p class="lead">Я не сервис для всех: одновременно веду до трёх клиентов на сопровождении и одного на внедрении. Указываю стартовые цены. Точный состав работ и стоимость — в коммерческом предложении после созвона.</p>
+    </div>
+    <div class="services-grid reveal">
+      <div class="service">
+        <h3>Разовый финансовый разбор</h3>
+        <p>Одна конкретная задача по Вашим данным: сколько на самом деле заработали или потеряли, прибыль по товарам, какая цена нужна, чтобы выйти в плюс. Отчёт и презентация на созвоне. Хороший вход: после разбора понятно, нужна ли системная работа.</p>
+        <div class="price">10–15 тыс. ₽</div>
+      </div>
+      <div class="service">
+        <h3>Аудит учёта и финансовый анализ</h3>
+        <p>Бизнес и учёт целиком: где лежат данные и где учёт теряет информацию, где бизнес зарабатывает и где теряет, сколько безопасно забрать себе. Результат — презентация с выводами и вариантами решений.</p>
+        <div class="price">от 35 тыс. ₽</div>
+      </div>
+      <div class="service">
+        <h3>Финансовая модель и калькулятор</h3>
+        <p>Считаю до того, как деньги потрачены: новое направление, кредит, распродажа, цены. Сначала модель в Excel, на её основе — веб-калькулятор.</p>
+        <div class="price">от 50 тыс. ₽</div>
+      </div>
+      <div class="service accent">
+        <h3>Внедрение управленческого учёта</h3>
+        <p>Прибыли и убытки, движение денег, платёжный календарь, себестоимость, юнит-экономика, дашборд. С нуля или порядок в том, что есть. Группа компаний — как одна компания.</p>
+        <div class="price">от 100 тыс. ₽</div>
+      </div>
+      <div class="service accent">
+        <h3>Постоянное сопровождение</h3>
+        <p>Ваш финансовый директор: цифры и анализ каждую неделю, встречи с собственником — разбор ситуации, рычаги управления, план для нужной прибыли, план-факт и готовые управленческие решения на рассмотрение. Решение — за собственником. Плюс развитие системы под задачи роста.</p>
+        <div class="price">от 75 тыс. ₽ в месяц</div>
+      </div>
+      <div class="service">
+        <h3>Автоматизация и интеграции по API</h3>
+        <p>Выписки банков, 1С, МойСклад, отчёты и остатки маркетплейсов, Битрикс24 — данные приходят сами. Деньги, продажи, доходы, расходы, прибыль и остатки видны на сегодня.</p>
+        <div class="price">20 тыс. ₽ за рабочий день<small>объём считаю после созвона</small></div>
+      </div>
+    </div>
+    <div class="price-note reveal">
+      <div class="note-box">
+        <h3>Как считаю стоимость</h3>
+        <ul>
+          <li>По трудозатратам, посчитанным после созвона. Ставка — 15 000 ₽ за рабочий день (8 часов), интеграции по API — 20 000 ₽.</li>
+          <li>Доработки и новый функционал на готовой системе — по той же ставке.</li>
+          <li>До начала работ согласовываем договор и техническое задание. Оплата — 50% перед началом, чек самозанятого.</li>
+          <li>2 недели после сдачи — бесплатно: исправление ошибок, доработки в рамках договора, чтобы всё показывалось так, как нужно, и ответы на вопросы.</li>
+        </ul>
+      </div>
+      <div class="note-box">
+        <h3>Чего не делаю</h3>
+        <ul>
+          <li>Не обещаю «рост прибыли на N%» — показываю, где рычаги. Решения за собственником.</li>
+          <li>Не беру антикризис и выживание.</li>
+          <li>Не называю цену до понимания задачи.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="expert reveal">
+      <div>
+        <h3>Судебная экспертиза по бухгалтерским и экономическим спорам</h3>
+        <p>Экспертное заключение, рецензия на чужую экспертизу, возражения на заключение или рецензию, проверка расчётов оппонента. Работаю от экспертной организации, только с корпоративными клиентами. Квалификационный аттестат аудитора № К 029304. Исход дела не обещаю — решение за судом.</p>
+      </div>
+      <div class="price" style="border:0;margin:0;padding:0;white-space:nowrap">от 100 тыс. ₽</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS + TOOLS -->
+<section id="process">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Как начинаем</span>
+      <h2>От теста до работающей системы</h2>
+    </div>
+    <div class="steps reveal">
+      <div class="step"><b>Тест</b><span>2–3 минуты. Я заранее вижу Вашу ситуацию и масштаб.</span></div>
+      <div class="step"><b>Созвон 20–30 минут</b><span>Бесплатно. Разбираем задачу, знакомимся.</span></div>
+      <div class="step"><b>Предложение, договор, ТЗ</b><span>Этапы, перечень работ, стоимость — под Вашу задачу. Договор и техническое задание согласовываем до старта.</span></div>
+      <div class="step"><b>Работа этапами</b><span>Каждый этап проверяем на Ваших реальных данных, дорабатываю — и дальше.</span></div>
+      <div class="step"><b>Система у Вас</b><span>Инструкции внутри файлов, команда обучена, решения — на цифрах.</span></div>
+    </div>
+    <div class="section-head reveal" style="margin:64px 0 8px">
+      <h2 style="font-size:1.8rem">Инструмент — под задачу и под Вашу команду</h2>
+      <p class="lead">Честно о том, что требует обслуживания, а что нет.</p>
+    </div>
+    <div class="tools reveal">
+      <div class="tool"><div class="who">Excel без макросов</div><h3>Без обслуживания</h3><p>Если в компании есть сотрудник, уверенно владеющий Excel, он ведёт учёт сам и может сам внести правки. Без абонентской платы — инструмент Ваш.</p></div>
+      <div class="tool"><div class="who">Google Таблицы со скриптами</div><h3>Больше автоматизации</h3><p>Данные подтягиваются сами, но скрипты нужно сопровождать: меняются документы, появляются новые позиции. Как с сайтом — у него всегда есть тот, кто его обслуживает.</p></div>
+      <div class="tool"><div class="who">Готовые сервисы</div><h3>Абонентская плата</h3><p>Перестали платить — потеряли доступ к своим данным. Под группу компаний и себестоимость по тех.картам типовые сервисы подходят с трудом.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="container about-grid">
+    <div class="reveal"><img src="assets/elena-full.jpg" alt="Елена Савичева" loading="lazy" width="712" height="998"></div>
+    <div class="reveal">
+      <span class="eyebrow">Обо мне</span>
+      <h2>Смотрю на учёт глазами проверяющего, аудитора и собственника</h2>
+      <ul class="timeline">
+        <li><b>6 лет</b><span>Главный налоговый инспектор отдела выездных проверок. Проверки крупнейших предприятий города — знаю, где учёт теряет информацию и где цифры «не сходятся».</span></li>
+        <li><b>12 лет</b><span>Руководитель и совладелец своей аудиторской компании, аттестованный аудитор Минфина. Компании с выручкой от 100 млн до 1 млрд ₽.</span></li>
+        <li><b>«Инвитро»</b><span>Свой медицинский офис (франшиза) с нуля: от убытка первого года до выручки, выросшей в 10 раз. Сама ставила управленческий учёт, бюджет, платёжные календари, юнит-экономику.</span></li>
+        <li><b>2026</b><span>Профессиональная переподготовка «Аналитик данных» (Skypro): Excel, SQL, Python, визуализация.</span></li>
+      </ul>
+      <div class="callout">
+        <p><b>Я не технический специалист, а финансовый директор с большим опытом, который умеет автоматизировать.</b></p>
+        <p>Для ускорения использую нейросети — таблицы, автоматизация, программирование, веб-приложения делаются в разы быстрее. Архитектура системы, видение, анализ и контроль каждой цифры — за мной.</p>
+        <p>Новые инструменты осваиваю на реальных задачах клиентов — так появились интеграции по API с банками, 1С, МойСкладом и маркетплейсами.</p>
+      </div>
+      <p style="margin-top:18px;color:var(--muted)">Думаю как собственник. Объясняю простым языком — понятно собственнику, руководителям и команде. Конфиденциальность — основа моей работы со времён налоговой и аудита: там налоговая и аудиторская тайна закреплены законом, как врачебная тайна у врача.</p>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section class="quiz-section" id="test">
+  <div class="container">
+    <div class="section-head reveal" style="text-align:center">
+      <span class="eyebrow">Запись на созвон</span>
+      <h2>Где Ваш бизнес сейчас: тест для собственника</h2>
+      <p class="lead" style="margin:0 auto">11 вопросов, 2–3 минуты. Вы увидите, на какой ступени управления на цифрах находится бизнес, а я приду на созвон, уже понимая Вашу задачу.</p>
+    </div>
+    <div class="quiz" id="quiz">
+      <div class="q-progress"><span id="qCount">Вопрос 1 из 11</span><div class="q-bar"><i id="qBar"></i></div></div>
+      <div id="qBody"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Вопросы</span>
+      <h2>Частые вопросы</h2>
+    </div>
+    <div class="faq-list reveal">
+      <details><summary>Чем Вы отличаетесь от штатного финансового директора?</summary><p>Вы получаете опыт налоговой, аудита и собственного бизнеса без найма в штат. Я выстраиваю систему так, чтобы она работала и без меня: инструкции внутри файлов, команда обучена. Дальше — сопровождение или самостоятельная работа, как Вам удобнее.</p></details>
+      <details><summary>Сколько стоит работа?</summary><p>Ориентиры — в разделе «Услуги». Точную стоимость считаю после созвона по трудозатратам: ставка 15 000 ₽ за рабочий день, интеграции по API — 20 000 ₽. Скидки в процентах не даю. Если берёте весь пул работ одним договором, скидка возможна — фиксированной суммой из сэкономленных часов.</p></details>
+      <details><summary>Как быстро будет результат?</summary><p>Срок зависит от задачи и от того, как быстро команда проверяет этапы на своих данных. Ориентир по календарю — в коммерческом предложении. Работаю этапами: первые цифры Вы видите уже на первом этапе.</p></details>
+      <details><summary>Почему только 3–4 клиента одновременно?</summary><p>До трёх клиентов на сопровождении и один на внедрении. Внедрение — это глубокое погружение в бизнес: данные, процессы, команда. Поэтому проекты внедрения беру по очереди: если место занято, договоримся о дате старта. Так каждый клиент получает персональную работу, а не поток.</p></details>
+      <details><summary>Нужен ли мне Excel, Google Таблицы или сервис?</summary><p>Зависит от задачи и от того, кто будет вести учёт. Excel без макросов работает без обслуживания, если в компании есть сильный сотрудник. Google Таблицы со скриптами дают больше автоматизации, но требуют сопровождения. Сервисы — это абонентская плата. Подбираем на созвоне.</p></details>
+      <details><summary>Работаете удалённо?</summary><p>Да, по всей России. Встречи онлайн, отчёты и аналитика — в электронном виде.</p></details>
+      <details><summary>Как проходит оплата? Есть ли договор и техническое задание?</summary><p>До начала работ обязательно согласовываем договор и техническое задание: состав работ, результат, этапы, сроки и стоимость. Оплата — 50% перед началом, остаток — по акту или по этапам. Работаю официально как самозанятая: чек из кабинета налоговой.</p></details>
+      <details><summary>Как с конфиденциальностью?</summary><p>Конфиденциальность — основа моей работы. Большую часть профессиональной жизни я проработала в налоговой и аудите, где налоговая и аудиторская тайна закреплены законом, как врачебная тайна у врача. Если нужно, подписываем соглашение о неразглашении.</p></details>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <h3>Елена Савичева</h3>
+        <p>Внешний финансовый директор. Решения на цифрах.</p>
+        <p style="margin-top:10px;font-size:.88rem">Самозанятая · ИНН 026509702969</p>
+      </div>
+      <div>
+        <h3>Связаться</h3>
+        <ul>
+          <li><a href="https://t.me/elenasovetnik" target="_blank" rel="noopener">Telegram @elenasovetnik</a></li>
+          <li><a href="https://wa.me/79272303594" target="_blank" rel="noopener">WhatsApp</a></li>
+          <li><a href="https://max.ru/u/f9LHodD0cOLTzX5jV_ozZ_ihegdCeDscIGXdoOSJLRzImtM7KLQqKhxRBUg" target="_blank" rel="noopener">MAX</a></li>
+          <li><a href="mailto:finansov1@mail.ru">finansov1@mail.ru</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Канал и документы</h3>
+        <ul>
+          <li><a href="https://t.me/savicheva_finance" target="_blank" rel="noopener">Канал «Финансы бизнеса»</a></li>
+          <li><a href="https://profi.ru/profile/SavichevaYL" target="_blank" rel="noopener">Профиль на profi.ru</a></li>
+          <li><a href="privacy.html">Политика конфиденциальности</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="copy"><span>© 2026 Елена Савичева</span><span>elenasavichevafindir.ru</span></div>
+  </div>
+</footer>
+
+<script>
+/* ===== НАСТРОЙКИ ОТПРАВКИ ЗАЯВОК =====
+   WEB3FORMS_KEY — ключ Web3Forms: заявка приходит на почту (ключ публичный по устройству сервиса).
+   APPS_SCRIPT_URL — адрес веб-приложения Google Apps Script: заявка уходит в Telegram-бот
+   и в таблицу заявок. Токен бота хранится только в Apps Script, в коде сайта его нет. */
+const WEB3FORMS_KEY = "e716ea60-f430-4671-a2f0-cd28d0982ed4";
+const APPS_SCRIPT_URL = "";
+
+/* ===== ТЕСТ ===== */
+const QUESTIONS = [
+  {t:"Ваша роль в компании", o:["Собственник","Руководитель","Финансист или экономист","Другое"]},
+  {t:"Сфера бизнеса", o:["Производство","Торговля и маркетплейсы","Услуги","Строительство","Другое"]},
+  {t:"Выручка бизнеса в год", h:"Помогает понять масштаб задачи", o:["До 20 млн ₽","20–100 млн ₽","100–500 млн ₽","Больше 500 млн ₽"], key:"rev"},
+  {t:"Сколько юрлиц и ИП в бизнесе?", o:["Одно","2–3","4 и больше"]},
+  {t:"Как Вы узнаёте, заработал ли бизнес за месяц?", o:["Смотрю, сколько денег на счёте","Считаем в таблицах или сервисах, но цифры не сходятся","Отчёты есть, но хочу видеть рычаги: где маржа, что развивать","Каждый месяц получаю отчёт о прибылях и деньгах и принимаю решения по нему"], s:[1,2,3,4]},
+  {t:"Знаете точную прибыль за прошлый месяц?", o:["Да, точно","Примерно","Знаю, что прибыль есть, но сколько — непонятно","Похоже, бизнес в минусе"], s:[4,2,1,1]},
+  {t:"Видите прибыль по направлениям, товарам или площадкам?", o:["Да, по каждому","Только по бизнесу в целом","Нет"], s:[4,2,1]},
+  {t:"Где ведётся учёт для управления — не для налоговой?", o:["Только бухгалтерия в 1С","Excel или Google Таблицы","Сервис управленческого учёта","Система, связанная с банком, складом, маркетплейсами"], s:[1,2,2,4]},
+  {t:"Что важнее всего получить в первую очередь?", o:["Понять, на чём бизнес зарабатывает","Навести порядок в цифрах и учёте","Себестоимость и юнит-экономика","Автоматизировать сбор данных","Финмодель под конкретное решение","Постоянного финансового директора"]},
+  {t:"Какой бюджет готовы заложить на постановку системы?", h:"Ориентиры по ценам — в разделе «Услуги»", o:["До 50 тыс. ₽","50–150 тыс. ₽","150–300 тыс. ₽","Больше 300 тыс. ₽","Пока не знаю"], key:"budget"},
+  {t:"Когда хотите начать?", o:["В этом месяце","В ближайшие 1–3 месяца","Пока присматриваюсь"]}
+];
+const ZONES = [
+  {n:"Торгуем и торгуем", title:"Ступень 1. «Торгуем и торгуем»",
+   now:["Результат видно по деньгам на счёте.","Маржа известна «плюс-минус».","Решения принимаются по ощущениям."],
+   need:["Отчёт о движении денег и отчёт о прибылях и убытках — понять, сколько бизнес на самом деле зарабатывает.","Разделить деньги бизнеса и личные.","Увидеть, какие товары и направления в плюсе, а какие в минусе."]},
+  {n:"Считаем, но не сходится", title:"Ступень 2. «Считаем, но не сходится»",
+   now:["Таблицы и сервисы есть, но цифры у всех разные.","Доверия к цифрам нет — непонятно, где погрешность.","На сбор данных уходит много ручной работы."],
+   need:["Единая картина из всех источников: банк, 1С, склад, маркетплейсы.","Проверка: управленческие цифры должны сходиться с деньгами.","Себестоимость и маржа по товарам и направлениям."]},
+  {n:"Хотим рычаги", title:"Ступень 3. «Хотим рычаги»",
+   now:["Основные цифры есть.","Хочется понять, где рычаги: что развивать, где цена, что сократить.","Нужен взгляд со стороны — не бухгалтера, а финансиста."],
+   need:["Юнит-экономика и ABC-анализ по прибыли.","Еженедельные цифры и встречи по решениям.","Связать показатели команды с результатом бизнеса."]},
+  {n:"Управляем на цифрах", title:"Ступень 4. «Управляем на цифрах»",
+   now:["Решения принимаются по отчётам.","Система работает регулярно."],
+   need:["Автоматизация: данные из банков, склада, CRM приходят сами.","Платёжный календарь на каждый день и план-факт.","Развитие системы под задачи роста."]}
+];
+let step = 0; const ans = new Array(QUESTIONS.length).fill(null);
+const qBody = document.getElementById('qBody'), qBar = document.getElementById('qBar'), qCount = document.getElementById('qCount');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function renderQ(){
+  const q = QUESTIONS[step];
+  qCount.textContent = `Вопрос ${step+1} из ${QUESTIONS.length}`;
+  qBar.style.width = (step/QUESTIONS.length*100)+'%';
+  qBody.innerHTML = `<div class="q-title">${esc(q.t)}</div>${q.h?`<div class="q-hint">${esc(q.h)}</div>`:'<div class="q-hint">Выберите один вариант</div>'}
+   <div class="opts">${q.o.map((o,i)=>`<label class="opt ${ans[step]===i?'sel':''}"><input type="radio" name="q" value="${i}" ${ans[step]===i?'checked':''}>${esc(o)}</label>`).join('')}</div>
+   <div class="q-nav"><button class="btn btn-ghost" id="back" ${step===0?'disabled':''}>← Назад</button><button class="btn btn-primary" id="next" ${ans[step]===null?'disabled':''}>${step===QUESTIONS.length-1?'Узнать результат':'Далее →'}</button></div>`;
+  qBody.querySelectorAll('input').forEach(inp => inp.addEventListener('change', e => {
+    ans[step] = +e.target.value;
+    qBody.querySelectorAll('.opt').forEach(l => l.classList.toggle('sel', l.contains(e.target)));
+    document.getElementById('next').disabled = false;
+  }));
+  document.getElementById('back').onclick = () => { if(step>0){step--;renderQ();} };
+  document.getElementById('next').onclick = () => { if(ans[step]===null) return; if(step<QUESTIONS.length-1){step++;renderQ();} else renderResult(); };
+}
+function zoneIndex(){
+  let sum=0,n=0; QUESTIONS.forEach((q,i)=>{ if(q.s && ans[i]!==null){sum+=q.s[ans[i]];n++;} });
+  const avg = sum/n; return avg<1.75?0:avg<2.5?1:avg<3.4?2:3;
+}
+function fitInfo(){
+  const rev = ans[2], budget = ans[9];
+  if(rev===0 || budget===0) return {ok:false, text:"Для Вашего масштаба лучший вход — разовый финансовый разбор (10–15 тыс. ₽): после него будет понятно, нужна ли системная работа и во что она обойдётся. На созвоне обсудим, с чего начать."};
+  return {ok:true, text:"Ваша задача по масштабу подходит для системной работы. На созвоне 20–30 минут разберём её подробно, после встречи пришлю коммерческое предложение."};
+}
+function renderResult(){
+  const z = ZONES[zoneIndex()], fit = fitInfo();
+  qCount.textContent = 'Результат'; qBar.style.width = '100%';
+  qBody.innerHTML = `<span class="zone-badge">Ваш результат</span>
+   <div class="q-title">${z.title}</div>
+   <div class="ladder">${ZONES.map(x=>`<div class="${x===z?'on':''}">${x.n}</div>`).join('')}</div>
+   <div class="result-block"><h4>Как обычно выглядит эта ступень</h4><ul>${z.now.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+   <div class="result-block"><h4>Что даёт следующий шаг</h4><ul>${z.need.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+   <div class="fit">${fit.text}</div>
+   <div class="q-title" style="font-size:1.2rem">Оставьте контакты — договоримся о созвоне</div>
+   <form id="leadForm" novalidate>
+     <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off">
+     <div class="field"><label for="fName">Имя</label><input id="fName" name="name" required autocomplete="name"></div>
+     <div class="field"><label for="fContact">Телефон или Telegram</label><input id="fContact" name="contact" required placeholder="+7 900 000-00-00 или @ник"></div>
+     <div class="field"><label for="fEmail">E-mail (по желанию)</label><input id="fEmail" name="email" type="email" autocomplete="email"></div>
+     <label class="consent"><input type="checkbox" id="fConsent"> <span>Даю согласие на обработку персональных данных в соответствии с <a href="privacy.html" target="_blank">политикой конфиденциальности</a></span></label>
+     <button class="btn btn-gold" type="submit" id="fSend" disabled>Записаться на созвон</button>
+     <div class="form-msg" id="fMsg"></div>
+   </form>
+   <div class="q-nav" style="margin-top:20px"><button class="btn btn-ghost" id="restart">Пройти заново</button></div>`;
+  const consent = document.getElementById('fConsent'), send = document.getElementById('fSend');
+  consent.onchange = () => send.disabled = !consent.checked;
+  document.getElementById('restart').onclick = () => { step=0; ans.fill(null); renderQ(); };
+  document.getElementById('leadForm').onsubmit = e => submitLead(e, z, fit);
+}
+async function submitLead(e, z, fit){
+  e.preventDefault();
+  const f = e.target, msg = document.getElementById('fMsg'), send = document.getElementById('fSend');
+  const name = f.name.value.trim(), contact = f.contact.value.trim(), email = f.email.value.trim();
+  if(!name || !contact){ msg.textContent = 'Заполните имя и телефон или Telegram.'; return; }
+  if(f.botcheck.checked) return;
+  msg.textContent = ''; send.disabled = true; send.textContent = 'Отправляю…';
+  const answers = QUESTIONS.map((q,i)=>`${i+1}. ${q.t} — ${ans[i]!==null?q.o[ans[i]]:'—'}`).join('\n');
+  const lead = {name, contact, email, zone:z.n, fit: fit.ok?'подходит':'проверить масштаб', answers, page: location.href};
+  let delivered = false;
+  try{
+    const r = await fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},
+      body:JSON.stringify({access_key:WEB3FORMS_KEY, subject:`Заявка с теста: ${name} — ${z.n}`, from_name:'Сайт elenasavichevafindir.ru', name, email: email||undefined, contact, zone:z.n, fit:lead.fit, answers})});
+    const d = await r.json(); delivered = !!d.success;
+  }catch(err){}
+  if(APPS_SCRIPT_URL){
+    try{ await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(lead)}); delivered = true; }catch(err){}
+  }
+  if(!delivered){
+    send.disabled = false; send.textContent = 'Записаться на созвон';
+    msg.innerHTML = 'Не получилось отправить. Напишите мне напрямую: <a href="https://t.me/elenasovetnik" target="_blank">Telegram</a> или <a href="https://wa.me/79272303594" target="_blank">WhatsApp</a>.';
+    return;
+  }
+  const text = encodeURIComponent(`Здравствуйте, Елена! Я ${name}, прошёл(ла) тест на сайте — результат «${z.n}». Хочу договориться о созвоне.`);
+  qBody.innerHTML = `<div class="q-title">Спасибо, ${esc(name)}! Заявка у меня</div>
+    <p style="color:var(--muted)">Я посмотрю ответы и свяжусь с Вами в ближайший рабочий день, чтобы договориться о времени созвона. Если удобнее — напишите сразу:</p>
+    <div class="messengers"><a class="btn btn-primary" href="https://t.me/elenasovetnik?text=${text}" target="_blank" rel="noopener">Написать в Telegram</a><a class="btn btn-ghost" href="https://wa.me/79272303594?text=${text}" target="_blank" rel="noopener">Написать в WhatsApp</a></div>`;
+}
+renderQ();
+
+/* появление блоков при прокрутке */
+const io = new IntersectionObserver(es => es.forEach(en => { if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } }), {threshold:.12});
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

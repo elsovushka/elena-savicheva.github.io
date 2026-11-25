@@ -1,0 +1,16 @@
+# Robots.txt для elenasavichevafindir.ru
+# Разрешаем индексацию всего сайта
+
+User-agent: *
+Allow: /
+
+# Указываем карту сайта
+Sitemap: https://elenasavichevafindir.ru/sitemap.xml
+
+# Для Яндекса
+User-agent: Yandex
+Allow: /
+
+# Для Google
+User-agent: Googlebot
+Allow: /
