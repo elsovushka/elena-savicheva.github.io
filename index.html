@@ -733,8 +733,8 @@ footer li{list-style:none;margin-bottom:8px}
   <div class="container">
     <div class="section-head reveal" style="text-align:center">
       <span class="eyebrow">Запись на созвон</span>
-      <h2>Где Ваш бизнес сейчас: тест для собственника</h2>
-      <p class="lead" style="margin:0 auto">11 вопросов, 2–3 минуты. Вы увидите, на какой ступени управления на цифрах находится бизнес, а я приду на созвон, уже понимая Вашу задачу.</p>
+      <h2>Где сейчас Ваш бизнес: тест на управление по цифрам</h2>
+      <p class="lead" style="margin:0 auto">Для собственников, руководителей и финансистов. 11 вопросов, 2–3 минуты. Вы увидите, на какой ступени управления на цифрах находится бизнес, а я приду на созвон, уже понимая Вашу задачу.</p>
     </div>
     <div class="quiz" id="quiz">
       <div class="q-progress"><span id="qCount">Вопрос 1 из 11</span><div class="q-bar"><i id="qBar"></i></div></div>
@@ -796,10 +796,8 @@ footer li{list-style:none;margin-bottom:8px}
 
 <script>
 /* ===== НАСТРОЙКИ ОТПРАВКИ ЗАЯВОК =====
-   WEB3FORMS_KEY — ключ Web3Forms: заявка приходит на почту (ключ публичный по устройству сервиса).
-   APPS_SCRIPT_URL — адрес веб-приложения Google Apps Script: заявка уходит в Telegram-бот
-   и в таблицу заявок. Токен бота хранится только в Apps Script, в коде сайта его нет. */
-const WEB3FORMS_KEY = "e716ea60-f430-4671-a2f0-cd28d0982ed4";
+   APPS_SCRIPT_URL — адрес веб-приложения Google Apps Script. Скрипт проверяет заявку на спам,
+   записывает её в таблицу, отправляет в Telegram-бот и на почту. Токенов и ключей в коде сайта нет. */
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUa-SzbPiUZ2KxRmttjQAFef_t9zFPTt0n3Ns-_HNo5woQQ5N6zeXwpRdxJKi3UT2G/exec";
 
 /* ===== ТЕСТ ===== */
@@ -830,7 +828,7 @@ const ZONES = [
    now:["Решения принимаются по отчётам.","Система работает регулярно."],
    need:["Автоматизация: данные из банков, склада, CRM приходят сами.","Платёжный календарь на каждый день и план-факт.","Развитие системы под задачи роста."]}
 ];
-let step = 0; const ans = new Array(QUESTIONS.length).fill(null);
+let step = 0, startedAt = 0; const ans = new Array(QUESTIONS.length).fill(null);
 const qBody = document.getElementById('qBody'), qBar = document.getElementById('qBar'), qCount = document.getElementById('qCount');
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
@@ -842,6 +840,7 @@ function renderQ(){
    <div class="opts">${q.o.map((o,i)=>`<label class="opt ${ans[step]===i?'sel':''}"><input type="radio" name="q" value="${i}" ${ans[step]===i?'checked':''}>${esc(o)}</label>`).join('')}</div>
    <div class="q-nav"><button class="btn btn-ghost" id="back" ${step===0?'disabled':''}>← Назад</button><button class="btn btn-primary" id="next" ${ans[step]===null?'disabled':''}>${step===QUESTIONS.length-1?'Узнать результат':'Далее →'}</button></div>`;
   qBody.querySelectorAll('input').forEach(inp => inp.addEventListener('change', e => {
+    if(!startedAt) startedAt = Date.now();
     ans[step] = +e.target.value;
     qBody.querySelectorAll('.opt').forEach(l => l.classList.toggle('sel', l.contains(e.target)));
     document.getElementById('next').disabled = false;
@@ -869,7 +868,7 @@ function renderResult(){
    <div class="fit">${fit.text}</div>
    <div class="q-title" style="font-size:1.2rem">Оставьте контакты — договоримся о созвоне</div>
    <form id="leadForm" novalidate>
-     <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off">
+     <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off"><input type="text" name="company" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
      <div class="field"><label for="fName">Имя</label><input id="fName" name="name" required autocomplete="name"></div>
      <div class="field"><label for="fContact">Телефон или Telegram</label><input id="fContact" name="contact" required placeholder="+7 900 000-00-00 или @ник"></div>
      <div class="field"><label for="fEmail">E-mail (по желанию)</label><input id="fEmail" name="email" type="email" autocomplete="email"></div>
@@ -888,19 +887,14 @@ async function submitLead(e, z, fit){
   const f = e.target, msg = document.getElementById('fMsg'), send = document.getElementById('fSend');
   const name = f.name.value.trim(), contact = f.contact.value.trim(), email = f.email.value.trim();
   if(!name || !contact){ msg.textContent = 'Заполните имя и телефон или Telegram.'; return; }
-  if(f.botcheck.checked) return;
   msg.textContent = ''; send.disabled = true; send.textContent = 'Отправляю…';
-  const answers = QUESTIONS.map((q,i)=>`${i+1}. ${q.t} — ${ans[i]!==null?q.o[ans[i]]:'—'}`).join('\n');
-  const lead = {name, contact, email, zone:z.n, fit: fit.ok?'подходит':'проверить масштаб', answers, page: location.href};
+  const answers = QUESTIONS.map((q,i)=>`${i+1}. ${q.t} — ${ans[i]!==null?q.o[ans[i]]:'—'}`).join('
+');
+  const lead = {name, contact, email, zone:z.n, fit: fit.ok?'подходит':'проверить масштаб', answers, page: location.href,
+    answered: ans.filter(a=>a!==null).length, elapsed: startedAt ? Date.now() - startedAt : 0,
+    hp: (f.botcheck.checked ? '1' : '') + f.company.value};
   let delivered = false;
-  try{
-    const r = await fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},
-      body:JSON.stringify({access_key:WEB3FORMS_KEY, subject:`Заявка с теста: ${name} — ${z.n}`, from_name:'Сайт elenasavichevafindir.ru', name, email: email||undefined, contact, zone:z.n, fit:lead.fit, answers})});
-    const d = await r.json(); delivered = !!d.success;
-  }catch(err){}
-  if(APPS_SCRIPT_URL){
-    try{ await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(lead)}); delivered = true; }catch(err){}
-  }
+  try{ await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(lead)}); delivered = true; }catch(err){}
   if(!delivered){
     send.disabled = false; send.textContent = 'Записаться на созвон';
     msg.innerHTML = 'Не получилось отправить. Напишите мне напрямую: <a href="https://t.me/elenasovetnik" target="_blank">Telegram</a> или <a href="https://wa.me/79272303594" target="_blank">WhatsApp</a>.';
