@@ -188,7 +188,8 @@ header{position:sticky;top:0;z-index:50;background:rgba(251,248,243,.92);backdro
 
 /* about */
 .about{background:var(--white);border-top:1px solid var(--line)}
-.about-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:start}
+.about-grid{display:grid;grid-template-columns:.8fr 1.2fr;grid-template-areas:"photo text" "extra text";column-gap:56px;row-gap:28px;align-items:start}
+.about-photo{grid-area:photo}.about-text{grid-area:text}.about-extra{grid-area:extra}
 .about-grid img{border-radius:24px;box-shadow:var(--shadow);width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;object-position:50% 12%}
 .timeline{list-style:none;margin:22px 0}
 .timeline li{display:grid;grid-template-columns:130px 1fr;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
@@ -255,6 +256,7 @@ footer li{list-style:none;margin-bottom:8px}
 
 @media (max-width:1000px){
   .hero-grid,.idea-grid,.about-grid,.price-note{grid-template-columns:1fr}
+  .about-grid{grid-template-areas:"photo" "text" "extra"}
   .facts{grid-template-columns:repeat(2,1fr)}
   .phases,.services-grid,.reviews-grid,.tools,.works-grid{grid-template-columns:1fr 1fr}
   .principles{grid-template-columns:1fr 1fr}
@@ -708,8 +710,8 @@ footer li{list-style:none;margin-bottom:8px}
 <!-- ABOUT -->
 <section class="about" id="about">
   <div class="container about-grid">
-    <div class="reveal"><img src="assets/elena-full.jpg" alt="Елена Савичева" loading="lazy" width="712" height="998"></div>
-    <div class="reveal">
+    <div class="reveal about-photo"><img src="assets/elena-full.jpg" alt="Елена Савичева" loading="lazy" width="712" height="998"></div>
+    <div class="reveal about-text">
       <span class="eyebrow">Обо мне</span>
       <h2>Смотрю на учёт глазами проверяющего, аудитора и собственника</h2>
       <ul class="timeline">
@@ -718,7 +720,10 @@ footer li{list-style:none;margin-bottom:8px}
         <li><b>«Инвитро»</b><span>Свой медицинский офис (франшиза) с нуля: от убытка первого года до выручки, выросшей в 10 раз. Сама ставила управленческий учёт, бюджет, платёжные календари, юнит-экономику.</span></li>
         <li><b>2026</b><span>Профессиональная переподготовка «Аналитик данных» (Skypro): Excel, SQL, Python, визуализация.</span></li>
       </ul>
-      <div class="callout">
+
+    </div>
+      <div class="reveal about-extra">
+      <div class="callout" style="margin-top:0">
         <p><b>Я не технический специалист, а финансовый директор с большим опытом, который умеет автоматизировать.</b></p>
         <p>Для ускорения использую нейросети — таблицы, автоматизация, программирование, веб-приложения делаются в разы быстрее. Архитектура системы, видение, анализ и контроль каждой цифры — за мной.</p>
         <p>Новые инструменты осваиваю на реальных задачах клиентов — так появились интеграции по API с банками, 1С, МойСкладом и маркетплейсами.</p>
