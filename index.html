@@ -888,8 +888,7 @@ async function submitLead(e, z, fit){
   const name = f.name.value.trim(), contact = f.contact.value.trim(), email = f.email.value.trim();
   if(!name || !contact){ msg.textContent = 'Заполните имя и телефон или Telegram.'; return; }
   msg.textContent = ''; send.disabled = true; send.textContent = 'Отправляю…';
-  const answers = QUESTIONS.map((q,i)=>`${i+1}. ${q.t} — ${ans[i]!==null?q.o[ans[i]]:'—'}`).join('
-');
+  const answers = QUESTIONS.map((q,i)=>`${i+1}. ${q.t} — ${ans[i]!==null?q.o[ans[i]]:'—'}`).join('\n');
   const lead = {name, contact, email, zone:z.n, fit: fit.ok?'подходит':'проверить масштаб', answers, page: location.href,
     answered: ans.filter(a=>a!==null).length, elapsed: startedAt ? Date.now() - startedAt : 0,
     hp: (f.botcheck.checked ? '1' : '') + f.company.value};
