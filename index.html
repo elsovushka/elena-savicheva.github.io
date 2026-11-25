@@ -906,10 +906,26 @@ async function submitLead(e, z, fit){
     msg.innerHTML = 'Не получилось отправить. Напишите мне напрямую: <a href="https://t.me/elenasovetnik" target="_blank">Telegram</a> или <a href="https://wa.me/79272303594" target="_blank">WhatsApp</a>.';
     return;
   }
-  const text = encodeURIComponent(`Здравствуйте, Елена! Я ${name}, прошёл(ла) тест на сайте — результат «${z.n}». Хочу договориться о созвоне.`);
+  const note = `Здравствуйте, Елена!
+
+Только что оставил(а) заявку на Вашем сайте на созвон.
+Результат теста: «${z.n}».
+
+Мне удобно:
+Дни: ___
+Время: с ___ до ___ (МСК, в диапазоне 9:00–15:00)`;
+  const text = encodeURIComponent(note);
+  const MAX_URL = 'https://max.ru/u/f9LHodD0cOLTzX5jV_ozZ_ihegdCeDscIGXdoOSJLRzImtM7KLQqKhxRBUg';
   qBody.innerHTML = `<div class="q-title">Спасибо, ${esc(name)}! Заявка у меня</div>
-    <p style="color:var(--muted)">Я посмотрю ответы и свяжусь с Вами в ближайший рабочий день, чтобы договориться о времени созвона. Если удобнее — напишите сразу:</p>
-    <div class="messengers"><a class="btn btn-primary" href="https://t.me/elenasovetnik?text=${text}" target="_blank" rel="noopener">Написать в Telegram</a><a class="btn btn-ghost" href="https://wa.me/79272303594?text=${text}" target="_blank" rel="noopener">Написать в WhatsApp</a></div>`;
+    <p style="color:var(--muted);margin-bottom:6px">Выберите мессенджер, в котором Вам удобнее связаться. Сообщение уже готово — допишите удобные дни и время.</p>
+    <div class="messengers">
+      <a class="btn btn-primary" href="https://t.me/elenasovetnik?text=${text}" target="_blank" rel="noopener">Telegram</a>
+      <a class="btn btn-primary" href="https://wa.me/79272303594?text=${text}" target="_blank" rel="noopener">WhatsApp</a>
+      <a class="btn btn-primary" href="${MAX_URL}" target="_blank" rel="noopener" id="maxBtn">MAX</a>
+    </div>
+    <p style="color:var(--muted);font-size:.9rem;margin-top:12px">В MAX текст не подставляется сам — при нажатии он скопируется, останется вставить его в чат.</p>
+    <p style="color:var(--muted);font-size:.9rem;margin-top:6px">Если не успеете написать — я сама свяжусь с Вами в ближайший рабочий день.</p>`;
+  document.getElementById('maxBtn').addEventListener('click', () => { try { navigator.clipboard.writeText(note); } catch (e) {} });
 }
 renderQ();
 
